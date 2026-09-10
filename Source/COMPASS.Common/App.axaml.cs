@@ -73,7 +73,7 @@ public partial class App : Application
             //must be done after window is shown, as notification service will use it as parent
             //and showing a notification on a non visible window causes a crash
             WindowManager.MainWindow = mainWindow;
-            ConnectivityManager.SubscribeToWindowFocus(mainWindow);
+            ServiceResolver.Resolve<ConnectivityManager>().SubscribeToWindowFocus(mainWindow);
 
             // Finally, close the splash screen
             _splashScreenWindow?.Close();

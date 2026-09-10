@@ -10,10 +10,12 @@ using System.Text.Json.Nodes;
 
 namespace COMPASS.Common.Services;
 
-public class WebService(ILogger logger, IHttpClientFactory httpClientFactory) : IWebService
+public class WebService(ILogger logger, IHttpClientFactory httpClientFactory, ConnectivityManager connectivityManager) : IWebService
 {
     public const string BrowserHttpClient = "browser";
     public const string ConnectionCheckHttpClient = "connection-check";
+
+    private readonly ConnectivityManager _connectivityManager = connectivityManager;
 
     //Download data and put it in a byte[]
     public async Task<byte[]> DownloadFileAsync(string uri)
@@ -25,13 +27,13 @@ public class WebService(ILogger logger, IHttpClientFactory httpClientFactory) : 
         try
         {
             var data = await client.GetByteArrayAsync(uri).ConfigureAwait(false);
-            ConnectivityManager.IsOnline = true;
+            _connectivityManager.IsOnline = true;
             return data;
         }
         catch (HttpRequestException ex)
         {
             //might mean we are offline, but not necessarily so check to inform user
-            await ConnectivityManager.CheckConnection();
+            await _connectivityManager.CheckConnection();
             logger.Error($"Failed to fetch data at {uri}", ex);
             return [];
         }
@@ -55,7 +57,7 @@ public class WebService(ILogger logger, IHttpClientFactory httpClientFactory) : 
             HttpResponseMessage response = await client.GetAsync(uri).ConfigureAwait(false);
             if (response.IsSuccessStatusCode)
             {
-                ConnectivityManager.IsOnline = true;
+                _connectivityManager.IsOnline = true;
                 string data = await response.Content.ReadAsStringAsync();
                 json = JsonNode.Parse(data);
             }
@@ -63,7 +65,7 @@ public class WebService(ILogger logger, IHttpClientFactory httpClientFactory) : 
         catch (Exception ex)
         {
             //might mean we are offline, but not necessarily so check to inform user
-            await ConnectivityManager.CheckConnection();
+            await _connectivityManager.CheckConnection();
             logger.Error($"Failed to fetch data at {uri}", ex);
         }
 
@@ -75,13 +77,13 @@ public class WebService(ILogger logger, IHttpClientFactory httpClientFactory) : 
         try
         {
             var imgBytes = await DownloadFileAsync(imgURL).ConfigureAwait(false);
-            ConnectivityManager.IsOnline = true;
+            _connectivityManager.IsOnline = true;
             return new(imgBytes);
         }
         catch (Exception ex)
         {
             //might mean we are offline, but not necessarily so check to inform user
-            await ConnectivityManager.CheckConnection();
+            await _connectivityManager.CheckConnection();
             logger.Error($"Failed to download cover image from {imgURL}", ex);
             return null;
         }
@@ -102,7 +104,7 @@ public class WebService(ILogger logger, IHttpClientFactory httpClientFactory) : 
         {
             //fails if URL could not be loaded
             //might mean we are offline, but not necessarily so check to inform user
-            await ConnectivityManager.CheckConnection();
+            await _connectivityManager.CheckConnection();
             progressVM.AddLogEntry(new(Severity.Error, ex.Message));
             logger.Error($"Could not load {url}", ex);
             return null;
@@ -117,7 +119,7 @@ public class WebService(ILogger logger, IHttpClientFactory httpClientFactory) : 
         }
         else
         {
-            ConnectivityManager.IsOnline = true;
+            _connectivityManager.IsOnline = true;
             return doc;
         }
     }

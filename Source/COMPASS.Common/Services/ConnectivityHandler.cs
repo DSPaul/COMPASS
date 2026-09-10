@@ -9,19 +9,19 @@ namespace COMPASS.Common.Services;
 /// On an <see cref="HttpRequestException"/>, we trigger a connection check to determine
 /// whether the failure is due to being fully offline.
 /// </summary>
-public class ConnectivityHandler : DelegatingHandler
+public class ConnectivityHandler(ConnectivityManager connectivityManager) : DelegatingHandler
 {
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
         try
         {
             var response = await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
-            ConnectivityManager.IsOnline = true;
+            connectivityManager.IsOnline = true;
             return response;
         }
         catch (HttpRequestException)
         {
-            await ConnectivityManager.CheckConnection().ConfigureAwait(false);
+            await connectivityManager.CheckConnection().ConfigureAwait(false);
             throw;
         }
     }

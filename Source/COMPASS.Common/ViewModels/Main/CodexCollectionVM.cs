@@ -28,11 +28,12 @@ public class CodexCollectionVM : ModelViewModelBase<CodexCollection>
     private readonly CodexViewModelFactory _codexViewModelFactory;
     private readonly TagViewModelFactory _tagViewModelFactory;
     private readonly ImportFilesViewModelFactory _importFilesViewModelFactory;
+    private readonly Lazy<CollectionManager> _collectionManager;
 
     public CodexCollectionVM(string identifier, CodexCollection collection, 
         ICodexCollectionRepository repo, ILogger logger, INotificationService notificationService, IImportExportService importExportService, 
         ICoverStorageService coverStorageService, FolderFactory folderFactory, CodexViewModelFactory codexViewModelFactory, TagViewModelFactory tagViewModelFactory,
-        ImportFilesViewModelFactory importFilesViewModelFactory)
+        ImportFilesViewModelFactory importFilesViewModelFactory, Lazy<CollectionManager> collectionManager)
         : base(collection)
     {
         _logger = logger;
@@ -43,6 +44,7 @@ public class CodexCollectionVM : ModelViewModelBase<CodexCollection>
         _codexViewModelFactory = codexViewModelFactory;
         _tagViewModelFactory = tagViewModelFactory;
         _importFilesViewModelFactory = importFilesViewModelFactory;
+        _collectionManager = collectionManager;
 
         _identifier = identifier;
         _repo = repo;
@@ -218,7 +220,7 @@ public class CodexCollectionVM : ModelViewModelBase<CodexCollection>
         }
         catch (Exception ex) 
         { 
-            Logger.Error("Error during auto import", ex);
+            _logger.Error("Error during auto import", ex);
         }
     }
     
@@ -255,7 +257,7 @@ public class CodexCollectionVM : ModelViewModelBase<CodexCollection>
         
         if (!CanDeleteCollection()) return false;
         
-        CollectionManager.RemoveCollection(this);
+        _collectionManager.Value.RemoveCollection(this);
         _repo.DeleteCollection(Identifier);
         return true;
     }
@@ -275,11 +277,12 @@ public class CodexCollectionVMFactory(
     FolderFactory folderFactory,
     CodexViewModelFactory codexViewModelFactory,
     TagViewModelFactory tagViewModelFactory,
-    ImportFilesViewModelFactory importFilesViewModelFactory)
+    ImportFilesViewModelFactory importFilesViewModelFactory,
+    Lazy<CollectionManager> collectionManager)
 {
     public CodexCollectionVM Create(CodexCollection collection, ICodexCollectionRepository repo)
         => new(collection.Name, collection, repo, logger, notificationService, importExportService, coverStorageService,
-               folderFactory, codexViewModelFactory, tagViewModelFactory, importFilesViewModelFactory);
+               folderFactory, codexViewModelFactory, tagViewModelFactory, importFilesViewModelFactory, collectionManager);
 
     public CodexCollectionVM Create(CodexCollection collection, StorageStrategy storageStrategy)
         => Create(collection, ServiceResolver.ResolveKeyed<ICodexCollectionRepository>(storageStrategy));

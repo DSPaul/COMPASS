@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Exceptions;
 using COMPASS.Common.Interfaces.ViewModels;
 using COMPASS.Common.Models;
@@ -13,22 +14,24 @@ namespace COMPASS.Common.ViewModels.Modals.Import
     public class ImportTagsViewModel : ViewModelBase, IDisposable, IModalViewModel, IConfirmable
     {
         private readonly TagViewModelFactory _tagViewModelFactory;
+        private readonly CollectionManager _collectionManager;
 
-        public ImportTagsViewModel(TagViewModelFactory tagViewModelFactory, string importCollectionId, string targetCollectionId)
-            : this(tagViewModelFactory, [importCollectionId], targetCollectionId) { }
-        public ImportTagsViewModel(TagViewModelFactory tagViewModelFactory, CollectionHandle importCollectionHandle, string targetCollectionId)
-            : this(tagViewModelFactory, [importCollectionHandle], targetCollectionId) { }
+        public ImportTagsViewModel(TagViewModelFactory tagViewModelFactory, CollectionManager collectionManager, string importCollectionId, string targetCollectionId)
+            : this(tagViewModelFactory, collectionManager, [importCollectionId], targetCollectionId) { }
+        public ImportTagsViewModel(TagViewModelFactory tagViewModelFactory, CollectionManager collectionManager, CollectionHandle importCollectionHandle, string targetCollectionId)
+            : this(tagViewModelFactory, collectionManager, [importCollectionHandle], targetCollectionId) { }
 
-        public ImportTagsViewModel(TagViewModelFactory tagViewModelFactory, IEnumerable<string> importCollectionIds, string targetCollectionId) :
-            this(tagViewModelFactory, importCollectionIds.Select(id => CollectionManager.LoadCollection(id) ?? throw new LoadException(id)), targetCollectionId) { }
+        public ImportTagsViewModel(TagViewModelFactory tagViewModelFactory, CollectionManager collectionManager, IEnumerable<string> importCollectionIds, string targetCollectionId) :
+            this(tagViewModelFactory, collectionManager, importCollectionIds.Select(id => collectionManager.LoadCollection(id) ?? throw new LoadException(id)), targetCollectionId) { }
 
 
-        public ImportTagsViewModel(TagViewModelFactory tagViewModelFactory, IEnumerable<CollectionHandle> importCollectionHandles, string targetCollectionId)
+        public ImportTagsViewModel(TagViewModelFactory tagViewModelFactory, CollectionManager collectionManager, IEnumerable<CollectionHandle> importCollectionHandles, string targetCollectionId)
         {
             _tagViewModelFactory = tagViewModelFactory;
+            _collectionManager = collectionManager;
 
             //Load the target collection
-            _targetCollectionHandle = CollectionManager.LoadCollection(targetCollectionId) ?? throw new LoadException(targetCollectionId);
+            _targetCollectionHandle = collectionManager.LoadCollection(targetCollectionId) ?? throw new LoadException(targetCollectionId);
 
             foreach (var handle in importCollectionHandles)
             {
@@ -38,12 +41,13 @@ namespace COMPASS.Common.ViewModels.Modals.Import
             TagsSelectorVM = new TagsSelectorViewModel(tagViewModelFactory, _collectionHandles.Select(h => h.CollectionVM));
         }
 
-        public ImportTagsViewModel(TagViewModelFactory tagViewModelFactory, CodexCollectionVM codexCollectionVM, string targetCollectionId)
+        public ImportTagsViewModel(TagViewModelFactory tagViewModelFactory, CollectionManager collectionManager, CodexCollectionVM codexCollectionVM, string targetCollectionId)
         {
             _tagViewModelFactory = tagViewModelFactory;
+            _collectionManager = collectionManager;
 
             //Load the target collection
-            _targetCollectionHandle = CollectionManager.LoadCollection(targetCollectionId) ?? throw new LoadException(targetCollectionId);
+            _targetCollectionHandle = collectionManager.LoadCollection(targetCollectionId) ?? throw new LoadException(targetCollectionId);
             TagsSelectorVM = new TagsSelectorViewModel(tagViewModelFactory, codexCollectionVM);
         }
 
@@ -84,5 +88,15 @@ namespace COMPASS.Common.ViewModels.Modals.Import
             _targetCollectionHandle.Dispose();
         }
 
+    }
+
+    [Factory]
+    public class ImportTagsViewModelFactory(TagViewModelFactory tagViewModelFactory, CollectionManager collectionManager)
+    {
+        public ImportTagsViewModel Create(IEnumerable<string> importCollectionIds, string targetCollectionId)
+            => new(tagViewModelFactory, collectionManager, importCollectionIds, targetCollectionId);
+
+        public ImportTagsViewModel Create(CodexCollectionVM codexCollectionVM, string targetCollectionId)
+            => new(tagViewModelFactory, collectionManager, codexCollectionVM, targetCollectionId);
     }
 }

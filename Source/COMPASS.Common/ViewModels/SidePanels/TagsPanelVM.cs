@@ -27,6 +27,8 @@ namespace COMPASS.Common.ViewModels.SidePanels
         private readonly ILogger _logger;
         private readonly IImportExportService _importExportService;
         private readonly INotificationService _notificationService;
+        private readonly CollectionManager _collectionManager;
+        private readonly ImportTagsViewModelFactory _importTagsViewModelFactory;
         private readonly TagOperations _tagOperations;
         private readonly CodexCollectionVMFactory _codexCollectionVMFactory;
         private readonly ExportCollectionViewModelFactory _exportCollectionViewModelFactory;
@@ -39,6 +41,8 @@ namespace COMPASS.Common.ViewModels.SidePanels
             ILogger logger,
             IImportExportService importExportService,
             INotificationService notificationService,
+            CollectionManager collectionManager,
+            ImportTagsViewModelFactory importTagsViewModelFactory,
             TagOperations tagOperations,
             CodexCollectionVMFactory codexCollectionVMFactory,
             ExportCollectionViewModelFactory exportCollectionViewModelFactory,
@@ -50,6 +54,8 @@ namespace COMPASS.Common.ViewModels.SidePanels
             _logger = logger;
             _importExportService = importExportService;
             _notificationService = notificationService;
+            _collectionManager = collectionManager;
+            _importTagsViewModelFactory = importTagsViewModelFactory;
             _tagOperations = tagOperations;
             _codexCollectionVMFactory = codexCollectionVMFactory;
             _exportCollectionViewModelFactory = exportCollectionViewModelFactory;
@@ -200,8 +206,8 @@ namespace COMPASS.Common.ViewModels.SidePanels
         public AsyncRelayCommand ImportTagsFromOtherCollectionsCommand => field ??= new(ImportTagsFromOtherCollections);
         public async Task ImportTagsFromOtherCollections()
         {
-            var importVM = new ImportTagsViewModel(_tagViewModelFactory,
-                (IEnumerable<string>)CollectionManager.CollectionNames, ActiveCollection.Name);
+            var importVM = _importTagsViewModelFactory.Create(
+                (IEnumerable<string>)_collectionManager.CollectionNames, ActiveCollection.Name);
             await WindowManager.OpenModal(importVM);
         }
 
@@ -224,7 +230,7 @@ namespace COMPASS.Common.ViewModels.SidePanels
             }
             
             using CodexCollectionVM toImportVm = _codexCollectionVMFactory.Create(importCollection, StorageStrategy.Xml);
-            var tagImportVM = new ImportTagsViewModel(_tagViewModelFactory, toImportVm, ActiveCollection.Name);
+            var tagImportVM = _importTagsViewModelFactory.Create(toImportVm, ActiveCollection.Name);
 
             var w = new ModalWindow(tagImportVM);
             await w.ShowDialog(WindowManager.ActiveWindow);
@@ -320,6 +326,8 @@ namespace COMPASS.Common.ViewModels.SidePanels
         ILogger logger,
         IImportExportService importExportService,
         INotificationService notificationService,
+        CollectionManager collectionManager,
+        ImportTagsViewModelFactory importTagsViewModelFactory,
         TagOperations tagOperations,
         CodexCollectionVMFactory codexCollectionVMFactory,
         ExportCollectionViewModelFactory exportCollectionViewModelFactory,
@@ -327,7 +335,7 @@ namespace COMPASS.Common.ViewModels.SidePanels
         TagViewModelFactory tagViewModelFactory)
     {
         public TagsPanelVM Create(CodexCollectionVM collectionVm, FiltersViewModel filtersVm)
-            => new(logger, importExportService, notificationService, tagOperations, codexCollectionVMFactory, exportCollectionViewModelFactory, tagEditViewModelFactory,
+            => new(logger, importExportService, notificationService, collectionManager, importTagsViewModelFactory, tagOperations, codexCollectionVMFactory, exportCollectionViewModelFactory, tagEditViewModelFactory,
                    tagViewModelFactory, collectionVm, filtersVm);
     }
 }

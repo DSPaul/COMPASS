@@ -22,14 +22,16 @@ public class CodexViewModel : ModelViewModelBase<Codex>
 {
     private readonly ILogger _logger;
     private readonly CodexOperations _codexOperations;
+    private readonly CoverService _coverService;
     private readonly CodexCollectionVM _codexCollectionVM;
     
     #region Constructors
 
-    public CodexViewModel(ILogger logger, CodexOperations codexOperations, Codex codex, CodexCollectionVM codexCollectionVM) : base(codex)
+    public CodexViewModel(ILogger logger, CodexOperations codexOperations, CoverService coverService, Codex codex, CodexCollectionVM codexCollectionVM) : base(codex)
     {
         _logger = logger;
         _codexOperations = codexOperations;
+        _coverService = coverService;
         _codexCollectionVM = codexCollectionVM;
 
         Tags = new ReadOnlyCollection<TagViewModel>(GetTagVms());
@@ -243,7 +245,7 @@ public class CodexViewModel : ModelViewModelBase<Codex>
             {
                 return await Task.Run(() =>
                 {
-                    using var thumbnail = CoverService.CreateThumbnail(_model);
+                    using var thumbnail = _coverService.CreateThumbnail(_model);
                     if(thumbnail == null)
                     {
                         return null;
@@ -393,8 +395,8 @@ public class CodexViewModel : ModelViewModelBase<Codex>
 }
 
 [Factory]
-public class CodexViewModelFactory(ILogger logger, Lazy<CodexOperations> codexOperations)
+public class CodexViewModelFactory(ILogger logger, Lazy<CodexOperations> codexOperations, CoverService coverService)
 {
     public CodexViewModel Create(Codex codex, CodexCollectionVM parentCollectionVm)
-        => new(logger, codexOperations.Value, codex, parentCollectionVm);
+        => new(logger, codexOperations.Value, coverService, codex, parentCollectionVm);
 }

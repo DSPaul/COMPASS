@@ -49,6 +49,11 @@ namespace COMPASS.Common.DependencyInjection
 
             //Managers
             builder.RegisterType<UpdateManager>().AsSelf().SingleInstance();
+            builder.RegisterType<CollectionManager>().AsSelf().SingleInstance();
+            builder.RegisterType<ConnectivityManager>().AsSelf().SingleInstance();
+
+            //Services
+            builder.RegisterType<CoverService>().AsSelf().SingleInstance();
 
             //Operations
             builder.RegisterType<Operations.CodexCollectionOperations>().AsSelf().SingleInstance();

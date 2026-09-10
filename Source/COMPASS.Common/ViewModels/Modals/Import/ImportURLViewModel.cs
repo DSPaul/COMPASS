@@ -15,11 +15,13 @@ namespace COMPASS.Common.ViewModels.Modals.Import
     {       
         private readonly CodexEditViewModelFactory _codexEditViewModelFactory;
         private readonly CodexCollectionOperations _codexCollectionOperations;
+        private readonly ConnectivityManager _connectivityManager;
 
-        public ImportURLViewModel(CodexEditViewModelFactory codexEditViewModelFactory, CodexCollectionOperations codexCollectionOperations, ImportSource importSource)
+        public ImportURLViewModel(CodexEditViewModelFactory codexEditViewModelFactory, CodexCollectionOperations codexCollectionOperations, ConnectivityManager connectivityManager, ImportSource importSource)
         {
             _codexEditViewModelFactory = codexEditViewModelFactory;
             _codexCollectionOperations = codexCollectionOperations;
+            _connectivityManager = connectivityManager;
 
             //TODO: Name should be a property of the metadatasource itself
             SourceName = importSource switch
@@ -86,7 +88,7 @@ namespace COMPASS.Common.ViewModels.Modals.Import
                 ImportError = $"'{InputURL}' is not a valid URL for {SourceName}";
                 return;
             }
-            if (!await ConnectivityManager.CheckConnection())
+            if (!await _connectivityManager.CheckConnection())
             {
                 ImportError = "You need to be connected to the internet to import an online source.";
                 return;
@@ -126,9 +128,9 @@ namespace COMPASS.Common.ViewModels.Modals.Import
     }
 
     [Factory]
-    public class ImportURLViewModelFactory(CodexEditViewModelFactory codexEditViewModelFactory, CodexCollectionOperations codexCollectionOperations)
+    public class ImportURLViewModelFactory(CodexEditViewModelFactory codexEditViewModelFactory, CodexCollectionOperations codexCollectionOperations, ConnectivityManager connectivityManager)
     {
         public ImportURLViewModel Create(ImportSource importSource)
-            => new(codexEditViewModelFactory, codexCollectionOperations, importSource);
+            => new(codexEditViewModelFactory, codexCollectionOperations, connectivityManager, importSource);
     }
 }

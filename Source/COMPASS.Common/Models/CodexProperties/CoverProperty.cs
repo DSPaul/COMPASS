@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using COMPASS.Common.Services;
+using COMPASS.Infra.Tools;
 using ImageMagick;
 
 namespace COMPASS.Common.Models.CodexProperties
@@ -24,7 +25,9 @@ namespace COMPASS.Common.Models.CodexProperties
         public override void Apply(SourceMetaData source, Codex target)
         {
             if (source.Cover == null) return;
-            CoverService.SaveCover(target, source.Cover).Wait();
+            //Intentional service location: property descriptors are built via reflection (CodexProperty.GetInstance),
+            //not DI. Inject CoverService here once descriptors become container-built.
+            ServiceResolver.Resolve<CoverService>().SaveCover(target, source.Cover).Wait();
             source.Cover.Dispose();
         }
 

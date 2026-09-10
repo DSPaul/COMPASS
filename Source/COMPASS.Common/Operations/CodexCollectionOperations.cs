@@ -19,7 +19,9 @@ public class CodexCollectionOperations(
     IUserFilesStorageService userFilesStorageService,
     ICoverStorageService coverStorageService,
     ILogger logger,
-    CodexOperations codexOperations)
+    Lazy<CollectionManager> collectionManager,
+    CodexOperations codexOperations,
+    CoverService coverService)
 {
     /// <summary>
     /// Merges all codices & tags from the source collection into the target collection.
@@ -91,7 +93,7 @@ public class CodexCollectionOperations(
         targetCollectionId ??= TabsViewModel.GetInstance().ActiveTab?.CollectionVM.Identifier
                                ?? throw new NoTabException("There is no open tab, so no collection to import the files to");
 
-        using CollectionHandle targetCollectionHandle = CollectionManager.LoadCollection(targetCollectionId)
+        using CollectionHandle targetCollectionHandle = collectionManager.Value.LoadCollection(targetCollectionId)
                                                         ?? throw new LoadException(targetCollectionId);
         var targetCollection = targetCollectionHandle.CollectionVM.Collection;
 
@@ -114,7 +116,7 @@ public class CodexCollectionOperations(
         targetCollectionId ??= TabsViewModel.GetInstance().ActiveTab?.CollectionVM.Identifier
                                ?? throw new NoTabException("There is no open tab, so no collection to import the items to");
 
-        using CollectionHandle targetCollectionHandle = CollectionManager.LoadCollection(targetCollectionId)
+        using CollectionHandle targetCollectionHandle = collectionManager.Value.LoadCollection(targetCollectionId)
                                                         ?? throw new LoadException(targetCollectionId);
         var targetCollection = targetCollectionHandle.CollectionVM.Collection;
 
@@ -157,7 +159,7 @@ public class CodexCollectionOperations(
         try
         {
             await codexOperations.StartGetMetaDataProcess(newCodices);
-            await CoverService.GetAndApplyCover(newCodices);
+                await coverService.GetAndApplyCover(newCodices);
         }
         catch (OperationCanceledException ex)
         {

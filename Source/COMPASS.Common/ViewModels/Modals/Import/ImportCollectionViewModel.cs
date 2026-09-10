@@ -17,6 +17,7 @@ namespace COMPASS.Common.ViewModels.Modals.Import
         private readonly IUserFilesStorageService _userFilesStorageService;
         private readonly INotificationService _notificationService;
         private readonly CodexCollectionOperations _codexCollectionOperations;
+        private readonly CollectionManager _collectionManager;
 
         public override string WindowTitle { get; } = "Import Collection";
 
@@ -28,6 +29,7 @@ namespace COMPASS.Common.ViewModels.Modals.Import
             IUserFilesStorageService userFilesStorageService, 
             INotificationService notificationService, 
             CodexCollectionOperations codexCollectionOperations, 
+            CollectionManager collectionManager,
             CollectionContentSelectorViewModelFactory contentSelectorVMFactory, 
             CodexCollectionVM collectionVmToImport,
             CodexCollectionVM? targetCollection = null)
@@ -35,13 +37,14 @@ namespace COMPASS.Common.ViewModels.Modals.Import
             _userFilesStorageService = userFilesStorageService;
             _notificationService = notificationService;
             _codexCollectionOperations = codexCollectionOperations;
+            _collectionManager = collectionManager;
             AddValidation(nameof(MergeIntoCollection), ValidateTarget);
             AddValidation(nameof(CollectionName), ValidateTarget);
             AddValidation(nameof(TargetCollection), ValidateTarget);
             
             CollectionVMToImport = collectionVmToImport;
             TargetCollection = targetCollection ?? TabsViewModel.GetInstance().ActiveTab?.CollectionVM;
-            CollectionVms = CollectionManager.CollectionVms.ToList(); 
+            CollectionVms = _collectionManager.CollectionVms.ToList(); 
             //Collection will have format '__<name><extension>'
             CollectionName = collectionVmToImport.Identifier.Substring(2, collectionVmToImport.Identifier.Length - 2 - Constants.SatchelExtension.Length);
 
@@ -163,7 +166,7 @@ namespace COMPASS.Common.ViewModels.Modals.Import
             {
                 targetCollectionHandle = MergeIntoCollection ? 
                     TargetCollection?.Load() : 
-                    CollectionManager.CreateAndLoadCollection(CollectionName);
+                    _collectionManager.CreateAndLoadCollection(CollectionName);
 
                 if (targetCollectionHandle == null)
                 {
@@ -205,7 +208,7 @@ namespace COMPASS.Common.ViewModels.Modals.Import
             ClearErrors(nameof(CollectionName));
             ClearErrors(nameof(TargetCollection));
             
-            if (!MergeIntoCollection && !CollectionManager.IsValidCollectionName(CollectionName, out string? invalidReason))
+            if (!MergeIntoCollection && !CollectionManager.IsValidCollectionName(CollectionName, out string? invalidReason, CollectionVms))
             {
                 //Error on step to block next
                 _overviewStep.AddError(nameof(CollectionName), invalidReason);
@@ -237,9 +240,10 @@ namespace COMPASS.Common.ViewModels.Modals.Import
     public class ImportCollectionViewModelFactory(
         IUserFilesStorageService userFilesStorageService, INotificationService notificationService, 
         CodexCollectionOperations codexCollectionOperations, 
+        CollectionManager collectionManager,
         CollectionContentSelectorViewModelFactory contentSelectorVMFactory)
     {
         public ImportCollectionViewModel Create(CodexCollectionVM collectionVmToImport, CodexCollectionVM? targetCollection = null)
-            => new(userFilesStorageService, notificationService, codexCollectionOperations, contentSelectorVMFactory, collectionVmToImport, targetCollection);
+            => new(userFilesStorageService, notificationService, codexCollectionOperations, collectionManager, contentSelectorVMFactory, collectionVmToImport, targetCollection);
     }
 }

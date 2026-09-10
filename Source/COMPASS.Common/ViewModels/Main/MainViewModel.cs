@@ -17,21 +17,25 @@ namespace COMPASS.Common.ViewModels.Main
         private readonly ILogger _logger;
         private readonly IUIService _uiService;
         private readonly UpdateManager _updateManager;
+        private readonly CollectionManager _collectionManager;
+        private readonly ConnectivityManager _connectivityManager;
         private readonly SettingsViewModelFactory _settingsViewModelFactory;
 
-        public MainViewModel(ILogger logger, IUIService uiService, UpdateManager updateManager, TabsViewModel tabsVm,
+        public MainViewModel(ILogger logger, IUIService uiService, UpdateManager updateManager, CollectionManager collectionManager, ConnectivityManager connectivityManager, TabsViewModel tabsVm,
             LeftDockViewModelFactory leftDockViewModelFactory,
             SettingsViewModelFactory settingsViewModelFactory)
         {
             _logger = logger;
             _uiService = uiService;
             _updateManager = updateManager;
+            _collectionManager = collectionManager;
+            _connectivityManager = connectivityManager;
             _settingsViewModelFactory = settingsViewModelFactory;
 
             _logger.Info($"Launching COMPASS v{ApplicationService.Version}");
 
             InitLayouts();
-            CollectionManager.DiscoverCollections();
+            _collectionManager.DiscoverCollections();
 
             TabsVM = tabsVm;
             TabsVM.TabCreated += TabsVM_TabCreated;
@@ -56,8 +60,8 @@ namespace COMPASS.Common.ViewModels.Main
         /// </summary>
         private void InitConnectionTimer()
         {
-            ConnectivityManager.IsOnlineChanged += online => IsOnline = online;
-            ConnectivityManager.Start();
+            _connectivityManager.IsOnlineChanged += online => IsOnline = online;
+            _connectivityManager.Start();
         }
 
         /// <summary>

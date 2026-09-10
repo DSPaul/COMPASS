@@ -20,6 +20,7 @@ public class ImportFilesViewModel : ViewModelBase, IDisposable
     private readonly ImportFolderWizardFactory _importFolderWizardFactory;
     private readonly FolderFactory _folderFactory;
     private readonly CodexCollectionOperations _codexCollectionOperations;
+    private readonly Lazy<CollectionManager> _collectionManager;
 
     private readonly bool _autoImport;
     private readonly CollectionHandle _targetCollectionHandle;
@@ -32,6 +33,7 @@ public class ImportFilesViewModel : ViewModelBase, IDisposable
         ImportFolderWizardFactory importFolderWizardFactory, 
         FolderFactory folderFactory,
         CodexCollectionOperations codexCollectionOperations,
+        Lazy<CollectionManager> collectionManager,
         string targetCollectionId, bool autoImport)
     {
         _ioService = ioService;
@@ -39,8 +41,9 @@ public class ImportFilesViewModel : ViewModelBase, IDisposable
         _importFolderWizardFactory = importFolderWizardFactory;
         _folderFactory = folderFactory;
         _codexCollectionOperations = codexCollectionOperations;
+        _collectionManager = collectionManager;
         
-        var handle = CollectionManager.LoadCollection(targetCollectionId);
+        var handle = _collectionManager.Value.LoadCollection(targetCollectionId);
         if (handle != null)
         {
             _targetCollectionHandle = handle;
@@ -197,7 +200,8 @@ public class ImportFilesViewModel : ViewModelBase, IDisposable
         IIOService ioServcie, INotificationService notificationService, 
         ImportFolderWizardFactory importFolderWizardFactory,
         FolderFactory folderFactory,
-        CodexCollectionOperations codexCollectionOperations)
+        CodexCollectionOperations codexCollectionOperations,
+        Lazy<CollectionManager> collectionManager)
     {
         public ImportFilesViewModel Create(bool autoImport)
         {
@@ -212,7 +216,7 @@ public class ImportFilesViewModel : ViewModelBase, IDisposable
             return new ImportFilesViewModel(
                 ioServcie, notificationService, 
                 importFolderWizardFactory, folderFactory,
-                codexCollectionOperations,
+                codexCollectionOperations, collectionManager,
                 targetCollectionId, autoImport);
         }
     }

@@ -16,7 +16,8 @@ public class ApplicationDataService(
     IIOService ioService,
     INotificationService notificationService,
     ILogger logger,
-    Lazy<IPreferencesService> preferencesService)
+    Lazy<IPreferencesService> preferencesService,
+    Lazy<CollectionManager> collectionManager)
     : IApplicationDataService
 {
     private const string RedirectFileName = "data_location.redirect";
@@ -162,7 +163,7 @@ public class ApplicationDataService(
         }
 
         //Save data before moving files around, just in case
-        CollectionManager.SaveAllCollections();
+            collectionManager.Value.SaveAllCollections();
         preferencesService.Value.SavePreferences();
 
         //Move data to new location if chosen

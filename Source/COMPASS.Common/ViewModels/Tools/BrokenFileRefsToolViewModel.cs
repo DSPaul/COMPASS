@@ -14,10 +14,10 @@ public class BrokenFileRefsToolViewModel : ViewModelBase, IToolViewModel, IDispo
 {
     private readonly CodexOperations _codexOperations;
 
-    public BrokenFileRefsToolViewModel(CodexOperations codexOperations)
+    public BrokenFileRefsToolViewModel(CodexOperations codexOperations, CollectionManager collectionManager)
     {
         _codexOperations = codexOperations;
-        SelectedCollectionVm = CollectionManager.CollectionVms.SingleOrDefault(vm => vm.Identifier == ActiveCollection.Name);
+        SelectedCollectionVm = collectionManager.CollectionVms.SingleOrDefault(vm => vm.Identifier == ActiveCollection.Name);
     }
 
     #region IToolViewModel
@@ -159,7 +159,7 @@ public class BrokenFileRefsToolViewModel : ViewModelBase, IToolViewModel, IDispo
 }
 
 [Factory]
-public class BrokenFileRefsToolViewModelFactory(CodexOperations codexOperations)
+public class BrokenFileRefsToolViewModelFactory(CodexOperations codexOperations, CollectionManager collectionManager)
 {
-    public BrokenFileRefsToolViewModel Create() => new(codexOperations);
+    public BrokenFileRefsToolViewModel Create() => new(codexOperations, collectionManager);
 }

@@ -78,7 +78,7 @@
                   Icon="{materialIcons:MaterialIconExt Kind=FolderEyeOutline}"/>
         
         <MenuItem Header="Move to Collection"
-                  ItemsSource="{x:Static managers:CollectionManager.CollectionNames}"
+                  ItemsSource="{x:Static managers:CodexCollectionExtensions.CollectionNames}"
                   Icon="{materialIcons:MaterialIconExt Kind=FolderMoveOutline}">
             <MenuItem.Styles>
                 <Style Selector="MenuItem MenuItem">
@@ -130,7 +130,7 @@
         <Separator />
         
         <MenuItem Header="Move to Collection"
-                  ItemsSource="{x:Static managers:CollectionManager.CollectionNames}"
+                  ItemsSource="{x:Static managers:CodexCollectionExtensions.CollectionNames}"
                   Icon="{materialIcons:MaterialIconExt Kind=FolderMoveOutline}">
             <MenuItem.Styles>
                 <Style Selector="MenuItem MenuItem">

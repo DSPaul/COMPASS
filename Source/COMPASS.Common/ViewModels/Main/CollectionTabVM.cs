@@ -25,6 +25,8 @@ public class CollectionTabVM : ViewModelBase, IDisposable
     private readonly ILogger _logger;
     private readonly INotificationService _notificationService;
     private readonly IImportExportService _importExportService;
+    private readonly CollectionManager _collectionManager;
+    private readonly CollectionEditViewModelFactory _collectionEditViewModelFactory;
     private readonly CodexCollectionOperations _codexCollectionOperations;
     private readonly CodexOperations _codexOperations;
     private readonly CodexCollectionVMFactory _codexCollectionVMFactory;
@@ -40,6 +42,8 @@ public class CollectionTabVM : ViewModelBase, IDisposable
         INotificationService notificationService,
         IPreferencesService preferencesService,
         IImportExportService importExportService,
+        CollectionManager collectionManager,
+        CollectionEditViewModelFactory collectionEditViewModelFactory,
         CodexCollectionOperations codexCollectionOperations,
         CodexOperations codexOperations,
         CodexCollectionVMFactory codexCollectionVMFactory,
@@ -53,6 +57,8 @@ public class CollectionTabVM : ViewModelBase, IDisposable
         _logger = logger;
         _notificationService = notificationService;
         _importExportService = importExportService;
+        _collectionManager = collectionManager;
+        _collectionEditViewModelFactory = collectionEditViewModelFactory;
         _codexCollectionOperations = codexCollectionOperations;
         _codexOperations = codexOperations;
         CodexCommands = codexOperations;
@@ -84,7 +90,7 @@ public class CollectionTabVM : ViewModelBase, IDisposable
     
     public CodexCollectionVM CollectionVM => _collectionHandle.CollectionVM;
     
-    public IReadOnlyCollection<CodexCollectionVM> AllCodexCollections => CollectionManager.CollectionVms;
+    public IReadOnlyCollection<CodexCollectionVM> AllCodexCollections => _collectionManager.CollectionVms;
     
     private FiltersViewModel _filtersVM;
     public FiltersViewModel FiltersVM
@@ -118,11 +124,11 @@ public class CollectionTabVM : ViewModelBase, IDisposable
 
     // Create CodexCollection
     public AsyncRelayCommand CreateCollectionCommand => field ??= new(CreateCollection);
-    private async Task CreateCollection() => await WindowManager.OpenModal(new CollectionEditViewModel(CollectionVM, createNew: true));
+    private async Task CreateCollection() => await WindowManager.OpenModal(_collectionEditViewModelFactory.Create(CollectionVM, createNew: true));
 
     // Rename Collection
     public AsyncRelayCommand RenameCollectionCommand => field ??= new(RenameCollection);
-    private async Task RenameCollection() => await WindowManager.OpenModal(new CollectionEditViewModel(CollectionVM, createNew: false));
+    private async Task RenameCollection() => await WindowManager.OpenModal(_collectionEditViewModelFactory.Create(CollectionVM, createNew: false));
 
     // Delete Collection
     public AsyncRelayCommand DeleteCollectionCommand => field ??= new(RaiseDeleteCollectionWarning);
@@ -166,13 +172,13 @@ public class CollectionTabVM : ViewModelBase, IDisposable
             if (_uiState.StartupCollection == collectionToDelete.Identifier)
             {
                 _uiState.StartupCollection =
-                    CollectionManager.CollectionVms
+                    _collectionManager.CollectionVms
                         .Select(vm => vm.Identifier)
                         .FirstOrDefault(vm => vm != collectionToDelete.Identifier) ?? Constants.DEFAULT_COLLECTION_NAME;
             }
 
             //Switch to another collection
-            var collectionHandle = CollectionManager.GetOrCreateInitialCollectionVM();
+            var collectionHandle = _collectionManager.GetOrCreateInitialCollectionVM();
             await ChangeToCollection(collectionHandle, saveBeforeSwitch: false);
         }
         else
@@ -218,7 +224,7 @@ public class CollectionTabVM : ViewModelBase, IDisposable
     private async Task MergeIntoCollection(string? collectionToMergeInto)
     {
         if (string.IsNullOrEmpty(collectionToMergeInto) ||
-            !CollectionManager.CollectionExists(collectionToMergeInto))
+            !_collectionManager.CollectionExists(collectionToMergeInto))
         {
             return;
         }
@@ -233,7 +239,7 @@ public class CollectionTabVM : ViewModelBase, IDisposable
         if (areYouSure.Result != NotificationAction.Confirm) return;
 
         //load target, merge, and unload
-        using (var targetCollectionHandle = CollectionManager.LoadCollection(collectionToMergeInto))
+        using (var targetCollectionHandle = _collectionManager.LoadCollection(collectionToMergeInto))
         {
             if (targetCollectionHandle == null)
             {
@@ -324,6 +330,8 @@ public class CollectionTabVMFactory(
     INotificationService notificationService,
     IPreferencesService preferencesService,
     IImportExportService importExportService,
+    CollectionManager collectionManager,
+    CollectionEditViewModelFactory collectionEditViewModelFactory,
     CodexCollectionOperations codexCollectionOperations,
     CodexOperations codexOperations,
     CodexCollectionVMFactory codexCollectionVMFactory,
@@ -334,7 +342,8 @@ public class CollectionTabVMFactory(
     ExportCollectionViewModelFactory exportCollectionViewModelFactory)
 {
     public CollectionTabVM Create(CollectionHandle collectionHandle, FiltersState? filtersState = null, CodexLayout? layout = null)
-        => new(logger, notificationService, preferencesService, importExportService, codexCollectionOperations, codexOperations,
+        => new(logger, notificationService, preferencesService, importExportService, collectionManager, collectionEditViewModelFactory,
+               codexCollectionOperations, codexOperations,
                codexCollectionVMFactory, filtersViewModelFactory, tagsPanelVMFactory,
                layoutViewModelFactory, importCollectionViewModelFactory, exportCollectionViewModelFactory,
                collectionHandle, filtersState, layout);

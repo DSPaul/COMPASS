@@ -39,6 +39,7 @@ namespace COMPASS.Common.ViewModels.Modals
             UpdateManager updateManager,
             ImportFilesViewModelFactory importFilesViewModelFactory,
             ToolsViewModelFactory toolsViewModelFactory,
+            CollectionManager collectionManager,
             string tabToOpen = "")
         {
             int tabIndex = TabOrder.FindIndex(t => t.Equals(tabToOpen, StringComparison.OrdinalIgnoreCase));
@@ -53,7 +54,7 @@ namespace COMPASS.Common.ViewModels.Modals
             _importFilesViewModelFactory = importFilesViewModelFactory;
             ToolsVM = toolsViewModelFactory.Create();
 
-            SelectedCollectionVm = CollectionManager.CollectionVms.SingleOrDefault(vm => vm.Identifier == ActiveCollection.Name);
+            SelectedCollectionVm = collectionManager.CollectionVms.SingleOrDefault(vm => vm.Identifier == ActiveCollection.Name);
 
             if (SelectedCollectionVm == null)
             {
@@ -69,8 +70,6 @@ namespace COMPASS.Common.ViewModels.Modals
             {
                 BanishedPaths = new ObservableCollection<string>();
             }
-
-            ToolsVM = toolsViewModelFactory.Create();
         }
 
 
@@ -374,10 +373,11 @@ namespace COMPASS.Common.ViewModels.Modals
         IFilesService filesService,
         UpdateManager updateManager,
         ImportFilesViewModelFactory importFilesViewModelFactory,
-        ToolsViewModelFactory toolsViewModelFactory)
+        ToolsViewModelFactory toolsViewModelFactory,
+        CollectionManager collectionManager)
     {
         public SettingsViewModel Create(string tabToOpen = "")
             => new(logger, applicationDataService, ioService, preferencesService, filesService, updateManager,
-                   importFilesViewModelFactory, toolsViewModelFactory, tabToOpen);
+                   importFilesViewModelFactory, toolsViewModelFactory, collectionManager, tabToOpen);
     }
 }

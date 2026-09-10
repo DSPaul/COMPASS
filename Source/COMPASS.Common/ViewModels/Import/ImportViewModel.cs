@@ -15,6 +15,7 @@ namespace COMPASS.Common.ViewModels.Import
         private readonly ISBNScannerViewModelFactory _isbnScannerViewModelFactory;
         private readonly IFilesService _filesService;
         private readonly CodexCollectionOperations _codexCollectionOperations;
+        private readonly CollectionManager _collectionManager;
 
         public ImportViewModel(
             CodexEditViewModelFactory codexEditViewModelFactory, 
@@ -23,6 +24,7 @@ namespace COMPASS.Common.ViewModels.Import
             ISBNScannerViewModelFactory isbnScannerViewModelFactory,
             IFilesService filesService,
             CodexCollectionOperations codexCollectionOperations,
+            CollectionManager collectionManager,
             string targetCollectionId)
         {
             _codexEditViewModelFactory = codexEditViewModelFactory;
@@ -31,6 +33,7 @@ namespace COMPASS.Common.ViewModels.Import
             _isbnScannerViewModelFactory = isbnScannerViewModelFactory;
             _filesService = filesService;
             _codexCollectionOperations = codexCollectionOperations;
+            _collectionManager = collectionManager;
             _targetcollectionId = targetCollectionId;
         }
 
@@ -88,7 +91,7 @@ namespace COMPASS.Common.ViewModels.Import
 
         private async Task ImportManual()
         {
-            using var handle = CollectionManager.LoadCollection(_targetcollectionId);
+            using var handle = _collectionManager.LoadCollection(_targetcollectionId);
             CodexEditViewModel vm = _codexEditViewModelFactory.Create(_codexCollectionOperations.CreateNewCodex(handle!.CollectionVM.Collection), createNew: true);
             await WindowManager.OpenModal(vm);
         }
@@ -113,9 +116,10 @@ namespace COMPASS.Common.ViewModels.Import
         ImportURLViewModelFactory importURLViewModelFactory,
         ISBNScannerViewModelFactory isbnScannerViewModelFactory,
         IFilesService filesService,
-        CodexCollectionOperations codexCollectionOperations)
+        CodexCollectionOperations codexCollectionOperations,
+        CollectionManager collectionManager)
     {
         public ImportViewModel Create(string targetCollectionId)
-            => new(codexEditViewModelFactory, importFilesViewModelFactory, importURLViewModelFactory, isbnScannerViewModelFactory, filesService, codexCollectionOperations, targetCollectionId);
+            => new(codexEditViewModelFactory, importFilesViewModelFactory, importURLViewModelFactory, isbnScannerViewModelFactory, filesService, codexCollectionOperations, collectionManager, targetCollectionId);
     }
 }

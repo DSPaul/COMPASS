@@ -1,3 +1,4 @@
+using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Models;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels.Main;
@@ -8,13 +9,15 @@ namespace COMPASS.Common.ViewModels.Modals.Edit;
 public class CollectionEditViewModel : EditViewModelBase<CollectionInfoViewModel, CollectionInfo>
 {
     private readonly CodexCollectionVM _collectionVm;
+    private readonly CollectionManager _collectionManager;
 
-    public CollectionEditViewModel(CodexCollectionVM collectionVm, bool createNew)
+    public CollectionEditViewModel(CollectionManager collectionManager, CodexCollectionVM collectionVm, bool createNew)
         : base(
             createNew ? new CollectionInfo() : collectionVm.Collection.Info,
             createNew,
             model => new CollectionInfoViewModel(model))
     {
+        _collectionManager = collectionManager;
         _collectionVm = collectionVm;
         AddValidation(nameof(Name), ValidateName);
 
@@ -41,7 +44,7 @@ public class CollectionEditViewModel : EditViewModelBase<CollectionInfoViewModel
 
     protected override async void HandleCreateNew(CollectionInfo newCollectionInfo) 
     {
-        CollectionHandle? newHandle = CollectionManager.CreateAndLoadCollection(Name);
+        CollectionHandle? newHandle = _collectionManager.CreateAndLoadCollection(Name);
         newHandle?.CollectionVM.Collection.Info = newCollectionInfo;
 
         if (newHandle != null)
@@ -76,7 +79,7 @@ public class CollectionEditViewModel : EditViewModelBase<CollectionInfoViewModel
 
     private void ValidateName()
     {
-        var otherCollections = CollectionManager.CollectionVms.Except([_collectionVm]).ToList();
+        var otherCollections = _collectionManager.CollectionVms.Except([_collectionVm]).ToList();
         if (!CollectionManager.IsValidCollectionName(Name, out string? reason, otherCollections))
         {
             AddError(nameof(Name), reason!);
@@ -88,4 +91,11 @@ public class CollectionEditViewModel : EditViewModelBase<CollectionInfoViewModel
     public override string WindowTitle => _createNew ? "Create a new collection" : "Edit collection";
 
     #endregion
+}
+
+[Factory]
+public class CollectionEditViewModelFactory(CollectionManager collectionManager)
+{
+    public CollectionEditViewModel Create(CodexCollectionVM collectionVm, bool createNew)
+        => new(collectionManager, collectionVm, createNew);
 }

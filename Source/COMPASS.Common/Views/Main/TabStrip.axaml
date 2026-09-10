@@ -88,7 +88,7 @@
                                                       Command="{Binding ExportCommand}"
                                                       Icon="{materialIcons:MaterialIconExt Kind=FolderUpload}" />
                                             <MenuItem Header="Merge into "
-                                                      ItemsSource="{x:Static managers:CollectionManager.CollectionNames}"
+                                                      ItemsSource="{x:Static managers:CodexCollectionExtensions.CollectionNames}"
                                                       Icon="{materialIcons:MaterialIconExt Kind=FolderMove}">
                                                 <MenuItem.Styles>
                                                     <Style Selector="MenuItem MenuItem">

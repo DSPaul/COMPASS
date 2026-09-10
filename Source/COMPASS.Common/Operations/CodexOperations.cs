@@ -35,7 +35,9 @@ namespace COMPASS.Common.Operations
         IIOService ioService,
         Lazy<CodexEditViewModelFactory> codexEditViewModelFactory,
         Lazy<FileNotFoundViewModelFactory> fileNotFoundViewModelFactory,
-        ChooseMetaDataViewModelFactory chooseMetaDataViewModelFactory)
+        ChooseMetaDataViewModelFactory chooseMetaDataViewModelFactory,
+        Lazy<CollectionManager> collectionManager,
+        CoverService coverService)
     {
         #region Open Codex
 
@@ -289,7 +291,7 @@ namespace COMPASS.Common.Operations
 
             if (areYouSureNotification.Result == NotificationAction.Confirm)
             {
-                using CollectionHandle? targetCollectionHandle = CollectionManager.LoadCollection(targetCollectionIdentifier);
+                using CollectionHandle? targetCollectionHandle = collectionManager.Value.LoadCollection(targetCollectionIdentifier);
                 if (targetCollectionHandle == null)
                 {
                     Notification errorNotification = new("Target collection could not be loaded.", $"Could not move items to {targetCollectionIdentifier}",
@@ -366,7 +368,7 @@ namespace COMPASS.Common.Operations
             foreach (var group in codicesByCollections)
             {
                 CodexCollection collection = group.Key;
-                using var collectionHandle = CollectionManager.LoadCollection(collection.Name);
+                using var collectionHandle = collectionManager.Value.LoadCollection(collection.Name);
 
                 if (collectionHandle == null)
                 {
@@ -580,12 +582,12 @@ namespace COMPASS.Common.Operations
         public async Task GetCover(Codex? codex)
         {
             if (codex is null) return;
-            await CoverService.GetAndApplyCover([codex]);
+            await coverService.GetAndApplyCover([codex]);
         }
 
         public AsyncRelayCommand<IList> GetCoverBulkCommand => field ??= new(GetCoverBulk);
         private async Task GetCoverBulk(IList? items) =>
-            await CoverService.GetAndApplyCover(GatherCodices(items) ?? []);
+            await coverService.GetAndApplyCover(GatherCodices(items) ?? []);
         
         public async void HandleKeyDownOnCodex(IList? selectedItems, KeyEventArgs e)
         {

@@ -1,26 +1,25 @@
 using Avalonia.Controls;
 using Avalonia.Threading;
 using COMPASS.Common.Interfaces.Services;
-using COMPASS.Infra.Tools;
+using COMPASS.Common.Services;
 
 namespace COMPASS.Common.Services.StateManagers;
 
-public static class ConnectivityManager
+public class ConnectivityManager(
+    ILogger logger,
+    IHttpClientFactory httpClientFactory)
 {
-    private static ILogger Logger => ServiceResolver.Resolve<ILogger>();
-    private static IHttpClientFactory HttpClientFactory => ServiceResolver.Resolve<IHttpClientFactory>();
-
     private static readonly TimeSpan _connectionCheckCooldown = TimeSpan.FromSeconds(5);
     private static readonly TimeSpan _connectionCheckInterval = TimeSpan.FromMinutes(5);
-    private static DateTime _lastConnectionCheck = DateTime.MinValue;
+    private DateTime _lastConnectionCheck = DateTime.MinValue;
 
-    private static readonly CancellationTokenSource _cts = new();
-    private static bool _timerPaused = false;
-    private static bool _fireOnResume = false;
+    private readonly CancellationTokenSource _cts = new();
+    private bool _timerPaused = false;
+    private bool _fireOnResume = false;
 
-    public static event Action<bool>? IsOnlineChanged;
+    public event Action<bool>? IsOnlineChanged;
 
-    public static bool IsOnline
+    public bool IsOnline
     {
         get;
         set
@@ -30,32 +29,32 @@ public static class ConnectivityManager
                 field = value;
                 if (!value)
                 {
-                    Logger.Warn("COMPASS is offline, some features might not work.");
+                    logger.Warn("COMPASS is offline, some features might not work.");
                 }
                 else
                 {
-                    Logger.Info("Internet connection restored");
+                    logger.Info("Internet connection restored");
                 }
                 Dispatcher.UIThread.Post(() => IsOnlineChanged?.Invoke(value));
             }
         }
     } = true;
 
-    public static void Start()
+    public void Start()
     {
         _ = RunAsync(_cts.Token);
         _ = CheckConnection();
     }
 
-    public static void SubscribeToWindowFocus(Window window)
+    public void SubscribeToWindowFocus(Window window)
     {
         window.Activated += (_, _) => Resume();
         window.Deactivated += (_, _) => Pause();
     }
 
-    public static void Pause() => _timerPaused = true;
+    public void Pause() => _timerPaused = true;
 
-    public static void Resume()
+    public void Resume()
     {
         _timerPaused = false;
         if (_fireOnResume)
@@ -65,7 +64,7 @@ public static class ConnectivityManager
         }
     }
 
-    private static async Task RunAsync(CancellationToken cancellationToken)
+    private async Task RunAsync(CancellationToken cancellationToken)
     {
         using var timer = new PeriodicTimer(_connectionCheckInterval);
         while (await timer.WaitForNextTickAsync(cancellationToken).ConfigureAwait(false))
@@ -81,7 +80,7 @@ public static class ConnectivityManager
         }
     }
 
-    public static async Task<bool> CheckConnection()
+    public async Task<bool> CheckConnection()
     {
         // Cooldown so we don't check unreasonably often whether or not there is an internet connection.
         if (DateTime.UtcNow - _lastConnectionCheck < _connectionCheckCooldown)
@@ -90,7 +89,7 @@ public static class ConnectivityManager
         try
         {
             _lastConnectionCheck = DateTime.UtcNow;
-            var client = HttpClientFactory.CreateClient(WebService.ConnectionCheckHttpClient);
+            var client = httpClientFactory.CreateClient(WebService.ConnectionCheckHttpClient);
             using HttpResponseMessage reply = await client.SendAsync(new HttpRequestMessage(HttpMethod.Head, "https://google.com")).ConfigureAwait(false);
             reply.EnsureSuccessStatusCode();
             IsOnline = true;
@@ -103,11 +102,11 @@ public static class ConnectivityManager
         return IsOnline;
     }
 
-    public static async Task<bool> VerifyUrlReachable(string url)
+    public async Task<bool> VerifyUrlReachable(string url)
     {
         try
         {
-            var client = HttpClientFactory.CreateClient(WebService.ConnectionCheckHttpClient);
+            var client = httpClientFactory.CreateClient(WebService.ConnectionCheckHttpClient);
             using HttpResponseMessage reply = await client.SendAsync(new HttpRequestMessage(HttpMethod.Head, url)).ConfigureAwait(false);
             reply.EnsureSuccessStatusCode();
             IsOnline = true;

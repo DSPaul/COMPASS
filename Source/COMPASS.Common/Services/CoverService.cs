@@ -11,15 +11,15 @@ using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels.Modals;
 using COMPASS.Infra.Tools;
-using COMPASS.Common.Interfaces.Storage;
-using COMPASS.Common.Operations;
 
 namespace COMPASS.Common.Services
 {
-    public static class CoverService
+    public class CoverService(
+        ILogger logger,
+        IPreferencesService preferencesService,
+        IIOService ioService,
+        ChooseMetaDataViewModelFactory chooseMetaDataViewModelFactory)
     {
-        private static ILogger? _logger;
-        private static ILogger Logger => _logger ??= ServiceResolver.Resolve<ILogger>();
 
         private const int ThumbnailWidth = 200;
         private const int CoverWidth = 850;
@@ -30,12 +30,12 @@ namespace COMPASS.Common.Services
         /// <param name="codex"></param>
         /// <param name="chooseMetaDataViewModel"></param>
         /// <exception cref="System.OperationCanceledException">The token has had cancellation requested.</exception>
-        public static async Task GetAndApplyCover(Codex codex, ChooseMetaDataViewModel? chooseMetaDataViewModel = null)
+        public async Task GetAndApplyCover(Codex codex, ChooseMetaDataViewModel? chooseMetaDataViewModel = null)
         {
             IMagickImage<byte>? coverFromSource = null;
             try
             {
-                CodexProperty coverProp = ServiceResolver.Resolve<IPreferencesService>().Preferences.ImportableCodexProperties.First(prop => prop.Name == nameof(SourceMetaData.Cover));
+                CodexProperty coverProp = preferencesService.Preferences.ImportableCodexProperties.First(prop => prop.Name == nameof(SourceMetaData.Cover));
 
                 switch (coverProp.OverwriteMode)
                 {
@@ -89,7 +89,7 @@ namespace COMPASS.Common.Services
             }
         }
 
-        public static async Task GetAndApplyCover(List<Codex> codices)
+        public async Task GetAndApplyCover(List<Codex> codices)
         {
             if (!codices.Any()) return;
 
@@ -98,7 +98,7 @@ namespace COMPASS.Common.Services
             progressVM.TotalAmount = codices.Count;
             progressVM.Text = "Getting Cover";
 
-            ChooseMetaDataViewModel chooseMetaDataVM = ServiceResolver.Resolve<ChooseMetaDataViewModelFactory>().Create();
+            ChooseMetaDataViewModel chooseMetaDataVM = chooseMetaDataViewModelFactory.Create();
 
             ParallelOptions parallelOptions = new()
             {
@@ -111,7 +111,7 @@ namespace COMPASS.Common.Services
             }
             catch (OperationCanceledException ex)
             {
-                Logger.Warn("Renewing covers has been cancelled", ex);
+                logger.Warn("Renewing covers has been cancelled", ex);
                 await Task.Run(() => ProgressViewModel.GetInstance().ConfirmCancellation());
             }
 
@@ -121,15 +121,13 @@ namespace COMPASS.Common.Services
             }
         }
 
-        public static async Task SaveCover(Codex destCodex, IMagickImage image)
+        public async Task SaveCover(Codex destCodex, IMagickImage image)
         {
             if (string.IsNullOrEmpty(destCodex.CoverArtPath))
             {
-                Logger.Error("Trying to write cover img to empty path", new InvalidOperationException());
+                logger.Error("Trying to write cover img to empty path", new InvalidOperationException());
                 return;
             }
-
-            var ioService = ServiceResolver.Resolve<IIOService>();
             
             if (image.Width > CoverWidth) image.Resize(CoverWidth, 0);
             
@@ -141,7 +139,7 @@ namespace COMPASS.Common.Services
             }
         }
 
-        public static MagickImage? GetCoverFromImage(string imagePath)
+        public MagickImage? GetCoverFromImage(string imagePath)
         {
             //check if it's a valid file
             if (string.IsNullOrEmpty(imagePath) ||
@@ -158,12 +156,12 @@ namespace COMPASS.Common.Services
             catch (Exception ex)
             {
                 //will fail if image is corrupt
-                Logger.Error($"Failed to generate a cover for {imagePath}", ex);
+                logger.Error($"Failed to generate a cover for {imagePath}", ex);
                 return null;
             }
         }
 
-        public static IMagickImage? CreateThumbnail(Codex c, IMagickImage? image = null)
+        public IMagickImage? CreateThumbnail(Codex c, IMagickImage? image = null)
         {
             uint newWidth = ThumbnailWidth; //sets resolution of thumbnail in pixels
 
@@ -185,8 +183,6 @@ namespace COMPASS.Common.Services
                 }
             }
             
-            var ioService = ServiceResolver.Resolve<IIOService>();
-
             //preserve aspect ratio
             uint width = image.Width;
             uint height = image.Height;
@@ -202,9 +198,9 @@ namespace COMPASS.Common.Services
             return image;
         }
 
-        private static void HandleCorruptCover(Codex codex, MagickCorruptImageErrorException corruptException)
+        private void HandleCorruptCover(Codex codex, MagickCorruptImageErrorException corruptException)
         {
-            Logger.Warn("Corrupt cover detected", corruptException);
+            logger.Warn("Corrupt cover detected", corruptException);
             if (!codex.CoverArtPath.Contains(Constants.DIR_COVERS))
             {
                 //not our image, don't delete it
@@ -214,7 +210,7 @@ namespace COMPASS.Common.Services
             try
             {
                 File.Delete(codex.CoverArtPath);
-                Logger.Info("Corrupt cover removed, attempting to fetch a new cover...");
+                logger.Info("Corrupt cover removed, attempting to fetch a new cover...");
                 GetAndApplyCover([codex]).ContinueWith(t =>
                 {
                     if (t.IsCompletedSuccessfully)
@@ -225,7 +221,7 @@ namespace COMPASS.Common.Services
             }
             catch (Exception ex)
             {
-                Logger.Error($"Failed to delete corrupt image file {codex.CoverArtPath}", ex);
+                logger.Error($"Failed to delete corrupt image file {codex.CoverArtPath}", ex);
             }
         }
 

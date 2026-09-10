@@ -49,7 +49,7 @@ public partial class MainWindow : Window
         if (MainViewModel.SaveOnClose)
         {
             UpdateWindowPlacement();
-            CollectionManager.SaveAllCollections();
+            ServiceResolver.Resolve<CollectionManager>().SaveAllCollections();
             ServiceResolver.Resolve<IPreferencesService>().SavePreferences();
         }
     }

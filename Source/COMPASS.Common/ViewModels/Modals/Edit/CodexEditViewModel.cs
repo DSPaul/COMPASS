@@ -26,8 +26,9 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         private readonly IFilesService _filesService;
         private readonly IPreferencesService _preferencesService;
         private readonly CodexOperations _codexOperations;
+        private readonly CoverService _coverService;
         public CodexEditViewModel(CodexViewModelFactory codexViewModelFactory, TagEditViewModelFactory tagEditViewModelFactory,
-            IFilesService filesService, IPreferencesService preferencesService, CodexOperations codexOperations,
+            IFilesService filesService, IPreferencesService preferencesService, CodexOperations codexOperations, CoverService coverService,
             Codex sourceCodex, bool createNew = false, CollectionTabVM? tabVm = null)
             : base(sourceCodex, createNew, codex => codexViewModelFactory.Create(codex, (tabVm ?? TabsViewModel.GetInstance().ActiveTab)!.CollectionVM))
         {
@@ -36,6 +37,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             _filesService = filesService;
             _preferencesService = preferencesService;
             _codexOperations = codexOperations;
+            _coverService = coverService;
         
             var publisherList = TabVM.FiltersVM.PublisherList;
             PublisherOptions = ["", ..publisherList];
@@ -205,7 +207,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             //get the cover
             try
             {
-                await CoverService.GetAndApplyCover(WorkingCopy.GetModel());
+                await _coverService.GetAndApplyCover(WorkingCopy.GetModel());
             }
             catch (OperationCanceledException)
             {
@@ -232,10 +234,10 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             if (files.Any())
             {
                 using var file = files.Single();
-                var img = CoverService.GetCoverFromImage(file.Path.LocalPath);
+                var img = _coverService.GetCoverFromImage(file.Path.LocalPath);
                 if (img != null)
                 {
-                    await CoverService.SaveCover(WorkingCopy.GetModel(), img);
+                    await _coverService.SaveCover(WorkingCopy.GetModel(), img);
                 }
                 WorkingCopy.LoadCover();
             }
@@ -266,10 +268,10 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
                 && FileFormatUtils.IsImageFile(files[0].Path.LocalPath))
             {
                 string path = files[0].Path.LocalPath;
-                var img = CoverService.GetCoverFromImage(path);
+                var img = _coverService.GetCoverFromImage(path);
                 if (img != null)
                 {
-                    await CoverService.SaveCover(WorkingCopy.GetModel(), img);
+                    await _coverService.SaveCover(WorkingCopy.GetModel(), img);
                 }
                 WorkingCopy.LoadCover();
             }
@@ -295,10 +297,11 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         TagEditViewModelFactory tagEditViewModelFactory,
         IFilesService filesService,
         IPreferencesService preferencesService,
-        CodexOperations codexOperations)
+        CodexOperations codexOperations,
+        CoverService coverService)
     {
         public CodexEditViewModel Create(Codex sourceCodex, bool createNew = false, CollectionTabVM? tabVm = null)
-            => new(codexViewModelFactory, tagEditViewModelFactory, filesService, preferencesService, codexOperations, sourceCodex, createNew, tabVm);
+            => new(codexViewModelFactory, tagEditViewModelFactory, filesService, preferencesService, codexOperations, coverService, sourceCodex, createNew, tabVm);
     }
 }
 

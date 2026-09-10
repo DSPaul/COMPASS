@@ -118,7 +118,7 @@ namespace COMPASS.IntegrationTests.Common.Services
                 importViewModel.MergeIntoCollection = false;
                 await importViewModel.Finish();
 
-                importedCollection = CollectionManager.GetCollectionVM("Imported_Satchel");
+                importedCollection = container.Resolve<CollectionManager>().GetCollectionVM("Imported_Satchel");
                 Assert.That(importedCollection, Is.Not.Null, "Imported collection not found after import");
                 Assert.That(importedCollection.Collection.AllCodices, Has.Count.EqualTo(deserializedCollection.AllCodices.Count));
                 Assert.That(importedCollection.Collection.AllTags, Has.Count.EqualTo(deserializedCollection.AllTags.Count));

@@ -10,6 +10,7 @@ namespace COMPASS.Common.ViewModels.Main;
 
 public class TabsViewModel(
     ILogger logger,
+    CollectionManager collectionManager,
     CollectionTabVMFactory collectionTabVMFactory) : ViewModelBase
 {
     private static TabsViewModel? _instance;
@@ -21,6 +22,7 @@ public class TabsViewModel(
     public static TabsViewModel GetInstance() => _instance ??= ServiceResolver.Resolve<TabsViewModel>();
 
     private readonly ILogger _logger = logger;
+    private readonly CollectionManager _collectionManager = collectionManager;
     private readonly CollectionTabVMFactory _collectionTabVMFactory = collectionTabVMFactory;
 
     private int _tabIndex = 0;
@@ -69,10 +71,10 @@ public class TabsViewModel(
 
     #region Methods
 
-    public CollectionTabVM CreateTab() => CreateTab(CollectionManager.GetOrCreateInitialCollectionVM());
+    public CollectionTabVM CreateTab() => CreateTab(_collectionManager.GetOrCreateInitialCollectionVM());
 
     public CollectionTabVM CreateTab(CodexCollectionVM collectionVm, FiltersState? filtersState = null, CodexLayout? layout = null)
-        => CreateTab(collectionVm.Load() ?? CollectionManager.GetOrCreateInitialCollectionVM(), filtersState, layout);
+        => CreateTab(collectionVm.Load() ?? _collectionManager.GetOrCreateInitialCollectionVM(), filtersState, layout);
 
     private CollectionTabVM CreateTab(CollectionHandle collectionHandle, FiltersState? filtersState = null, CodexLayout? layout = null)
     {
@@ -83,7 +85,7 @@ public class TabsViewModel(
 
     private void CreateTab(TabState tabState)
     {
-        if (CollectionManager.GetCollectionVM(tabState.CollectionId) is { } collectionVM)
+        if (_collectionManager.GetCollectionVM(tabState.CollectionId) is { } collectionVM)
         {
             CreateTab(collectionVM, tabState.FiltersState, tabState.Layout);
         }

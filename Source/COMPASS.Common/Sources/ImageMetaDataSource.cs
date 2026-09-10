@@ -25,6 +25,6 @@ namespace COMPASS.Common.Sources
             return Task.FromResult(metaData);
         }
         public override async Task<IMagickImage<byte>?> FetchCover(SourceSet sources) => await Task.Run(() => 
-            CoverService.GetCoverFromImage(sources.Path));
+            ServiceResolver.Resolve<CoverService>().GetCoverFromImage(sources.Path));
     }
 }

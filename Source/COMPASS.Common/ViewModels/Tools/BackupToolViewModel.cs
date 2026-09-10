@@ -3,15 +3,11 @@ using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Interfaces.ViewModels;
-using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services;
 using COMPASS.Common.Services.StateManagers;
-using COMPASS.Common.Tools;
-using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.Views.Windows;
 using COMPASS.Infra.Interfaces.Services;
 using COMPASS.Infra.Models;
-using COMPASS.Infra.Tools;
 using SharpCompress.Archives;
 using SharpCompress.Archives.Zip;
 using SharpCompress.Readers;
@@ -24,17 +20,20 @@ public class BackupToolViewModel : ViewModelBase, IToolViewModel
     private readonly IFilesService _filesService;
     private readonly IImportExportService _importExportService;
     private readonly INotificationService _notificationService;
+    private readonly CollectionManager _collectionManager;
 
     public BackupToolViewModel(
         IApplicationDataService applicationDataService,
         IFilesService filesService,
         IImportExportService importExportService,
-        INotificationService notificationService)
+        INotificationService notificationService,
+        CollectionManager collectionManager)
     {
         _applicationDataService = applicationDataService;
         _filesService = filesService;
         _importExportService = importExportService;
         _notificationService = notificationService;
+        _collectionManager = collectionManager;
     }
     
     #region IToolViewModel
@@ -60,7 +59,7 @@ public class BackupToolViewModel : ViewModelBase, IToolViewModel
             loadingWindow.Show(WindowManager.ActiveWindow);
 
             //save first
-            CollectionManager.SaveAllCollections();
+            _collectionManager.SaveAllCollections();
 
             await Task.Run(() => _importExportService.CompressUserDataToZip(targetPath));
 
@@ -119,8 +118,9 @@ public class BackupToolViewModelFactory(
     IApplicationDataService applicationDataService,
     IFilesService filesService,
     IImportExportService importExportService,
-    INotificationService notificationService)
+    INotificationService notificationService,
+    CollectionManager collectionManager)
 {
     public BackupToolViewModel Create()
-        => new(applicationDataService, filesService, importExportService, notificationService);
+        => new(applicationDataService, filesService, importExportService, notificationService, collectionManager);
 }
