@@ -15,6 +15,7 @@ namespace COMPASS.Common.ViewModels.Import;
 
 public class ImportFilesViewModel : ViewModelBase, IDisposable
 {
+    private readonly ILogger _logger;
     private readonly IIOService _ioService;
     private readonly INotificationService _notificationService;
     private readonly ImportFolderWizardFactory _importFolderWizardFactory;
@@ -29,6 +30,7 @@ public class ImportFilesViewModel : ViewModelBase, IDisposable
     #region CTOR
     
     public ImportFilesViewModel(
+        ILogger logger,
         IIOService ioService, INotificationService notificationService, 
         ImportFolderWizardFactory importFolderWizardFactory, 
         FolderFactory folderFactory,
@@ -36,6 +38,7 @@ public class ImportFilesViewModel : ViewModelBase, IDisposable
         Lazy<CollectionManager> collectionManager,
         string targetCollectionId, bool autoImport)
     {
+        _logger = logger;
         _ioService = ioService;
         _notificationService = notificationService;
         _importFolderWizardFactory = importFolderWizardFactory;
@@ -141,7 +144,7 @@ public class ImportFilesViewModel : ViewModelBase, IDisposable
             }
             catch (Exception ex)
             {
-                Logger.Error($"Failed to get subfolders of {currentFolder}", ex);
+                _logger.Error($"Failed to get subfolders of {currentFolder}", ex);
                 subfolders = [];
             }
             foreach (string dir in subfolders)
@@ -197,6 +200,7 @@ public class ImportFilesViewModel : ViewModelBase, IDisposable
 
     [Factory]
     public class ImportFilesViewModelFactory(
+        ILogger logger,
         IIOService ioServcie, INotificationService notificationService, 
         ImportFolderWizardFactory importFolderWizardFactory,
         FolderFactory folderFactory,
@@ -214,7 +218,7 @@ public class ImportFilesViewModel : ViewModelBase, IDisposable
         public ImportFilesViewModel Create(string targetCollectionId, bool autoImport)
         {
             return new ImportFilesViewModel(
-                ioServcie, notificationService, 
+                logger, ioServcie, notificationService, 
                 importFolderWizardFactory, folderFactory,
                 codexCollectionOperations, collectionManager,
                 targetCollectionId, autoImport);

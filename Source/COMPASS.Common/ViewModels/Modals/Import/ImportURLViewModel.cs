@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using Autofac.Features.Indexed;
 using COMPASS.Common.DependencyInjection;
+using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.ViewModels;
 using COMPASS.Common.Operations;
 using COMPASS.Common.Models;
@@ -18,9 +19,11 @@ namespace COMPASS.Common.ViewModels.Modals.Import
         private readonly CodexCollectionOperations _codexCollectionOperations;
         private readonly ConnectivityManager _connectivityManager;
         private readonly IIndex<MetaDataSourceType, MetaDataSource> _metaDataSources;
+        private readonly ILogger _logger;
 
-        public ImportURLViewModel(CodexEditViewModelFactory codexEditViewModelFactory, CodexCollectionOperations codexCollectionOperations, ConnectivityManager connectivityManager, IIndex<MetaDataSourceType, MetaDataSource> metaDataSources, ImportSource importSource)
+        public ImportURLViewModel(ILogger logger, CodexEditViewModelFactory codexEditViewModelFactory, CodexCollectionOperations codexCollectionOperations, ConnectivityManager connectivityManager, IIndex<MetaDataSourceType, MetaDataSource> metaDataSources, ImportSource importSource)
         {
+            _logger = logger;
             _codexEditViewModelFactory = codexEditViewModelFactory;
             _codexCollectionOperations = codexCollectionOperations;
             _connectivityManager = connectivityManager;
@@ -116,7 +119,7 @@ namespace COMPASS.Common.ViewModels.Modals.Import
                 }
                 else
                 {
-                    Logger.Warn($"Could not find codex with source URL '{InputURL}' after import. Cannot open edit modal.");
+                    _logger.Warn($"Could not find codex with source URL '{InputURL}' after import. Cannot open edit modal.");
                 }
             }
         }
@@ -133,9 +136,9 @@ namespace COMPASS.Common.ViewModels.Modals.Import
     }
 
     [Factory]
-    public class ImportURLViewModelFactory(CodexEditViewModelFactory codexEditViewModelFactory, CodexCollectionOperations codexCollectionOperations, ConnectivityManager connectivityManager, IIndex<MetaDataSourceType, MetaDataSource> metaDataSources)
+    public class ImportURLViewModelFactory(ILogger logger, CodexEditViewModelFactory codexEditViewModelFactory, CodexCollectionOperations codexCollectionOperations, ConnectivityManager connectivityManager, IIndex<MetaDataSourceType, MetaDataSource> metaDataSources)
     {
         public ImportURLViewModel Create(ImportSource importSource)
-            => new(codexEditViewModelFactory, codexCollectionOperations, connectivityManager, metaDataSources, importSource);
+            => new(logger, codexEditViewModelFactory, codexCollectionOperations, connectivityManager, metaDataSources, importSource);
     }
 }

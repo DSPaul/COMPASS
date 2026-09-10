@@ -21,19 +21,22 @@ public class BackupToolViewModel : ViewModelBase, IToolViewModel
     private readonly IImportExportService _importExportService;
     private readonly INotificationService _notificationService;
     private readonly CollectionManager _collectionManager;
+    private readonly ILogger _logger;
 
     public BackupToolViewModel(
         IApplicationDataService applicationDataService,
         IFilesService filesService,
         IImportExportService importExportService,
         INotificationService notificationService,
-        CollectionManager collectionManager)
+        CollectionManager collectionManager,
+        ILogger logger)
     {
         _applicationDataService = applicationDataService;
         _filesService = filesService;
         _importExportService = importExportService;
         _notificationService = notificationService;
         _collectionManager = collectionManager;
+        _logger = logger;
     }
     
     #region IToolViewModel
@@ -97,7 +100,7 @@ public class BackupToolViewModel : ViewModelBase, IToolViewModel
     {
         if (!Path.Exists(sourcePath))
         {
-            Logger.Warn("Cannot extract sourcePath as it does not exit");
+            _logger.Warn("Cannot extract sourcePath as it does not exit");
             return;
         }
         
@@ -119,8 +122,9 @@ public class BackupToolViewModelFactory(
     IFilesService filesService,
     IImportExportService importExportService,
     INotificationService notificationService,
-    CollectionManager collectionManager)
+    CollectionManager collectionManager,
+    ILogger logger)
 {
     public BackupToolViewModel Create()
-        => new(applicationDataService, filesService, importExportService, notificationService, collectionManager);
+        => new(applicationDataService, filesService, importExportService, notificationService, collectionManager, logger);
 }

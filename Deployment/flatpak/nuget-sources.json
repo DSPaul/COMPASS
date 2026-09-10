@@ -281,10 +281,17 @@
     },
     {
         "type": "file",
-        "url": "https://api.nuget.org/v3-flatcontainer/log4net/3.4.0/log4net.3.4.0.nupkg",
-        "sha512": "4e60bf55fdab2002d63b2d460adb360ffa840ef80869c7f3d17a4f056e10ed11f8126a55ce862a1895524f24bfd97a4a585bf6350186362f3e567e321628a888",
+        "url": "https://api.nuget.org/v3-flatcontainer/serilog/4.0.0/serilog.4.0.0.nupkg",
+        "sha512": "1f6279bcfa93ca9c13180dd7c7e5944d5351358b9cd3a360cbbf12f2dda508700cb9ffadeffd4df772a6ddb2c029e2c3473e655a3b660a644de51d67133268c",
         "dest": "nuget-sources",
-        "dest-filename": "log4net.3.4.0.nupkg"
+        "dest-filename": "serilog.4.0.0.nupkg"
+    },
+    {
+        "type": "file",
+        "url": "https://api.nuget.org/v3-flatcontainer/serilog.sinks.file/6.0.0/serilog.sinks.file.6.0.0.nupkg",
+        "sha512": "90daa5403374597318b8973f4a7725dd14d44425a75793c82baa4143aeb3b4aeb8423636edd2b3b82a9df367d4e42339e73baaf62d42c87e7d4a958fa4394609",
+        "dest": "nuget-sources",
+        "dest-filename": "serilog.sinks.file.6.0.0.nupkg"
     },
     {
         "type": "file",

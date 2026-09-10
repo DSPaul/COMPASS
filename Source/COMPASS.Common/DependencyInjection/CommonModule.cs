@@ -29,12 +29,8 @@ namespace COMPASS.Common.DependencyInjection
             builder.RegisterModule<ApiClientsModule>();
             RegisterHttpClients(builder);
 
-            // Logging
-            builder.RegisterType<FileLogger>().AsSelf().SingleInstance();
-            builder.RegisterType<UILogger>().AsSelf().SingleInstance();
-            builder.Register(c => new CompositeLogger([c.Resolve<FileLogger>(), c.Resolve<UILogger>()]))
-                   .As<ILogger>()
-                   .SingleInstance();
+            // Logging: single Serilog pipeline (rolling file + in-app panel sinks)
+            builder.RegisterType<SerilogLogger>().As<ILogger>().SingleInstance();
 
             //Data Repos
             builder.RegisterType<CodexCollectionXmlRepository>().Keyed<ICodexCollectionRepository>(StorageStrategy.Xml);

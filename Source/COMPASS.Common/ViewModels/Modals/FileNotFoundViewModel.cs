@@ -12,10 +12,12 @@ namespace COMPASS.Common.ViewModels.Modals
     public class FileNotFoundViewModel : ViewModelBase, IModalViewModel
     {
 
+        private readonly ILogger _logger;
         private readonly IFilesService _filesService;
         private readonly CodexOperations _codexOperations;
-        public FileNotFoundViewModel(IFilesService filesService, CodexOperations codexOperations, Codex codex)
+        public FileNotFoundViewModel(ILogger logger, IFilesService filesService, CodexOperations codexOperations, Codex codex)
         {
+            _logger = logger;
             _filesService = filesService;
             _codexOperations = codexOperations;
             Codex = codex;
@@ -69,8 +71,8 @@ namespace COMPASS.Common.ViewModels.Modals
                 }
 
                 string message = $"Fixed {fixedRefs} broken references based on recent manual fix, {codicesWithBrokenPaths.Count - fixedRefs + 1} remaining.";
-                Logger.Info(message);
-                Logger.Debug(message);
+                _logger.Info(message);
+                _logger.Debug(message);
                 
                 Codex.Collection.SaveCodices();
                 bool opened = await _codexOperations.OpenCodexLocally(Codex);
@@ -106,8 +108,8 @@ namespace COMPASS.Common.ViewModels.Modals
     }
 
     [Factory]
-    public class FileNotFoundViewModelFactory(IFilesService filesService, CodexOperations codexOperations)
+    public class FileNotFoundViewModelFactory(ILogger logger, IFilesService filesService, CodexOperations codexOperations)
     {
-        public FileNotFoundViewModel Create(Codex codex) => new(filesService, codexOperations, codex);
+        public FileNotFoundViewModel Create(Codex codex) => new(logger, filesService, codexOperations, codex);
     }
 }

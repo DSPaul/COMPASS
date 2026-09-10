@@ -297,14 +297,6 @@
         "resolved": "1.13.0",
         "contentHash": "nWZtz9WjSbq6V7TjjYBCmW+D8+BrWs15O6MlPxh55SH4zmenkWHXwu6gYeIarHL3KoHgDyZzTdOM50EdTnR8Xw=="
       },
-      "log4net": {
-        "type": "Transitive",
-        "resolved": "3.4.0",
-        "contentHash": "IubYl1l3vs4pZ8hRJBWjfPOW8osR1gS/FAweVYpc2n7SZ0yrZ64uMGQYjjt1nna/Hpm10IHiw4D6HSh/JFbj9w==",
-        "dependencies": {
-          "System.Configuration.ConfigurationManager": "4.5.0"
-        }
-      },
       "Magick.NET-Q8-AnyCPU": {
         "type": "Transitive",
         "resolved": "14.16.0",
@@ -541,6 +533,19 @@
         "resolved": "4.47.0",
         "contentHash": "P6tWCztrMNXpA4av0EDEwpw+jPbefH7BtdSU05aAldkCUrZF537uBTkHj+A3EcgpbcGGr6uj61UDy8GO6APhoQ=="
       },
+      "Serilog": {
+        "type": "Transitive",
+        "resolved": "4.0.0",
+        "contentHash": "2jDkUrSh5EofOp7Lx5Zgy0EB+7hXjjxE2ktTb1WVQmU00lDACR2TdROGKU0K1pDTBSJBN1PqgYpgOZF8mL7NJw=="
+      },
+      "Serilog.Sinks.File": {
+        "type": "Transitive",
+        "resolved": "6.0.0",
+        "contentHash": "lxjg89Y8gJMmFxVkbZ+qDgjl+T4yC5F7WSLTvA+5q0R04tfKVLRL/EHpYoJ/MEQd2EeCKDuylBIVnAYMotmh2A==",
+        "dependencies": {
+          "Serilog": "4.0.0"
+        }
+      },
       "SharpCompress": {
         "type": "Transitive",
         "resolved": "0.50.4",
@@ -657,15 +662,6 @@
           "Svg.SceneGraph": "5.1.1"
         }
       },
-      "System.Configuration.ConfigurationManager": {
-        "type": "Transitive",
-        "resolved": "4.5.0",
-        "contentHash": "UIFvaFfuKhLr9u5tWMxmVoDPkFeD+Qv8gUuap4aZgVGYSYMdERck4OhLN/2gulAc0nYTEigWXSJNNWshrmxnng==",
-        "dependencies": {
-          "System.Security.Cryptography.ProtectedData": "4.5.0",
-          "System.Security.Permissions": "4.5.0"
-        }
-      },
       "System.Drawing.Common": {
         "type": "Transitive",
         "resolved": "8.0.29",
@@ -673,16 +669,6 @@
         "dependencies": {
           "Microsoft.Win32.SystemEvents": "8.0.0"
         }
-      },
-      "System.Security.Cryptography.ProtectedData": {
-        "type": "Transitive",
-        "resolved": "4.5.0",
-        "contentHash": "wLBKzFnDCxP12VL9ANydSYhk59fC4cvOr9ypYQLPnAj48NQIhqnjdD2yhP8yEKyBJEjERWS9DisKL7rX5eU25Q=="
-      },
-      "System.Security.Permissions": {
-        "type": "Transitive",
-        "resolved": "4.5.0",
-        "contentHash": "9gdyuARhUR7H+p5CjyUB/zPk7/Xut3wUSP8NJQB6iZr8L3XUXTMdoLeVAg9N4rqF8oIpE7MpdqHdDHQ7XgJe0g=="
       },
       "Tmds.DBus.Protocol": {
         "type": "Transitive",
@@ -721,10 +707,11 @@
           "PdfPig": "[0.1.16, )",
           "Selenium.Support": "[4.47.0, )",
           "Selenium.WebDriver": "[4.47.0, )",
+          "Serilog": "[4.0.0, )",
+          "Serilog.Sinks.File": "[6.0.0, )",
           "SharpCompress": "[0.50.4, )",
           "SkiaImageView.Avalonia11": "[1.5.0, )",
-          "Svg.Controls.Skia.Avalonia": "[12.0.0.13, )",
-          "log4net": "[3.4.0, )"
+          "Svg.Controls.Skia.Avalonia": "[12.0.0.13, )"
         }
       },
       "compass.infra": {
@@ -833,11 +820,6 @@
         "type": "Transitive",
         "resolved": "3.119.4",
         "contentHash": "XOpbx/4CReO2wYsq2s6rbvdauc6dntG4Zv499sHGTJ87bwZaFXszFkwql3+FIZMc8kUPeaj3Mx2ezIJmo8a1Kg=="
-      },
-      "System.Security.Cryptography.ProtectedData": {
-        "type": "Transitive",
-        "resolved": "4.5.0",
-        "contentHash": "wLBKzFnDCxP12VL9ANydSYhk59fC4cvOr9ypYQLPnAj48NQIhqnjdD2yhP8yEKyBJEjERWS9DisKL7rX5eU25Q=="
       }
     }
   }

@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Exceptions;
+using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.ViewModels.Import;
@@ -15,6 +16,7 @@ namespace COMPASS.Common.ViewModels.SidePanels
 {
     public class AddCodexPanelVM : ViewModelBase
     {
+        private readonly ILogger _logger;
         private readonly IImportExportService _importExportService;
         private readonly INotificationService _notificationService;
         private readonly ImportViewModelFactory _importViewModelFactory;
@@ -22,12 +24,14 @@ namespace COMPASS.Common.ViewModels.SidePanels
         private readonly ImportCollectionViewModelFactory _importCollectionViewModelFactory;
 
         public AddCodexPanelVM(
+            ILogger logger,
             IImportExportService importExportService,
             INotificationService notificationService,
             ImportViewModelFactory importViewModelFactory,
             CodexCollectionVMFactory codexCollectionVMFactory,
             ImportCollectionViewModelFactory importCollectionViewModelFactory)
         {
+            _logger = logger;
             _importExportService = importExportService;
             _notificationService = notificationService;
             _importViewModelFactory = importViewModelFactory;
@@ -56,7 +60,7 @@ namespace COMPASS.Common.ViewModels.SidePanels
 
             if (extractedCollection == null)
             {
-                Logger.Warn("Failed to open file");
+                _logger.Warn("Failed to open file");
                 return;
             }
 
@@ -87,6 +91,7 @@ namespace COMPASS.Common.ViewModels.SidePanels
 
     [Factory]
     public class AddCodexPanelVMFactory(
+        ILogger logger,
         IImportExportService importExportService,
         INotificationService notificationService,
         ImportViewModelFactory importViewModelFactory,
@@ -94,6 +99,6 @@ namespace COMPASS.Common.ViewModels.SidePanels
         ImportCollectionViewModelFactory importCollectionViewModelFactory)
     {
         public AddCodexPanelVM Create()
-            => new(importExportService, notificationService, importViewModelFactory, codexCollectionVMFactory, importCollectionViewModelFactory);
+            => new(logger, importExportService, notificationService, importViewModelFactory, codexCollectionVMFactory, importCollectionViewModelFactory);
     }
 }
