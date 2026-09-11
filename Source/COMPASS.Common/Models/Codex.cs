@@ -10,8 +10,6 @@ namespace COMPASS.Common.Models
 {
     public class Codex : ObservableObject, IHasId, IHasCodexMetadata, ICloneable<Codex>
     {
-        public readonly CodexCollection Collection;
-
         #region Constructors
 
         public Codex(CodexCollection collection)
@@ -29,6 +27,8 @@ namespace COMPASS.Common.Models
         #region Properties
 
         #region COMPASS related Metadata
+
+        public CodexCollection Collection { get; set; }
 
         /// <summary>
         /// Local Id, only unique within the collection

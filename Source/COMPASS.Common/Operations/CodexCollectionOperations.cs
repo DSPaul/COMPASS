@@ -31,27 +31,38 @@ public class CodexCollectionOperations(
     /// <param name="separateTags">Whether to separate tags into a group named after the source collection.</param>
     public void Merge(CodexCollection source, CodexCollection target, bool separateTags = false)
     {
-        //Merge Tags
+        if(source == target)
+        {
+            logger.Warn("Attempted to merge a collection into itself. Operation aborted."); 
+            return;
+        }
+
+        //Deep-copy tags so source and target never share Tag instances.
+        List<Tag> rootsToImport = TagOperations.DeepCloneTags(source.RootTags, out Dictionary<Tag, Tag> tagOrigToClone);
         if (separateTags)
         {
-            var rootTag = new Tag(source.AllTags)
+            var rootTag = new Tag
             {
                 IsGroup = true,
-                Name = source.Name.Trim('_'),
-                Children = new(source.RootTags)
+                Name = source.Name.Trim('_')
             };
-            source.RootTags = [rootTag];
+            foreach (Tag clonedRoot in rootsToImport)
+            {
+                clonedRoot.Parent = rootTag;
+                rootTag.Children.Add(clonedRoot);
+            }
+            rootsToImport = [rootTag];
         }
-        target.AddTags(source.RootTags);
+        target.AddTags(rootsToImport);
 
-        //merge codices (with file moves)
-        CopyCodicesToTarget(source, target);
+        //merge codices (with file copies)
+        CopyCodicesToTarget(source, target, tagOrigToClone);
 
         //merge info
         target.Info.MergeWith(source.Info);
     }
 
-    private void CopyCodicesToTarget(CodexCollection source, CodexCollection target)
+    private void CopyCodicesToTarget(CodexCollection source, CodexCollection target, Dictionary<Tag, Tag> tagMap)
     {
         bool canImportFiles = false;
         if (userFilesStorageService.HasUserFiles(source))
@@ -63,20 +74,47 @@ public class CodexCollectionOperations(
             }
         }
 
+        HashSet<Tag> unmappedTags = [];
         foreach (Codex codex in source.AllCodices)
         {
+            var copyCodex = new Codex(target);
+            copyCodex.CopyFrom(codex);
+            
+            //replace tags from old collection to the clone in new collection
+            copyCodex.Tags.Clear();
+            foreach (Tag tag in codex.Tags)
+            {
+                if(tagMap.TryGetValue(tag, out Tag? clone))
+                {
+                    copyCodex.Tags.Add(clone);
+                }
+                else
+                {
+                    unmappedTags.Add(tag);
+                }
+            }
+
             //Give it a new id that is unique to this collection
-            codex.Id = Utils.GetAvailableId(target.AllCodices);
+            copyCodex.Id = Utils.GetAvailableId(target.AllCodices);
+            copyCodex.GlobalId = Guid.NewGuid();
 
-            //Move thumbnail and cover
-            coverStorageService.MoveCodexDataToCollection(codex, target);
+            //Copy thumbnail and cover
+            coverStorageService.MoveCodexDataToCollection(copyCodex, target, copy: true);
 
-            //move user files included in import
+            //Copy user files included in import
             if (canImportFiles)
             {
-                userFilesStorageService.MoveCodexDataToCollection(codex, target, source, copy: true);
+                userFilesStorageService.MoveCodexDataToCollection(copyCodex, target, source, copy: true);
             }
-            target.AllCodices.Add(codex);
+
+            target.AllCodices.Add(copyCodex);
+        }
+
+        if (unmappedTags.Count > 0)
+        {
+            logger.Warn($"Copied {source.AllCodices.Count} items from {source.Name} to {target.Name}, " +
+                $"but {unmappedTags.Count} tags had no mapping and were dropped from the copies: " +
+                $"{string.Join(", ", unmappedTags.Select(tag => tag.Name))}.");
         }
     }
 

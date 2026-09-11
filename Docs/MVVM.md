@@ -76,9 +76,48 @@ The View picks up errors automatically through `INotifyDataErrorInfo` — Avalon
 
 ## Commands
 
-Commands live on ViewModels but operate on models. `CodexOperations`, for example, exposes static command methods that take a `Codex` model (`OpenCodex`, `OpenCodexLocally`).
+Commands live on ViewModels but operate on models. `CodexOperations`, for example, is an injectable instance service exposing command logic that takes a `Codex` model (`OpenCodex`, `OpenCodexLocally`).
 
 This ensures the model is always authoritative and the ViewModel never needs to manually synchronise state.
+
+## ViewModel creation: colocated factories
+
+ViewModels that need services are **never constructed with `new`** outside their factory. Each such ViewModel has a colocated `<Name>Factory` class at the bottom of its own file:
+
+```csharp
+[Factory]
+public class CodexViewModelFactory(ILogger logger, CodexOperations codexOperations)
+{
+    public CodexViewModel Create(Codex codex, CodexCollectionVM parentCollectionVm)
+        => new(logger, codexOperations, codex, parentCollectionVm);
+}
+```
+
+Rules:
+
+1. **Primary constructor = injected services only; `Create` parameters = runtime data only.** Services are long-lived and come from the container; runtime data (models, parent VMs, ids, flags) is short-lived and comes from the caller. Never mix them.
+2. **No interfaces on factories.** Factories are concrete classes; tests construct them directly with mocks (`new CodexViewModelFactory(new MockLogger(), ...)`).
+3. **`[Factory]` + auto-registration.** The attribute marks the class for `FactoryRegistrar.RegisterFactories`, which scans the assembly and registers every factory as self (transient, the Autofac default) — called from `CommonModule`, `MockModule`, and the UI test harness. Never register a factory by hand.
+4. **Composite factories aggregate creation.** When one VM needs many factories to assemble its children (e.g. `CollectionTabVMFactory` builds tabs from six factories, `LeftDockViewModelFactory` and `ToolsViewModelFactory` compose their areas), consumers take the composite instead of the parts. Extract one when a constructor starts collecting factories it only forwards.
+5. **Singletons vs transient.** Transient is the default for factories and stateless services. Singleton is reserved for shared caches or true app state - managers (`CollectionManager`, `TabsViewModel`), `PreferencesService`, the operations services, and the loggers. Rule of thumb from `CommonModule`: "Services with cache of some kind -> SingleInstance". (Counter-intuitive case: `ApplicationDataService` *looks* stateful but its "state" lives in a redirect file on disk, so it stays transient.)
+6. **Break constructor cycles with `Lazy<T>`.** UI creation graphs occasionally cycle (view-model factory → operations → editor factory → back). Since nothing needs the other *during* construction — only on user interaction — `Lazy<T>` on one leg is the sanctioned breaker. If a third `Lazy` appears on the same triangle, restructure instead.
+
+## Operations classes
+
+Domain logic that needs services but isn't tied to one ViewModel lives in instance operations services in `Operations/` (`CodexOperations` for codex-level actions, `CodexCollectionOperations` for collection-level actions like import/merge, `TagOperations` for tag deletion). They are registered singletons and injected wherever needed — including into factories, which is what makes the factory graph compose.
+
+The organizing rule: **methods act on the object their class is named for** (`CreateNewCodex(collection)` lives in `CodexCollectionOperations`, everything taking a `Codex` lives in `CodexOperations`). Models themselves stay pure and service-free.
+
+## `ServiceResolver` boundaries
+
+Direct `ServiceResolver.Resolve` survives only where DI structurally cannot reach:
+
+- **Composition roots** (`Program.cs`, `App.axaml.cs`) — the container is built here.
+- **View code-behind** (`.axaml.cs`) and **static helpers** — via the documented `GetInstance()` accessors (`TabsViewModel`, `ProgressViewModel`).
+- **Pre-container code** (`CrashHandler`) and **reflection-built objects** (e.g. `CoverProperty` descriptors).
+- **Single choke points** where sugar demands it (`CodexCollectionExtensions` for model extension methods, XAML `x:Static` bindings).
+
+Everything else resolves through constructors. If you find yourself adding a new `Resolve`, you are probably missing a factory parameter.
 
 ## When `ModelViewModelBase` is NOT used
 
@@ -93,8 +132,10 @@ Not every ViewModel wraps a single model:
 
 ## Summary of rules
 
-1. **Models own the data** — all state lives in the model, models use `SetProperty` to notify.
+1. **Models own the data** — all state lives in the model, models use `SetProperty` to notify. Models never reference services.
 2. **ViewModel setters write through** — `set => _model.X = value`, never `SetProperty` on the VM side for model-backed properties.
 3. **One notification path** — Model → `OnModelPropertyChanged` → `HandlePropertyChanged` → UI. No dual-raise.
 4. **Derived properties are declared** — registered in the constructor via `_derivedProperties`, auto-notified.
 5. **Validation is property-driven** — registered via `AddValidation`, triggered on every property change automatically.
+6. **Creation goes through factories** — never `new` a service-needing ViewModel; primary ctor takes services, `Create` takes runtime data.
+7. **Services come from constructors** — the only `ServiceResolver` calls live at the documented boundaries above.

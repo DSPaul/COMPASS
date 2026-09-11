@@ -14,7 +14,8 @@ namespace COMPASS.UnitTests.Models
         public void MapCodex()
         {
             // -2: Sources are 3 props in dto, but only 1 in model
-            int expectedDiff = -2;
+            // +1: Collection is a runtime back-reference on the model, passed as a param in ToModel
+            int expectedDiff = -1;
 
             AssertAllPropMapped(typeof(Codex), typeof(CodexDto), expectedDiff);
 

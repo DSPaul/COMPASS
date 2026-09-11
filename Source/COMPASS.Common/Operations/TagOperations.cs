@@ -36,6 +36,45 @@ public class TagOperations(INotificationService notificationService)
     }
 
     /// <summary>
+    /// Deep-clones a tag tree without copying ids or parent references.
+    /// </summary>
+    public static Tag DeepClone(Tag source, out Dictionary<Tag, Tag> origToClone) =>
+        DeepCloneTags(new List<Tag> { source }, out origToClone).Single();
+    
+
+    /// <summary>
+    /// Deep-clones multiple root tags, sharing one source-to-clone map.
+    /// </summary>
+    public static List<Tag> DeepCloneTags(IEnumerable<Tag> roots, out Dictionary<Tag, Tag> origToClone)
+    {
+        //can't pass out var to lambda so we need to create a local dictionary and then assign it to the out parameter at the end
+        var localOrigToClone = new Dictionary<Tag, Tag>();
+
+        var clonedTags = roots.Select(root => InnerDeepClone(root, localOrigToClone)).ToList();
+        origToClone = localOrigToClone;
+        return clonedTags;
+    }
+
+    private static Tag InnerDeepClone(Tag source, Dictionary<Tag, Tag> origToClone)
+    {
+        Tag clone = source.Clone();
+
+        //clear links to other tags, will become links to their clones
+        clone.Children.Clear();
+        clone.Parent = null;
+        clone.Id = -1;
+
+        origToClone[source] = clone;
+        foreach (Tag child in source.Children)
+        {
+            Tag childCopy = InnerDeepClone(child, origToClone);
+            childCopy.Parent = clone;
+            clone.Children.Add(childCopy);
+        }
+        return clone;
+    }
+
+    /// <summary>
     /// Pure removal logic, extracted for testability.
     /// </summary>
     private static void InnerDelete(CodexCollection collection, Tag toDelete)

@@ -37,7 +37,7 @@ This document is a high-level map of every major feature and system in COMPASS.
 | `COMPASS.Linux` | Linux entry point & platform service implementations. |
 | `COMPASS.Tests.*` | Test projects (unit, integration, UI). |
 
-Dependency injection is handled through `ServiceResolver` (a thin static wrapper around whatever DI container each platform registers). Platform-specific bindings are registered in each platform's `DependencyInjection` module; cross-platform bindings live in `COMPASS.Common/DependencyInjection/CommonModule.cs`.
+Dependency injection is handled through `ServiceResolver` (a thin static wrapper around whatever DI container each platform registers). Platform-specific bindings are registered in each platform's `DependencyInjection` module; cross-platform bindings live in `COMPASS.Common/DependencyInjection/CommonModule.cs`. View-model creation, lifetimes, and the `ServiceResolver` boundaries are documented in [MVVM.md](MVVM.md).
 
 ```mermaid
 graph TD;
@@ -145,7 +145,7 @@ Every source implements `MetaDataSource` and is identified by a `MetaDataSourceT
 | `GoogleDriveMetaDataSource` | Reads Google Drive file metadata |
 | `GenericOnlineMetaDataSource` | Falls back to Open Graph / page title for any URL |
 
-`MetaDataSource.GetSource(type, collection)` is the factory that maps an enum value to the correct concrete source.
+Metadata sources are registered keyed by `MetaDataSourceType` and resolved via `IIndex<MetaDataSourceType, MetaDataSource>`, so new sources only need a registration line — see [MVVM.md](MVVM.md) for the factory/DI conventions.
 
 ### CodexProperty & Overwrite Rules
 
@@ -215,7 +215,7 @@ Each layout has a corresponding `*LayoutPreferences` model that persists user ch
 
 **Key files:** `Source/COMPASS.Common/Services/StateManagers/CollectionManager.cs`, `ViewModels/Main/CodexCollectionVM.cs`, `Repositories/CodexCollectionXmlRepository.cs`
 
-`CollectionManager` is a static registry of all discovered collections. On startup it calls `DiscoverCollections()`, which scans the user data directory for collection folders and creates a `CodexCollectionVM` for each.
+`CollectionManager` is an instance singleton registry of all discovered collections. On startup it calls `DiscoverCollections()`, which scans the user data directory for collection folders and creates a `CodexCollectionVM` for each.
 
 `CodexCollectionVM` wraps a `CodexCollection` and manages its lifecycle: loading from / saving to the repository, and providing the `FiltersViewModel` and layout view-models for the tab that shows it.
 

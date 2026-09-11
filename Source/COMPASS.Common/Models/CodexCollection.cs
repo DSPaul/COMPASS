@@ -66,6 +66,7 @@ namespace COMPASS.Common.Models
             foreach (Tag tag in tagsToImport)
             {
                 tag.Id = Utils.GetAvailableId(AllTags);
+                AllTags.Add(tag);
             }
             RootTags.AddRange(tagsList);
             

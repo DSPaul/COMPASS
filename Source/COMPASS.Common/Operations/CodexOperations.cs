@@ -312,6 +312,7 @@ namespace COMPASS.Common.Operations
 
                     movedCodex.Tags.Clear();
                     movedCodex.Id = Utils.GetAvailableId(targetCollection.AllCodices);
+                    movedCodex.GlobalId = Guid.NewGuid();
 
                     //Add Codex to target CodexCollection
                     targetCollection.AllCodices.Add(movedCodex);

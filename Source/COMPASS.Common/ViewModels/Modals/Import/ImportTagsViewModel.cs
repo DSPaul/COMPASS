@@ -4,6 +4,7 @@ using COMPASS.Common.Exceptions;
 using COMPASS.Common.Interfaces.ViewModels;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Hierarchy;
+using COMPASS.Common.Operations;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.ModelVMs;
@@ -70,7 +71,9 @@ namespace COMPASS.Common.ViewModels.Modals.Import
 
                 if (selectedTags.Any())
                 {
-                    _targetCollectionHandle.CollectionVM.Collection.AddTags(selectedTags);
+                    //Deep-copy so the target never shares Tag instances with the source collection
+                    List<Tag> clonedTags = TagOperations.DeepCloneTags(selectedTags, out _);
+                    _targetCollectionHandle.CollectionVM.Collection.AddTags(clonedTags);
                 }
             }
             CloseAction.Invoke();

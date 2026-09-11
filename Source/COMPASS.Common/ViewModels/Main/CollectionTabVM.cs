@@ -224,7 +224,8 @@ public class CollectionTabVM : ViewModelBase, IDisposable
     private async Task MergeIntoCollection(string? collectionToMergeInto)
     {
         if (string.IsNullOrEmpty(collectionToMergeInto) ||
-            !_collectionManager.CollectionExists(collectionToMergeInto))
+            !_collectionManager.CollectionExists(collectionToMergeInto)
+            || collectionToMergeInto == CollectionVM.Identifier)
         {
             return;
         }
