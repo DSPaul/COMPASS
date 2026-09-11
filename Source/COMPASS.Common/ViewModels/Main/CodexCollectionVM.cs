@@ -29,12 +29,12 @@ public class CodexCollectionVM : ModelViewModelBase<CodexCollection>
     private readonly CodexViewModelFactory _codexViewModelFactory;
     private readonly TagViewModelFactory _tagViewModelFactory;
     private readonly ImportFilesViewModelFactory _importFilesViewModelFactory;
-    private readonly Lazy<CollectionManager> _collectionManager;
+    private readonly CollectionManager _collectionManager;
 
     public CodexCollectionVM(string identifier, CodexCollection collection, 
         ICodexCollectionRepository repo, ILogger logger, INotificationService notificationService, IImportExportService importExportService, 
         ICoverStorageService coverStorageService, FolderFactory folderFactory, CodexViewModelFactory codexViewModelFactory, TagViewModelFactory tagViewModelFactory,
-        ImportFilesViewModelFactory importFilesViewModelFactory, Lazy<CollectionManager> collectionManager)
+        ImportFilesViewModelFactory importFilesViewModelFactory, CollectionManager collectionManager)
         : base(collection)
     {
         _logger = logger;
@@ -258,7 +258,7 @@ public class CodexCollectionVM : ModelViewModelBase<CodexCollection>
         
         if (!CanDeleteCollection()) return false;
         
-        _collectionManager.Value.RemoveCollection(this);
+        _collectionManager.RemoveCollection(this);
         _repo.DeleteCollection(Identifier);
         return true;
     }
@@ -284,7 +284,7 @@ public class CodexCollectionVMFactory(
 {
     public CodexCollectionVM Create(CodexCollection collection, ICodexCollectionRepository repo)
         => new(collection.Name, collection, repo, logger, notificationService, importExportService, coverStorageService,
-               folderFactory, codexViewModelFactory, tagViewModelFactory, importFilesViewModelFactory, collectionManager);
+               folderFactory, codexViewModelFactory, tagViewModelFactory, importFilesViewModelFactory, collectionManager.Value);
 
     public CodexCollectionVM Create(CodexCollection collection, StorageStrategy storageStrategy)
         => Create(collection, repoIndex[storageStrategy]);

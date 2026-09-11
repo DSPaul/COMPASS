@@ -21,7 +21,7 @@ public class ImportFilesViewModel : ViewModelBase, IDisposable
     private readonly ImportFolderWizardFactory _importFolderWizardFactory;
     private readonly FolderFactory _folderFactory;
     private readonly CodexCollectionOperations _codexCollectionOperations;
-    private readonly Lazy<CollectionManager> _collectionManager;
+    private readonly CollectionManager _collectionManager;
 
     private readonly bool _autoImport;
     private readonly CollectionHandle _targetCollectionHandle;
@@ -35,7 +35,7 @@ public class ImportFilesViewModel : ViewModelBase, IDisposable
         ImportFolderWizardFactory importFolderWizardFactory, 
         FolderFactory folderFactory,
         CodexCollectionOperations codexCollectionOperations,
-        Lazy<CollectionManager> collectionManager,
+        CollectionManager collectionManager,
         string targetCollectionId, bool autoImport)
     {
         _logger = logger;
@@ -46,7 +46,7 @@ public class ImportFilesViewModel : ViewModelBase, IDisposable
         _codexCollectionOperations = codexCollectionOperations;
         _collectionManager = collectionManager;
         
-        var handle = _collectionManager.Value.LoadCollection(targetCollectionId);
+        var handle = _collectionManager.LoadCollection(targetCollectionId);
         if (handle != null)
         {
             _targetCollectionHandle = handle;
@@ -220,7 +220,7 @@ public class ImportFilesViewModel : ViewModelBase, IDisposable
             return new ImportFilesViewModel(
                 logger, ioServcie, notificationService, 
                 importFolderWizardFactory, folderFactory,
-                codexCollectionOperations, collectionManager,
+                codexCollectionOperations, collectionManager.Value,
                 targetCollectionId, autoImport);
         }
     }

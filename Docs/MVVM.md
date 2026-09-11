@@ -98,6 +98,7 @@ Rules:
 1. **Primary constructor = injected services only; `Create` parameters = runtime data only.** Services are long-lived and come from the container; runtime data (models, parent VMs, ids, flags) is short-lived and comes from the caller. Never mix them.
 2. **No interfaces on factories.** Factories are concrete classes; tests construct them directly with mocks (`new CodexViewModelFactory(new MockLogger(), ...)`).
 3. **`[Factory]` + auto-registration.** The attribute marks the class for `FactoryRegistrar.RegisterFactories`, which scans the assembly and registers every factory as self (transient, the Autofac default) — called from `CommonModule`, `MockModule`, and the UI test harness. Never register a factory by hand.
+4. **Factories hold `Lazy<T>`, VMs take concrete services.** When a creation graph cycles, the `Lazy` lives on the factory and is resolved (`.Value`) inside `Create` — never in the VM constructor. VMs stay directly test-constructible and never know a cycle existed.
 
 ## Operations classes
 
