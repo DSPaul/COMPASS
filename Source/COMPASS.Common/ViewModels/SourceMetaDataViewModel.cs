@@ -28,7 +28,7 @@ public class SourceMetaDataViewModel : IDisposable
     public Bitmap? Cover { get; }
 
     //Make this a method rather than a property to avoid binding to it
-    public SourceMetaData GetSource() =>  _sourceMetaData;
+    public SourceMetaData GetSourceMetaData() =>  _sourceMetaData;
     
     public void Dispose()
     {

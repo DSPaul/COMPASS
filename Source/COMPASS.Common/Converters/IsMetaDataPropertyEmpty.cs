@@ -34,7 +34,7 @@ namespace COMPASS.Common.Converters
 
             return value switch
             {
-                SourceMetaDataViewModel metaDataVM => !prop.IsEmpty(metaDataVM.GetSource()),
+                SourceMetaDataViewModel metaDataVM => !prop.IsEmpty(metaDataVM.GetSourceMetaData()),
                 IHasCodexMetadata metadata => !prop.IsEmpty(metadata),
                 _ => false
             };

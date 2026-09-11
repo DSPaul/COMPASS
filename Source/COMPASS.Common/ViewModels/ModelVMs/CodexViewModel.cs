@@ -7,7 +7,6 @@ using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.DragDrop;
 using COMPASS.Common.Operations;
-using COMPASS.Common.Services;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Infra.Avalonia.DragDrop;
@@ -21,17 +20,17 @@ namespace COMPASS.Common.ViewModels.ModelVMs;
 public class CodexViewModel : ModelViewModelBase<Codex>
 {
     private readonly ILogger _logger;
+    private readonly ICoverService _coverService;
     private readonly CodexOperations _codexOperations;
-    private readonly CoverService _coverService;
     private readonly CodexCollectionVM _codexCollectionVM;
     
     #region Constructors
 
-    public CodexViewModel(ILogger logger, CodexOperations codexOperations, CoverService coverService, Codex codex, CodexCollectionVM codexCollectionVM) : base(codex)
+    public CodexViewModel(ILogger logger, ICoverService coverService, CodexOperations codexOperations, Codex codex, CodexCollectionVM codexCollectionVM) : base(codex)
     {
         _logger = logger;
-        _codexOperations = codexOperations;
         _coverService = coverService;
+        _codexOperations = codexOperations;
         _codexCollectionVM = codexCollectionVM;
 
         Tags = new ReadOnlyCollection<TagViewModel>(GetTagVms());
@@ -395,8 +394,8 @@ public class CodexViewModel : ModelViewModelBase<Codex>
 }
 
 [Factory]
-public class CodexViewModelFactory(ILogger logger, Lazy<CodexOperations> codexOperations, CoverService coverService)
+public class CodexViewModelFactory(ILogger logger, Lazy<CodexOperations> codexOperations, ICoverService coverService)
 {
     public CodexViewModel Create(Codex codex, CodexCollectionVM parentCollectionVm)
-        => new(logger, codexOperations.Value, coverService, codex, parentCollectionVm);
+        => new(logger, coverService, codexOperations.Value, codex, parentCollectionVm);
 }

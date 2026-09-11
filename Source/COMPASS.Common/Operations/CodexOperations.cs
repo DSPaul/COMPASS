@@ -34,11 +34,11 @@ namespace COMPASS.Common.Operations
         ICoverStorageService coverStorageService,
         IUserFilesStorageService userFilesStorageService,
         IIOService ioService,
+        ICoverService coverService,
         Lazy<CodexEditViewModelFactory> codexEditViewModelFactory,
         Lazy<FileNotFoundViewModelFactory> fileNotFoundViewModelFactory,
         ChooseMetaDataViewModelFactory chooseMetaDataViewModelFactory,
         Lazy<CollectionManager> collectionManager,
-        CoverService coverService,
         IIndex<MetaDataSourceType, MetaDataSource> metaDataSources)
     {
         #region Open Codex

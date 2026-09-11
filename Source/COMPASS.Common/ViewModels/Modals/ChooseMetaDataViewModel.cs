@@ -42,18 +42,17 @@ namespace COMPASS.Common.ViewModels.Modals
             OnPropertyChanged(nameof(CurrentProposal));
         }
 
-        public override Task Finish()
+        public override async Task Finish()
         {
-            ApplyChoices();
+            await ApplyChoices();
             CloseAction();
-            return Task.CompletedTask;
         }
 
-        private void ApplyChoices()
+        private async Task ApplyChoices()
         {
             foreach (var proposal in MetaDataProposals)
             {
-                proposal.ApplyChoice();
+                await proposal.ApplyChoice();
                 proposal.Dispose();
             }
             

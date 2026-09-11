@@ -1,7 +1,6 @@
 ﻿using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
-using COMPASS.Common.Services;
 using COMPASS.Infra.Tools;
 using ImageMagick;
 
@@ -9,9 +8,9 @@ namespace COMPASS.Common.Sources
 {
     public class ImageMetaDataSource : MetaDataSource
     {
-        private readonly CoverService _coverService;
+        private readonly ICoverService _coverService;
 
-        public ImageMetaDataSource(ILogger logger, IPreferencesService preferencesService, CoverService coverService) :  
+        public ImageMetaDataSource(ILogger logger, IPreferencesService preferencesService, ICoverService coverService) :  
             base(logger, preferencesService) 
         {
             _coverService = coverService;

@@ -20,7 +20,7 @@ namespace COMPASS.Common.Services
         IPreferencesService preferencesService,
         IIOService ioService,
         ChooseMetaDataViewModelFactory chooseMetaDataViewModelFactory,
-        IIndex<MetaDataSourceType, MetaDataSource> metaDataSources)
+        IIndex<MetaDataSourceType, MetaDataSource> metaDataSources) : ICoverService
     {
 
         private const int ThumbnailWidth = 200;

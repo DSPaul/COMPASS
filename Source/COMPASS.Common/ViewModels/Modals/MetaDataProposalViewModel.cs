@@ -9,12 +9,17 @@ namespace COMPASS.Common.ViewModels.Modals;
 public class MetaDataProposalViewModel : ViewModelBase, IDisposable
 {
     private readonly Guid _proposalIdentifier = Guid.NewGuid();
+    private readonly ICoverService _coverService;
 
-    public MetaDataProposalViewModel(IPreferencesService preferencesService, Codex codex, SourceMetaData proposedMetaData)
+    public MetaDataProposalViewModel(
+        IPreferencesService preferencesService, ICoverService coverService, 
+        Codex codex, SourceMetaData proposedMetaData)
     {
         Codex = codex;
         ExistingMetaData = new(new(codex));
         ProposedMetaData = new(proposedMetaData);
+
+        _coverService = coverService;
 
         ShouldUseNewValue = preferencesService.Preferences.ImportableCodexProperties
                                               .ToDictionary(prop => prop.Name, prop => new ObservableKeyValuePair<CodexProperty, bool>(prop, false));
@@ -31,12 +36,21 @@ public class MetaDataProposalViewModel : ViewModelBase, IDisposable
     public Dictionary<string, ObservableKeyValuePair<CodexProperty, bool>> ShouldUseNewValue { get; }
     public Dictionary<string, string> MetaDataChoiceGroupNames { get; }
     
-    public void ApplyChoice()
+    public async Task ApplyChoice()
     {
         var propsToApply = ShouldUseNewValue.Values.Where(kvp => kvp.Value).Select(val => val.Key);
+        var sourceMetadata = ProposedMetaData.GetSourceMetaData();
         foreach (CodexProperty prop in propsToApply)
         {
-            prop.Apply(ProposedMetaData.GetSource(), Codex);
+            if(prop is CoverProperty coverProp)
+            {
+                // Special handling for CoverProperty
+                await coverProp.ApplyAsync(sourceMetadata, Codex, _coverService);
+            }
+            else
+            {
+                prop.Apply(sourceMetadata, Codex);
+            }
         }
     }
 
@@ -48,7 +62,10 @@ public class MetaDataProposalViewModel : ViewModelBase, IDisposable
 }
 
 [Factory]
-public class MetaDataProposalViewModelFactory(IPreferencesService preferencesService)
+public class MetaDataProposalViewModelFactory(IPreferencesService preferencesService, Lazy<ICoverService> coverService)
 {
-    public MetaDataProposalViewModel Create(Codex codex, SourceMetaData proposedMetaData) => new(preferencesService, codex, proposedMetaData);
+    //Lazy breaks the CoverService -> ChooseMetaDataViewModelFactory ->
+    //MetaDataProposalViewModelFactory -> CoverService cycle: the service is only
+    //resolved in Create, long after the container is built
+    public MetaDataProposalViewModel Create(Codex codex, SourceMetaData proposedMetaData) => new(preferencesService, coverService.Value, codex, proposedMetaData);
 }

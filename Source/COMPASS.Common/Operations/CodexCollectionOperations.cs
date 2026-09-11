@@ -2,7 +2,6 @@ using COMPASS.Common.Exceptions;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
-using COMPASS.Common.Services;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels;
 using COMPASS.Common.ViewModels.Main;
@@ -18,10 +17,10 @@ namespace COMPASS.Common.Operations;
 public class CodexCollectionOperations(
     IUserFilesStorageService userFilesStorageService,
     ICoverStorageService coverStorageService,
+    ICoverService coverService,
     ILogger logger,
     Lazy<CollectionManager> collectionManager,
-    CodexOperations codexOperations,
-    CoverService coverService)
+    CodexOperations codexOperations)
 {
     /// <summary>
     /// Merges all codices & tags from the source collection into the target collection.

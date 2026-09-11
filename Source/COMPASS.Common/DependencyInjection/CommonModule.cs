@@ -59,7 +59,7 @@ namespace COMPASS.Common.DependencyInjection
             builder.RegisterType<ApplicationDataService>().As<IApplicationDataService>();
             builder.RegisterType<BarcodeDecoderService>().As<IBarcodeDecoderService>();
             builder.RegisterType<CameraService>().As<ICameraService>();
-            builder.RegisterType<CoverService>().AsSelf();
+            builder.RegisterType<CoverService>().As<ICoverService>();
             builder.RegisterType<CoverStorageService>().As<ICoverStorageService>();
             builder.RegisterType<FilesService>().As<IFilesService>();
             builder.RegisterType<FilterService>().As<IFilterService>();

@@ -11,7 +11,6 @@ using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Models.Hierarchy;
 using COMPASS.Common.Operations;
-using COMPASS.Common.Services;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.ModelVMs;
@@ -23,12 +22,12 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
     public class CodexEditViewModel : EditViewModelBase<CodexViewModel, Codex>
     {
         private readonly TagEditViewModelFactory _tagEditViewModelFactory;
+        private readonly ICoverService _coverService;
         private readonly IFilesService _filesService;
         private readonly IPreferencesService _preferencesService;
         private readonly CodexOperations _codexOperations;
-        private readonly CoverService _coverService;
         public CodexEditViewModel(CodexViewModelFactory codexViewModelFactory, TagEditViewModelFactory tagEditViewModelFactory,
-            IFilesService filesService, IPreferencesService preferencesService, CodexOperations codexOperations, CoverService coverService,
+            IFilesService filesService, IPreferencesService preferencesService, ICoverService coverService, CodexOperations codexOperations,
             Codex sourceCodex, bool createNew = false, CollectionTabVM? tabVm = null)
             : base(sourceCodex, createNew, codex => codexViewModelFactory.Create(codex, (tabVm ?? TabsViewModel.GetInstance().ActiveTab)!.CollectionVM))
         {
@@ -297,11 +296,11 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         TagEditViewModelFactory tagEditViewModelFactory,
         IFilesService filesService,
         IPreferencesService preferencesService,
-        CodexOperations codexOperations,
-        CoverService coverService)
+        ICoverService coverService,
+        CodexOperations codexOperations)
     {
         public CodexEditViewModel Create(Codex sourceCodex, bool createNew = false, CollectionTabVM? tabVm = null)
-            => new(codexViewModelFactory, tagEditViewModelFactory, filesService, preferencesService, codexOperations, coverService, sourceCodex, createNew, tabVm);
+            => new(codexViewModelFactory, tagEditViewModelFactory, filesService, preferencesService, coverService, codexOperations, sourceCodex, createNew, tabVm);
     }
 }
 

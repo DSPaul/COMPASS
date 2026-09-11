@@ -1,4 +1,5 @@
-﻿using COMPASS.Common.Services;
+﻿using COMPASS.Common.Interfaces.Services;
+using COMPASS.Common.Services;
 using COMPASS.Infra.Tools;
 using ImageMagick;
 
@@ -23,10 +24,13 @@ namespace COMPASS.Common.Models.CodexProperties
         public override void Copy(SourceMetaData target, SourceMetaData source) => target.Cover = source.Cover;
         public override void Apply(SourceMetaData source, Codex target)
         {
+            throw new InvalidOperationException("Cover is special case, does IO so use ApplyAsync instead");
+        }
+
+        public async Task ApplyAsync(SourceMetaData source, Codex target, ICoverService coverService)
+        {
             if (source.Cover == null) return;
-            //Intentional service location: property descriptors are built via reflection (CodexProperty.GetInstance),
-            //not DI. Inject CoverService here once descriptors become container-built.
-            ServiceResolver.Resolve<CoverService>().SaveCover(target, source.Cover).Wait();
+            await coverService.SaveCover(target, source.Cover);
             source.Cover.Dispose();
         }
 
