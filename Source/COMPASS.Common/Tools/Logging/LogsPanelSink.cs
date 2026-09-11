@@ -13,17 +13,26 @@ public class LogsPanelSink : ILogEventSink
 {
     public void Emit(LogEvent logEvent)
     {
-        Severity? severity = logEvent.Level switch
+        try
         {
-            LogEventLevel.Information => Severity.Info,
-            LogEventLevel.Warning => Severity.Warning,
-            LogEventLevel.Error => Severity.Error,
-            LogEventLevel.Fatal => Severity.Error,
-            _ => null,
-        };
+            Severity? severity = logEvent.Level switch
+            {
+                LogEventLevel.Information => Severity.Info,
+                LogEventLevel.Warning => Severity.Warning,
+                LogEventLevel.Error => Severity.Error,
+                LogEventLevel.Fatal => Severity.Error,
+                _ => null,
+            };
 
-        if (severity is null) return;
+            if (severity is null) return;
 
-        LogsVM.AddLog(new(severity.Value, logEvent.RenderMessage()));
+            LogsVM.AddLog(new(severity.Value, logEvent.RenderMessage()));
+        }
+        catch (Exception)
+        {
+            //Sinks run on the caller's thread (cover fetch, web callbacks) and must never
+            //throw: a logging failure must not take down the worker being logged from.
+            //Nothing to log to here by definition, so the event is dropped.
+        }
     }
 }

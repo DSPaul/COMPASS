@@ -18,4 +18,13 @@ public static class ServiceResolver
     public static T ResolveKeyed<T>(object key) where T : notnull => _container != null
         ? _container.ResolveKeyed<T>(key)
         : throw new Exception("Cannot resolve before it is initialized");
+
+    /// <summary>
+    /// Disposes the container and all disposable singletons it owns (e.g. the log pipeline).
+    /// Idempotent. After this, resolving throws.
+    /// </summary>
+    public static void Dispose()
+    {
+        _container?.Dispose();
+    }
 }

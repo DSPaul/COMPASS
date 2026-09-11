@@ -68,6 +68,7 @@ public static class CrashHandler
         if (!string.IsNullOrEmpty(CmdLineArgumentService.Args?.CrashMessage))
         {
             Logger.Fatal("Crash during crash notification", ex);
+            FlushLogs();
             Environment.Exit(1);
         }
         
@@ -75,8 +76,27 @@ public static class CrashHandler
         var currentExecutablePath = Environment.ProcessPath;
         string[] args = [$"--{Constants.CmdArgNotifyCrashed}", $"\"{ex}\""];
         if (currentExecutablePath != null) Process.Start(currentExecutablePath, args);
-        
+
+        FlushLogs();
         Environment.Exit(1);
+    }
+
+    /// <summary>
+    /// Flushes buffered log output to disk. The file sink buffers writes, and
+    /// <see cref="Environment.Exit"/> terminates without flushing, so without this
+    /// the Fatal event that explains the crash would never reach the log file.
+    /// Never throws: crash handling must not crash.
+    /// </summary>
+    private static void FlushLogs()
+    {
+        try
+        {
+            (ServiceResolver.Resolve<ILogger>() as IDisposable)?.Dispose();
+        }
+        catch (Exception)
+        {
+            //No logging available here by definition; nothing left to do
+        }
     }
 
     public static Notification GetCrashNotification(string exceptionMessage)

@@ -31,6 +31,20 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
+            //Dispose the container on shutdown, which flushes disposable singletons
+            //like the log pipeline; without this the last log events may never reach the file
+            desktop.Exit += (_, _) =>
+            {
+                try
+                {
+                    ServiceResolver.Dispose();
+                }
+                catch (Exception)
+                {
+                    //Shutting down; nothing left to do
+                }
+            };
+
             //if crash, show crash dialog instead
             string? crashMsg = CmdLineArgumentService.Args?.CrashMessage;
             if (!string.IsNullOrEmpty(crashMsg))
