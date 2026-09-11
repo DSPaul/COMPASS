@@ -226,6 +226,8 @@ public class ApplicationDataService(
         //and if we bring the old data along, it has already been copied so redundant
         MainViewModel.SaveOnClose = false;
 
+        //Singleton services (repos, preferences) capture data paths at construction,
+        //so the restart below is load-bearing: removing it strands them on the old location.
         ApplicationService.Restart(false);
 
         return true;
