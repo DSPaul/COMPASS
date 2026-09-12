@@ -18,9 +18,17 @@ namespace COMPASS.Common.Sources
 
         /// <summary>
         /// The prefix of the URL for this source. For example, "https://www.example.com/metadata/".
+        /// Also shown as the example URL in the import dialog.
         /// </summary>
         public abstract string UrlPrefix { get; }
 
-        public override bool IsValidSource(SourceSet sources) => sources.HasOnlineSource() && sources.SourceURL.StartsWith(UrlPrefix);
+        /// <summary>
+        /// URL prefixes this source handles. Defaults to <see cref="UrlPrefix"/>
+        /// </summary>
+        protected virtual IEnumerable<string> AcceptedUrlPrefixes => [UrlPrefix];
+
+        public override bool IsValidSource(SourceSet sources) =>
+            sources.HasOnlineSource() && AcceptedUrlPrefixes.Any(prefix =>
+                sources.SourceURL.StartsWith(prefix, StringComparison.OrdinalIgnoreCase));
     }
 }

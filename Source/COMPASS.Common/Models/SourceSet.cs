@@ -19,9 +19,13 @@ namespace COMPASS.Common.Models
             get => _sourceURL;
             set
             {
-                if (value.StartsWith("www."))
+                //Accept bare domains ("google.com", "www.foo.com/x", "localhost:8080/x") by assuming https. 
+                if (!string.IsNullOrWhiteSpace(value)
+                    && !value.Contains("://")
+                    && !value.Any(char.IsWhiteSpace)
+                    && !value.Contains('\\'))
                 {
-                    value = @"https://" + value;
+                    value = "https://" + value;
                 }
                 SetProperty(ref _sourceURL, value);
             }

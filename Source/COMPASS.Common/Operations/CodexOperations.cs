@@ -39,7 +39,7 @@ namespace COMPASS.Common.Operations
         Lazy<FileNotFoundViewModelFactory> fileNotFoundViewModelFactory,
         ChooseMetaDataViewModelFactory chooseMetaDataViewModelFactory,
         Lazy<CollectionManager> collectionManager,
-        IIndex<MetaDataSourceType, MetaDataSource> metaDataSources)
+        IIndex<string, MetaDataSource> metaDataSources)
     {
         #region Open Codex
 
@@ -492,26 +492,26 @@ namespace COMPASS.Common.Operations
             SourceMetaData existingMetaData = new(codex);
 
             // Lazy load metadata from all the sources, use dict to store
-            Dictionary<MetaDataSourceType, SourceMetaData> metaDataFromSource = new();
+            Dictionary<string, SourceMetaData> metaDataFromSource = new();
 
             //First try to get sources from other sources
             //Pdf can contain ISBN number
-            if (metaDataSources.TryGetValue(MetaDataSourceType.PDF, out MetaDataSource? pdfSource)
+            if (metaDataSources.TryGetValue(nameof(MetaDataSourceType.PDF), out MetaDataSource? pdfSource)
                 && pdfSource.IsValidSource(codex.Sources)
                 && string.IsNullOrEmpty(codex.Sources.ISBN))
             {
                 SourceMetaData pdfData = await pdfSource.GetMetaData(codex.Sources, codex.Collection.AllTags);
 
                 //already store this so pdf doesn't need to be opened twice
-                metaDataFromSource.Add(MetaDataSourceType.PDF, pdfData);
+                metaDataFromSource.Add(nameof(MetaDataSourceType.PDF), pdfData);
             }
 
             //metadata that will be shown to the user, and asked if they want to use it
             SourceMetaData toAsk = new();
             bool shouldAsk = false;
 
-                //Iterate over all the properties and set them
-                foreach (var prop in preferencesService.Preferences.ImportableCodexProperties)
+            //Iterate over all the properties and set them
+            foreach (var prop in preferencesService.Preferences.ImportableCodexProperties)
             {
                 if (prop.OverwriteMode == MetaDataOverwriteMode.Never) continue;
                 if (prop is CoverProperty) continue; //Covers are done separately
@@ -520,7 +520,7 @@ namespace COMPASS.Common.Operations
                 SourceMetaData preferredMetadata = new();
 
                 //iterate over the sources in reverse because overwriting causes the last ones to remain
-                foreach (var sourceType in prop.SourcePriority.AsEnumerable().Reverse())
+                foreach (var sourceType in prop.SourcePriority.Select(s => s.ToString()).Reverse())
                 {
                     ProgressViewModel.GlobalCancellationTokenSource.Token.ThrowIfCancellationRequested();
 

@@ -37,14 +37,14 @@ namespace COMPASS.Common.DependencyInjection
             builder.RegisterType<CodexCollectionMemRepository>().Keyed<ICodexCollectionRepository>(StorageStrategy.Memory).SingleInstance();
 
             //Metadata sources: stateless gateways, same rationale as services below
-            builder.RegisterType<FileMetaDataSource>().Keyed<MetaDataSource>(MetaDataSourceType.File).SingleInstance();
-            builder.RegisterType<PdfMetaDataSource>().Keyed<MetaDataSource>(MetaDataSourceType.PDF).SingleInstance();
-            builder.RegisterType<ImageMetaDataSource>().Keyed<MetaDataSource>(MetaDataSourceType.Image).SingleInstance();
-            builder.RegisterType<ISBNMetaDataSource>().Keyed<MetaDataSource>(MetaDataSourceType.ISBN).SingleInstance();
-            builder.RegisterType<GmBinderMetaDataSource>().Keyed<MetaDataSource>(MetaDataSourceType.GmBinder).SingleInstance();
-            builder.RegisterType<HomebreweryMetaDataSource>().Keyed<MetaDataSource>(MetaDataSourceType.Homebrewery).SingleInstance();
-            builder.RegisterType<GoogleDriveMetaDataSource>().Keyed<MetaDataSource>(MetaDataSourceType.GoogleDrive).SingleInstance();
-            builder.RegisterType<GenericOnlineMetaDataSource>().Keyed<MetaDataSource>(MetaDataSourceType.GenericURL).SingleInstance();
+            builder.RegisterType<FileMetaDataSource>().Keyed<MetaDataSource>(nameof(MetaDataSourceType.File)).SingleInstance();
+            builder.RegisterType<PdfMetaDataSource>().Keyed<MetaDataSource>(nameof(MetaDataSourceType.PDF)).SingleInstance();
+            builder.RegisterType<ImageMetaDataSource>().Keyed<MetaDataSource>(nameof(MetaDataSourceType.Image)).SingleInstance();
+            builder.RegisterType<ISBNMetaDataSource>().Keyed<MetaDataSource>(nameof(MetaDataSourceType.ISBN)).SingleInstance();
+            builder.RegisterType<GmBinderMetaDataSource>().Keyed<MetaDataSource>(nameof(MetaDataSourceType.GmBinder)).SingleInstance();
+            builder.RegisterType<HomebreweryMetaDataSource>().Keyed<MetaDataSource>(nameof(MetaDataSourceType.Homebrewery)).SingleInstance();
+            builder.RegisterType<GoogleDriveMetaDataSource>().Keyed<MetaDataSource>(nameof(MetaDataSourceType.GoogleDrive)).SingleInstance();
+            builder.RegisterType<GenericOnlineMetaDataSource>().Keyed<MetaDataSource>(nameof(MetaDataSourceType.GenericURL)).SingleInstance();
 
             //Services with cache of some kind -> SingleInstance
             builder.RegisterType<PreferencesService>().As<IPreferencesService>().SingleInstance();
@@ -55,15 +55,11 @@ namespace COMPASS.Common.DependencyInjection
             builder.RegisterType<CollectionManager>().AsSelf().SingleInstance();
             builder.RegisterType<ConnectivityManager>().AsSelf().SingleInstance();
 
-            //Services are singletons: all are stateless (or capture only paths that
-            //refresh on the restart-after-relocation), and several are held by singleton
-            //operations/managers where transient would just pin one copy per consumer.
-            //Anything holding per-use state must stay transient behind a factory instead.
+            //Services are singletons: all are stateless and several are held by singleton
+            //operations/managers where transient would just pin one copy per consumer anyway
             builder.RegisterType<ApplicationDataService>().As<IApplicationDataService>().SingleInstance();
             builder.RegisterType<BarcodeDecoderService>().As<IBarcodeDecoderService>().SingleInstance();
             builder.RegisterType<CameraService>().As<ICameraService>().SingleInstance();
-            //Stateless but captured by singleton operations, so singleton as well
-            //(otherwise each consumer pins its own copy for app lifetime anyway)
             builder.RegisterType<CoverService>().As<ICoverService>().SingleInstance();
             builder.RegisterType<CoverStorageService>().As<ICoverStorageService>().SingleInstance();
             builder.RegisterType<FilesService>().As<IFilesService>().SingleInstance();

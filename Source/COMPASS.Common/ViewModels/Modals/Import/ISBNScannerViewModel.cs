@@ -11,7 +11,6 @@ using COMPASS.Common.Operations;
 using COMPASS.Common.Services;
 using COMPASS.Common.Sources;
 using COMPASS.Common.ViewModels.Components;
-using COMPASS.Common.ViewModels.Import;
 using COMPASS.Common.ViewModels.Main;
 using System.Collections.ObjectModel;
 
@@ -26,12 +25,12 @@ namespace COMPASS.Common.ViewModels.Modals.Import
         private readonly MetaDataSource _isbnSource;
         private bool _scanning;
 
-        public ISBNScannerViewModel(IBarcodeDecoderService barcodeDecoderService, VideoCaptureViewModelFactory videoCaptureVmFactory, CodexCollectionOperations codexCollectionOperations, IIndex<MetaDataSourceType, MetaDataSource> metaDataSources)
+        public ISBNScannerViewModel(IBarcodeDecoderService barcodeDecoderService, VideoCaptureViewModelFactory videoCaptureVmFactory, CodexCollectionOperations codexCollectionOperations, IIndex<string, MetaDataSource> metaDataSources)
         {
             _barcodeDecoderService = barcodeDecoderService;
             _videoCaptureVmFactory = videoCaptureVmFactory;
             _codexCollectionOperations = codexCollectionOperations;
-            _isbnSource = metaDataSources[MetaDataSourceType.ISBN];
+            _isbnSource = metaDataSources[MetaDataSourceType.ISBN.ToString()];
             _scanTimer = new(TimeSpan.FromMilliseconds(50), DispatcherPriority.Render, OnScanTick);
 
             ScannedCodes = [];
@@ -186,7 +185,11 @@ namespace COMPASS.Common.ViewModels.Modals.Import
     }
 
     [Factory]
-    public class ISBNScannerViewModelFactory(IBarcodeDecoderService barcodeDecoderService, VideoCaptureViewModelFactory videoCaptureVmFactory, CodexCollectionOperations codexCollectionOperations, IIndex<MetaDataSourceType, MetaDataSource> metaDataSources)
+    public class ISBNScannerViewModelFactory(
+        IBarcodeDecoderService barcodeDecoderService, 
+        VideoCaptureViewModelFactory videoCaptureVmFactory, 
+        CodexCollectionOperations codexCollectionOperations, 
+        IIndex<string, MetaDataSource> metaDataSources)
     {
         public ISBNScannerViewModel Create() => new(barcodeDecoderService, videoCaptureVmFactory, codexCollectionOperations, metaDataSources);
     }

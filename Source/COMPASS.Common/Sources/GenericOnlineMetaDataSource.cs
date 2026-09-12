@@ -17,7 +17,9 @@ namespace COMPASS.Common.Sources
         { }
         
         public override MetaDataSourceType Type => MetaDataSourceType.GenericURL;
+        
         public override string UrlPrefix => "https://";
+        protected override IEnumerable<string> AcceptedUrlPrefixes => ["https://", "http://"];
 
         public override Task<IMagickImage<byte>?> FetchCover(SourceSet sources) => throw new NotImplementedException();
 

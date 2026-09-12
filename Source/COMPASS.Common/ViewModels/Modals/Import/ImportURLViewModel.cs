@@ -18,10 +18,11 @@ namespace COMPASS.Common.ViewModels.Modals.Import
         private readonly CodexEditViewModelFactory _codexEditViewModelFactory;
         private readonly CodexCollectionOperations _codexCollectionOperations;
         private readonly ConnectivityManager _connectivityManager;
-        private readonly IIndex<MetaDataSourceType, MetaDataSource> _metaDataSources;
+        private readonly IIndex<string, MetaDataSource> _metaDataSources;
         private readonly ILogger _logger;
+        private readonly OnlineMetaDataSource? _metadataSource;
 
-        public ImportURLViewModel(ILogger logger, CodexEditViewModelFactory codexEditViewModelFactory, CodexCollectionOperations codexCollectionOperations, ConnectivityManager connectivityManager, IIndex<MetaDataSourceType, MetaDataSource> metaDataSources, ImportSource importSource)
+        public ImportURLViewModel(ILogger logger, CodexEditViewModelFactory codexEditViewModelFactory, CodexCollectionOperations codexCollectionOperations, ConnectivityManager connectivityManager, IIndex<string, MetaDataSource> metaDataSources, ImportSource importSource)
         {
             _logger = logger;
             _codexEditViewModelFactory = codexEditViewModelFactory;
@@ -48,9 +49,10 @@ namespace COMPASS.Common.ViewModels.Modals.Import
                 _ => MetaDataSourceType.GenericURL
             };
 
-            var metadataSource = _metaDataSources.TryGetValue(associatedMetadataSource, out MetaDataSource? source)
+            var metadataSource = _metaDataSources.TryGetValue(associatedMetadataSource.ToString(), out MetaDataSource? source)
                 ? source as OnlineMetaDataSource
                 : null;
+            _metadataSource = metadataSource;
 
             ExampleURL = metadataSource?.UrlPrefix ?? "";
             ShowValidateDisableCheckbox = importSource == ImportSource.Homebrewery;
@@ -91,27 +93,43 @@ namespace COMPASS.Common.ViewModels.Modals.Import
         public IRelayCommand ConfirmCommand => _submitUrlCommand ??= new(SubmitURL, () => !HasErrors);
         private async Task SubmitURL()
         {
-            if (!InputURL.Contains(ExampleURL) && ValidateURL)
+            SourceSet sourceSet = new();
+
+            //file:// Uri's are valid but are converted to local path
+            bool isLocalFile = InputURL.StartsWith("file://", StringComparison.OrdinalIgnoreCase);
+            if (isLocalFile)
             {
-                ImportError = $"'{InputURL}' is not a valid URL for {SourceName}";
-                return;
+                if (!Uri.TryCreate(InputURL, UriKind.Absolute, out Uri? fileUri))
+                {
+                    ImportError = $"'{InputURL}' was malformatted";
+                    return;
+                }
+                sourceSet.Path = fileUri.LocalPath;
             }
-            if (!await _connectivityManager.CheckConnection())
+            else
             {
-                ImportError = "You need to be connected to the internet to import an online source.";
-                return;
+                sourceSet.SourceURL = InputURL;
+                if (ValidateURL && _metadataSource?.IsValidSource(sourceSet) == false)
+                {
+                    ImportError = $"'{InputURL}' is not a valid URL for {SourceName}";
+                    return;
+                }
+                if (!await _connectivityManager.CheckConnection())
+                {
+                    ImportError = "You need to be connected to the internet to import an online source.";
+                    return;
+                }
             }
 
             CloseAction();
 
-            List<SourceSet> sourceSets = [new() { SourceURL = InputURL }];
-            await _codexCollectionOperations.CreateCodicesAsync(sourceSets);
+            await _codexCollectionOperations.CreateCodicesAsync([sourceSet]);
 
             if (ShowEditWhenDone)
             {
                 Codex? addedCodex = ActiveCollection.AllCodices
                     .OrderByDescending(c => c.DateAdded)
-                    .FirstOrDefault(c => c.Sources.SourceURL == InputURL);
+                    .FirstOrDefault(c => c.Sources == sourceSet);
                 if(addedCodex != null)
                 {
                     CodexEditViewModel vm = _codexEditViewModelFactory.Create(addedCodex);
@@ -136,7 +154,12 @@ namespace COMPASS.Common.ViewModels.Modals.Import
     }
 
     [Factory]
-    public class ImportURLViewModelFactory(ILogger logger, CodexEditViewModelFactory codexEditViewModelFactory, CodexCollectionOperations codexCollectionOperations, ConnectivityManager connectivityManager, IIndex<MetaDataSourceType, MetaDataSource> metaDataSources)
+    public class ImportURLViewModelFactory(
+        ILogger logger, 
+        CodexEditViewModelFactory codexEditViewModelFactory, 
+        CodexCollectionOperations codexCollectionOperations, 
+        ConnectivityManager connectivityManager, 
+        IIndex<string, MetaDataSource> metaDataSources)
     {
         public ImportURLViewModel Create(ImportSource importSource)
             => new(logger, codexEditViewModelFactory, codexCollectionOperations, connectivityManager, metaDataSources, importSource);

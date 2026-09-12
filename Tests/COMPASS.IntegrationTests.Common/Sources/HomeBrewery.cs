@@ -22,7 +22,7 @@ public class HomeBrewery
         };
 
         var collection = new CodexCollection("TEST_COLLECTION");
-        var source = ServiceResolver.Resolve<IIndex<MetaDataSourceType, MetaDataSource>>()[MetaDataSourceType.Homebrewery];
+        var source = ServiceResolver.Resolve<IIndex<string, MetaDataSource>>()[MetaDataSourceType.Homebrewery.ToString()];
 
         SourceMetaData response = await source.GetMetaData(sources, collection.AllTags);
 
@@ -40,7 +40,7 @@ public class HomeBrewery
     public async Task GetCoverFromHomeBrewery()
     {
         //Setup
-        var source = ServiceResolver.Resolve<IIndex<MetaDataSourceType, MetaDataSource>>()[MetaDataSourceType.Homebrewery];
+        var source = ServiceResolver.Resolve<IIndex<string, MetaDataSource>>()[MetaDataSourceType.Homebrewery.ToString()];
         var sources = new SourceSet()
         {
             SourceURL = TEST_URL

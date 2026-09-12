@@ -1,7 +1,6 @@
 ﻿using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
-using COMPASS.Common.Models.Preferences;
 using COMPASS.Common.ViewModels;
 using COMPASS.Infra.Tools;
 using ImageMagick;

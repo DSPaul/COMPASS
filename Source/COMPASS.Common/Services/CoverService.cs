@@ -20,7 +20,7 @@ namespace COMPASS.Common.Services
         IPreferencesService preferencesService,
         IIOService ioService,
         ChooseMetaDataViewModelFactory chooseMetaDataViewModelFactory,
-        IIndex<MetaDataSourceType, MetaDataSource> metaDataSources) : ICoverService
+        IIndex<string, MetaDataSource> metaDataSources) : ICoverService
     {
 
         private const int ThumbnailWidth = 200;
@@ -56,7 +56,7 @@ namespace COMPASS.Common.Services
                 {
                     ProgressViewModel.GlobalCancellationTokenSource.Token.ThrowIfCancellationRequested();
 
-                    if (!metaDataSources.TryGetValue(sourceType, out MetaDataSource? source)) continue;
+                    if (!metaDataSources.TryGetValue(sourceType.ToString(), out MetaDataSource? source)) continue;
                     if (!source.IsValidSource(codex.Sources)) continue;
                     coverFromSource = await source.FetchCover(codex.Sources);
                     if (coverFromSource != null) break;
