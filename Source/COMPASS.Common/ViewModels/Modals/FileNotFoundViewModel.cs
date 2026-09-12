@@ -46,7 +46,7 @@ namespace COMPASS.Common.ViewModels.Modals
                 //find the replaced part of the path
                 string oldPath = Codex.Sources.Path;
                 string newPath = file.Path.LocalPath;
-                var (toReplace, replaceWith) = PathUtils.GetDifferingRoot(oldPath, newPath);
+                var (toReplace, replacement) = PathUtils.GetDifferingRoot(oldPath, newPath);
 
                 //fix the path of this codex
                 Codex.Sources.Path = newPath;
@@ -59,9 +59,9 @@ namespace COMPASS.Common.ViewModels.Modals
                 
                 foreach (var c in codicesWithBrokenPaths)
                 {
-                    if (c.Sources.Path.StartsWith(toReplace))
+                    if (PathUtils.IsPathInsideDirectory(c.Sources.Path, toReplace))
                     {
-                        string possiblePath = Path.Combine(replaceWith, c.Sources.Path[toReplace.Length..]);
+                        string possiblePath = Path.Combine(replacement, c.Sources.Path[toReplace.Length..]);
                         if (File.Exists(possiblePath))
                         {
                             c.Sources.Path = possiblePath;

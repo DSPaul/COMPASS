@@ -3,6 +3,7 @@ using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Infra.Models;
 using COMPASS.Infra.Models.Interfaces;
+using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.Models
 {
@@ -34,17 +35,13 @@ namespace COMPASS.Common.Models
 
         public void SetExplicitSubfolders(IEnumerable<Folder> folders)
         {
-            _explicitSubFolders = new RangeObservableCollection<Folder>();
-
-            foreach (var folder in folders) 
-            { 
-                if(!_allSubFolders.Select(sf => sf.FullPath).Contains(folder.FullPath))
-                {
-                    throw new InvalidOperationException($"Cannot set explicit subfolders for {FullPath} because it contains a folder that is not a subfolder of this folder: {folder.FullPath}");
-                }
-
-                _explicitSubFolders.Add(folder);
+            if(folders.Any(f => !PathUtils.IsPathInsideDirectory(f.FullPath, FullPath)))
+            {
+                throw new InvalidOperationException($"Cannot set explicit subfolders for {FullPath} because it contains a folder that is not a subfolder of this folder.");
             }
+
+            _explicitSubFolders = [];
+            _explicitSubFolders.ReplaceRange(folders);
             OnPropertyChanged(nameof(SubFolders));
         }
 

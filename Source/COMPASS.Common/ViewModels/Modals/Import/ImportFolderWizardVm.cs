@@ -1,4 +1,5 @@
 ﻿using COMPASS.Common.DependencyInjection;
+using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.ViewModels.Selection;
 using COMPASS.Infra.ExtensionMethods;
@@ -9,22 +10,29 @@ namespace COMPASS.Common.ViewModels.Modals.Import
 {
     public sealed class ImportFolderWizardVm : WizardViewModel
     {
+        private readonly ILogger _logger;
         private readonly FolderFactory _folderFactory;
         private readonly bool _autoImport;
         private readonly CollectionInfo _collectionInfo;
 
         public bool Finished { get; private set; }
 
+        
         public ImportFolderWizardVm(
+            ILogger logger,
             FolderFactory folderFactory,
             bool autoImport,
             CollectionInfo collectionInfo,
             IList<Folder> folders,
             IList<string> allFiles)
         {
+            _logger = logger;
             _folderFactory = folderFactory;
             _autoImport = autoImport;
             _collectionInfo = collectionInfo;
+
+            //make sure there are no duplicates (normalized: separators, trailing slashes; comparer: casing)
+            folders = folders.DistinctBy(f => PathUtils.NormalizePath(f.FullPath), PathUtils.PathComparer).ToList();
 
             //Add SubFolders Step
             if (!_autoImport)
@@ -44,7 +52,7 @@ namespace COMPASS.Common.ViewModels.Modals.Import
                 {
                     node.IsChecked = true;
 
-                    Folder? origFolder = folders.Single(f => f.FullPath == node.Item.FullPath);
+                    Folder origFolder = folders.Single(f => PathUtils.PathsEqual(f.FullPath, node.Item.FullPath));
 
                     var chosenSubFolderPaths = origFolder.SubFolders.Flatten().Select(sf => sf.FullPath).ToHashSet();
                     foreach (var subNode in node.Children.Flatten())
@@ -148,7 +156,7 @@ namespace COMPASS.Common.ViewModels.Modals.Import
             //we need to remove those in unchecked folders, rather than include those in checked folders
 
             IList<Folder> excludedFolders = SelectSubfoldersVM?.UncheckedOptions ?? [];
-            var excludedBySubfolder = files.Where(path => excludedFolders.Any(folder => Path.GetDirectoryName(path) == folder.FullPath));
+            var excludedBySubfolder = files.Where(path => excludedFolders.Any(folder => PathUtils.IsPathInsideDirectory(path, folder.FullPath)));
             return files.Except(excludedBySubfolder).ToList();
         }
 
@@ -162,7 +170,7 @@ namespace COMPASS.Common.ViewModels.Modals.Import
             //Update the Auto Import Folders
             if (AddAutoImportFolders)
             {
-                //go over every folder and updat the original if any, other wise add it
+                //go over every folder and update the original if any, otherwise add it
                 foreach (var checkableFolder in SelectSubfoldersVM?.OptionsRoot.Flatten() ?? [])
                 {
                     bool allSubfoldersChecked = checkableFolder.Children.All(child => child.IsChecked != false);
@@ -180,7 +188,7 @@ namespace COMPASS.Common.ViewModels.Modals.Import
                     }
 
                     //If folder was already in auto import, remove it so it can be replaced with the new version
-                    _collectionInfo.AutoImportFolders.RemoveWhere(f => f.FullPath == checkableFolder.Item.FullPath);
+                    _collectionInfo.AutoImportFolders.RemoveWhere(f => PathUtils.PathsEqual(f.FullPath, checkableFolder.Item.FullPath));
                 }
 
                 //Now add the top level folders to the auto import list
@@ -196,7 +204,7 @@ namespace COMPASS.Common.ViewModels.Modals.Import
 
                     foreach(var parentFolder in PathUtils.GetAllParentDirectories(folder.FullPath))
                     {
-                        if (_collectionInfo.AutoImportFolders.FirstOrDefault(f => f.FullPath == parentFolder) is { } parent)
+                        if (_collectionInfo.AutoImportFolders.FirstOrDefault(f => PathUtils.PathsEqual(f.FullPath, parentFolder)) is { } parent)
                         {
                             foundParent = parent;
                             break;
@@ -204,28 +212,38 @@ namespace COMPASS.Common.ViewModels.Modals.Import
                         checkedDirectories.Push(parentFolder);
                     }
 
-                    if (foundParent != null)
+                    if (foundParent != null) //there is a parent folder of 'folder' allready in autoimport
                     {
                         //go back down the tree, checking all neccessary subfolders along the way
-                        while (checkedDirectories.TryPop(out var parentFolder)) 
+                        while (checkedDirectories.TryPop(out var parentFolderPath)) 
                         {
                             foundParent.UpdateAllSubFolders(_folderFactory);
-                            var lowerParent = foundParent.SubFolders.SingleOrDefault(sf => sf.FullPath == parentFolder);
+                            Folder? lowerParent = foundParent.SubFolders.SingleOrDefault(sf => PathUtils.PathsEqual(sf.FullPath, parentFolderPath));
                             
-                            //if not a subfolders already, take it from allSubFolders and add it
+                            //if not an included subfolder already, take it from allSubFolders and add it to subfolders
                             if (lowerParent == null)
                             {
-                                lowerParent = foundParent.AllSubFolders.Single(p => p.FullPath == parentFolder);
+                                lowerParent = foundParent.AllSubFolders.SingleOrDefault(p => PathUtils.PathsEqual(p.FullPath, parentFolderPath));
+                                
+                                if(lowerParent == null)
+                                {
+                                    //not in allSubFolders which was just refreshed so not on disk
+                                    //If parent of "folder' is not on disk, then neither is 'folder'
+                                    //So just blow off the whole thing
+                                    _logger.Warn($"Folder {parentFolderPath} was not found, so it will not be added to auto import");
+                                    lowerParent = _folderFactory.Create(parentFolderPath);
+                                }
+
                                 foundParent.SetExplicitSubfolders([.. foundParent.SubFolders, lowerParent]);
                                 //If not yet target folder, explicit empty subfolders to not accidentally add other folders
-                                if(lowerParent.FullPath != folder.FullPath)
+                                if(!PathUtils.PathsEqual(lowerParent.FullPath, folder.FullPath))
                                 {
                                     lowerParent.SetExplicitSubfolders([]);
                                 }
                             }
 
                             //if reached target, copy over explicit subfolders
-                            if (lowerParent.FullPath == folder.FullPath) 
+                            if (PathUtils.PathsEqual(lowerParent.FullPath, folder.FullPath)) 
                             {
                                 if (folder.HasAllSubFolders)
                                 {
@@ -264,7 +282,7 @@ namespace COMPASS.Common.ViewModels.Modals.Import
     }
 
     [Factory]
-    public class ImportFolderWizardFactory(FolderFactory folderFactory)
+    public class ImportFolderWizardFactory(ILogger logger, FolderFactory folderFactory)
     {
         public ImportFolderWizardVm Create(
             bool autoImport,
@@ -272,7 +290,7 @@ namespace COMPASS.Common.ViewModels.Modals.Import
             IList<Folder> folders,
             IList<string> allFiles)
         {
-            return new ImportFolderWizardVm(folderFactory, autoImport, collectionInfo, folders, allFiles);
+            return new ImportFolderWizardVm(logger, folderFactory, autoImport, collectionInfo, folders, allFiles);
         }
     }
 }

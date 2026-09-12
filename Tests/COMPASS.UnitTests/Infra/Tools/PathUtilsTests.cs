@@ -162,6 +162,157 @@ public class PathUtilsTests
 
     #endregion
 
+    #region NormalizePath / PathsEqual / IsPathInsideDirectory
+
+    [Test]
+    public void PathsEqual_SamePath_ReturnsTrue()
+    {
+        string path = Path.Combine("a", "books", "file.txt");
+
+        Assert.That(PathUtils.PathsEqual(path, path), Is.True);
+    }
+
+    [Test]
+    public void PathsEqual_TrailingSlash_Ignored()
+    {
+        string path = Path.Combine("a", "books");
+
+        Assert.That(PathUtils.PathsEqual(path, path + Path.DirectorySeparatorChar), Is.True);
+    }
+
+    [Test]
+    public void PathsEqual_DifferentCasing_MatchesOnWindows()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            Assert.Ignore("Path casing is only insignificant on Windows");
+        }
+
+        Assert.That(PathUtils.PathsEqual(
+            Path.Combine("A", "Books"),
+            Path.Combine("a", "books")), Is.True);
+    }
+
+    [Test]
+    public void PathsEqual_MixedSeparators_MatchesOnWindows()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            Assert.Ignore("Backslash is a separator only on Windows");
+        }
+
+        Assert.That(PathUtils.PathsEqual(@"a\books\file.txt", "a/books/file.txt"), Is.True);
+    }
+
+    [TestCase(null, null)]
+    [TestCase(null, "a")]
+    [TestCase("a", null)]
+    public void PathsEqual_Null_ReturnsFalse(string? pathA, string? pathB)
+    {
+        Assert.That(PathUtils.PathsEqual(pathA, pathB), Is.False);
+    }
+
+    [Test]
+    public void IsPathInsideDirectory_DirectChild_ReturnsTrue()
+    {
+        Assert.That(PathUtils.IsPathInsideDirectory(
+            Path.Combine("a", "books", "scifi"),
+            Path.Combine("a", "books")), Is.True);
+    }
+
+    [Test]
+    public void IsPathInsideDirectory_SiblingWithSharedPrefix_ReturnsFalse()
+    {
+        // /a/bar1 is not inside /a/bar despite the string prefix
+        Assert.That(PathUtils.IsPathInsideDirectory(
+            Path.Combine("a", "bar1"),
+            Path.Combine("a", "bar")), Is.False);
+    }
+
+    [Test]
+    public void IsPathInsideDirectory_SamePath_ReturnsFalse()
+    {
+        string path = Path.Combine("a", "books");
+
+        Assert.That(PathUtils.IsPathInsideDirectory(path, path), Is.False);
+    }
+
+    [TestCase(null, "a")]
+    [TestCase("a", null)]
+    [TestCase("a", "")]
+    [TestCase("", "a")]
+    public void IsPathInsideDirectory_NullOrEmpty_ReturnsFalse(string? child, string? parent)
+    {
+        Assert.That(PathUtils.IsPathInsideDirectory(child, parent), Is.False);
+    }
+
+    #endregion
+
+    #region GetCommonFolder prefix fix
+
+    [Test]
+    public void GetCommonFolder_SiblingWithSharedPrefix_StopsAtParent()
+    {
+        List<string> paths =
+        [
+            Path.Combine("a", "bar", "x.txt"),
+            Path.Combine("a", "bar1", "y.txt")
+        ];
+
+        Assert.That(PathUtils.GetCommonFolder(paths), Is.EqualTo("a"));
+    }
+
+    [Test]
+    public void GetCommonFolder_TrailingSlash_Tolerated()
+    {
+        List<string> paths =
+        [
+            Path.Combine("a", "books") + Path.DirectorySeparatorChar,
+            Path.Combine("a", "books", "scifi")
+        ];
+
+        Assert.That(PathUtils.GetCommonFolder(paths), Is.EqualTo(Path.Combine("a", "books")));
+    }
+
+    #endregion
+
+    #region GetDifferingRoot case fix
+
+    [Test]
+    public void GetDifferingRoot_CaseDifference_MatchesOnWindows()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            Assert.Ignore("Path casing is only insignificant on Windows");
+        }
+
+        string path1 = Path.Combine("A", "path", "to", "file.txt");
+        string path2 = Path.Combine("a", "other", "to", "file.txt");
+
+        (string result1, string result2) = PathUtils.GetDifferingRoot(path1, path2);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result1, Is.EqualTo(Path.Combine("A", "path")));
+            Assert.That(result2, Is.EqualTo(Path.Combine("a", "other")));
+        });
+    }
+
+    #endregion
+
+    #region GetAllParentDirectories normalization
+
+    [Test]
+    public void GetAllParentDirectories_TrailingSlash_NoEmptyEntries()
+    {
+        string path = Path.Combine("a", "books") + Path.DirectorySeparatorChar;
+
+        Assert.That(PathUtils.GetAllParentDirectories(path).ToList(),
+            Is.EqualTo(new List<string> { Path.Combine("a") }));
+    }
+
+    #endregion
+
     #region MatchesAnyGlob
 
     [Test]
