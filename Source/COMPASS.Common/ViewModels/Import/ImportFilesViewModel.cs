@@ -137,17 +137,8 @@ public class ImportFilesViewModel : ViewModelBase, IDisposable
             if (!Directory.Exists(currentFolder)) continue;
             
             discoveredDirectories.Add(currentFolder);
-            IEnumerable<string> subfolders;
-            try
-            {
-                subfolders = Directory.GetDirectories(currentFolder);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error($"Failed to get subfolders of {currentFolder}", ex);
-                subfolders = [];
-            }
-            foreach (string dir in subfolders)
+
+            foreach (string dir in _ioService.TryGetDirectories(currentFolder))
             {
                 toSearch.Enqueue(dir);
             }
