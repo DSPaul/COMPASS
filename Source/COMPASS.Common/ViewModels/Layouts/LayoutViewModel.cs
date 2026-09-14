@@ -1,6 +1,7 @@
 ﻿using Avalonia.Input;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
+using Autofac.Features.Indexed;
 using COMPASS.Common.Adorners;
 using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Services;
@@ -13,18 +14,23 @@ using COMPASS.Common.ViewModels.ModelVMs;
 using COMPASS.Infra.Avalonia.DragDrop;
 using COMPASS.Infra.Avalonia.ExtensionMethods;
 using COMPASS.Infra.Models;
-using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.ViewModels.Layouts
 {
     public abstract class LayoutViewModel : ViewModelBase, IDisposable
     {
-        public LayoutViewModel(CodexInfoViewModelFactory codexInfoVmFactory, CollectionTabVM tabVM)
+        public LayoutViewModel(
+            CodexInfoViewModelFactory codexInfoVmFactory,
+            ImportFilesViewModelFactory importFilesVmFactory, 
+            CodexCollectionOperations collectionOperations, 
+            CollectionTabVM tabVM)
         {
             _tabViewModel = tabVM;
             CodexInfoVM = codexInfoVmFactory.Create();
             tabVM.CollectionChanging += OnCollectionChanging;
             tabVM.CollectionChanged += OnCollectionChanged;
+
+            FileDropManager = CreateFileDropManager(importFilesVmFactory, collectionOperations, tabVM);
         }
 
         protected CollectionTabVM _tabViewModel;
@@ -40,7 +46,7 @@ namespace COMPASS.Common.ViewModels.Layouts
 
         public FiltersViewModel FiltersVM => _tabViewModel.FiltersVM;
 
-        public CodexOperations? CodexCommands => TabsViewModel.GetInstance().ActiveTab?.CodexCommands;
+        public CodexOperations CodexCommands => _tabViewModel.CodexCommands;
 
         public CodexViewModel? SelectedCodex
         {
@@ -73,7 +79,12 @@ namespace COMPASS.Common.ViewModels.Layouts
             Dispatcher.UIThread.PostIfNeeded(() => OnPropertyChanged(nameof(FilteredCodexVms)));
         }
 
-        public DropManager FileDropManager { get; } = new DropManager()
+        public DropManager FileDropManager { get; }
+            
+        private DropManager CreateFileDropManager(
+            ImportFilesViewModelFactory importFilesVmFactory, 
+            CodexCollectionOperations codexCollectionOperations,
+            CollectionTabVM tabVm) => new DropManager()
             .AddHandler(new DropHandler<IStorageItem>(DataFormat.File, DragDropEffects.Copy)
             {
                 AdornerFactory = storageItems => new FileDropAdorner(storageItems),
@@ -86,25 +97,25 @@ namespace COMPASS.Common.ViewModels.Layouts
 
                     if (folders.Count != 0)
                     {
-                        var importFilesVmFactory = ServiceResolver.Resolve<ImportFilesViewModelFactory>();
                         using ImportFilesViewModel folderImportVM = importFilesVmFactory.Create(autoImport: false);
                         folderImportVM.RecursiveDirectories = folders;
                         folderImportVM.Files = files;
                         await folderImportVM.Import();
                     }
                     else
+                    {
                         switch (files.Count)
                         {
                             case 0:
                                 return;
                             case 1 when files.First().EndsWith(Constants.SatchelExtension):
-                                if (TabsViewModel.GetInstance().ActiveTab is CollectionTabVM activeTab)
-                                    await activeTab.ImportSatchelAsync(files.First());
+                                await tabVm.ImportSatchelAsync(files.First());
                                 break;
                             default:
-                                await ServiceResolver.Resolve<CodexCollectionOperations>().ImportFilesAsync(files);
+                                await codexCollectionOperations.ImportFilesAsync(files);
                                 break;
                         }
+                    }
                 }
             });
 
@@ -115,21 +126,29 @@ namespace COMPASS.Common.ViewModels.Layouts
         }
     }
 
+    /// <summary>
+    /// Base for per-layout factories.
+    /// </summary>
+    public abstract class LayoutViewModelFactoryBase
+    {
+        public abstract LayoutViewModel Create(CollectionTabVM tabVm);
+    }
+
     [Factory]
-    public class LayoutViewModelFactory(CodexInfoViewModelFactory codexInfoVmFactory, IPreferencesService preferencesService)
+    public class LayoutViewModelFactory(
+        IIndex<string, LayoutViewModelFactoryBase> layoutFactories,
+        IPreferencesService preferencesService)
     {
         public LayoutViewModel Create(CollectionTabVM tabVm, CodexLayout? layout = null)
         {
-            layout ??= preferencesService.Preferences.UIState.StartupLayout;
-            preferencesService.Preferences.UIState.StartupLayout = (CodexLayout)layout;
-            return layout switch
+            CodexLayout resolvedLayout = layout ?? preferencesService.Preferences.UIState.StartupLayout;
+            preferencesService.Preferences.UIState.StartupLayout = resolvedLayout;
+            
+            if (!layoutFactories.TryGetValue(resolvedLayout.ToString(), out LayoutViewModelFactoryBase? layoutFactory))
             {
-                CodexLayout.Home => new HomeLayoutViewModel(preferencesService.Preferences.HomeLayoutPreferences, codexInfoVmFactory, tabVm),
-                CodexLayout.List => new ListLayoutViewModel(preferencesService.Preferences.ListLayoutPreferences, codexInfoVmFactory, tabVm),
-                CodexLayout.Card => new CardLayoutViewModel(preferencesService.Preferences.CardLayoutPreferences, codexInfoVmFactory, tabVm),
-                CodexLayout.Tile => new TileLayoutViewModel(preferencesService.Preferences.TileLayoutPreferences, codexInfoVmFactory, tabVm),
-                _ => throw new NotImplementedException(layout.ToString())
-            };
+                throw new NotImplementedException($"No layout factory registered for {resolvedLayout}");
+            }
+            return layoutFactory.Create(tabVm);
         }
     }
 }

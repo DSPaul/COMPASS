@@ -15,6 +15,7 @@ using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Services.Storage;
 using COMPASS.Common.Tools.Logging;
 using COMPASS.Common.ViewModels;
+using COMPASS.Common.ViewModels.Layouts;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Infra.Interfaces.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -36,15 +37,8 @@ namespace COMPASS.Common.DependencyInjection
             builder.RegisterType<CodexCollectionXmlRepository>().Keyed<ICodexCollectionRepository>(StorageStrategy.Xml).SingleInstance();
             builder.RegisterType<CodexCollectionMemRepository>().Keyed<ICodexCollectionRepository>(StorageStrategy.Memory).SingleInstance();
 
-            //Metadata sources: stateless gateways, same rationale as services below
-            builder.RegisterType<FileMetaDataSource>().Keyed<MetaDataSource>(nameof(MetaDataSourceType.File)).SingleInstance();
-            builder.RegisterType<PdfMetaDataSource>().Keyed<MetaDataSource>(nameof(MetaDataSourceType.PDF)).SingleInstance();
-            builder.RegisterType<ImageMetaDataSource>().Keyed<MetaDataSource>(nameof(MetaDataSourceType.Image)).SingleInstance();
-            builder.RegisterType<ISBNMetaDataSource>().Keyed<MetaDataSource>(nameof(MetaDataSourceType.ISBN)).SingleInstance();
-            builder.RegisterType<GmBinderMetaDataSource>().Keyed<MetaDataSource>(nameof(MetaDataSourceType.GmBinder)).SingleInstance();
-            builder.RegisterType<HomebreweryMetaDataSource>().Keyed<MetaDataSource>(nameof(MetaDataSourceType.Homebrewery)).SingleInstance();
-            builder.RegisterType<GoogleDriveMetaDataSource>().Keyed<MetaDataSource>(nameof(MetaDataSourceType.GoogleDrive)).SingleInstance();
-            builder.RegisterType<GenericOnlineMetaDataSource>().Keyed<MetaDataSource>(nameof(MetaDataSourceType.GenericURL)).SingleInstance();
+            RegisterMetadataSources(builder);
+            RegisterLayouts(builder);
 
             //Services with cache of some kind -> SingleInstance
             builder.RegisterType<PreferencesService>().As<IPreferencesService>().SingleInstance();
@@ -81,6 +75,42 @@ namespace COMPASS.Common.DependencyInjection
             builder.RegisterType<TabsViewModel>().AsSelf().SingleInstance();
             builder.RegisterType<MainViewModel>().AsSelf().SingleInstance();
             builder.RegisterType<ProgressViewModel>().AsSelf().SingleInstance();
+        }
+
+        private static void RegisterLayouts(ContainerBuilder builder)
+        {
+            Dictionary<CodexLayout, Type> layouts = new()
+            {
+                { CodexLayout.Home, typeof(HomeLayoutViewModelFactory) },
+                { CodexLayout.List, typeof(ListLayoutViewModelFactory) },
+                { CodexLayout.Card, typeof(CardLayoutViewModelFactory) },
+                { CodexLayout.Tile, typeof(TileLayoutViewModelFactory) }
+            };
+
+            foreach (var kvp in layouts)
+            {
+                builder.RegisterType(kvp.Value).Keyed<LayoutViewModelFactoryBase>(kvp.Key.ToString());
+            }
+        }
+
+        private static void RegisterMetadataSources(ContainerBuilder builder)
+        {
+            Dictionary<MetaDataSourceType, Type> metaDataSources = new()
+            {
+                { MetaDataSourceType.File, typeof(FileMetaDataSource) },
+                { MetaDataSourceType.PDF, typeof(PdfMetaDataSource) },
+                { MetaDataSourceType.Image, typeof(ImageMetaDataSource) },
+                { MetaDataSourceType.ISBN, typeof(ISBNMetaDataSource) },
+                { MetaDataSourceType.GmBinder, typeof(GmBinderMetaDataSource) },
+                { MetaDataSourceType.Homebrewery, typeof(HomebreweryMetaDataSource) },
+                { MetaDataSourceType.GoogleDrive, typeof(GoogleDriveMetaDataSource) },
+                { MetaDataSourceType.GenericURL, typeof(GenericOnlineMetaDataSource) }
+            };
+
+            foreach (var kvp in metaDataSources)
+            {
+                builder.RegisterType(kvp.Value).Keyed<MetaDataSource>(kvp.Key.ToString()).SingleInstance();
+            }
         }
 
         private static void RegisterHttpClients(ContainerBuilder builder)

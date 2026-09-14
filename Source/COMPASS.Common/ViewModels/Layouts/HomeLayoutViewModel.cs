@@ -1,6 +1,9 @@
 ﻿using Avalonia.Threading;
+using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Models.Preferences;
+using COMPASS.Common.Operations;
+using COMPASS.Common.ViewModels.Import;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.ModelVMs;
 using COMPASS.Infra.Avalonia.ExtensionMethods;
@@ -11,7 +14,12 @@ namespace COMPASS.Common.ViewModels.Layouts
 {
     internal class HomeLayoutViewModel : LayoutViewModel
     {
-        public HomeLayoutViewModel(HomeLayoutPreferences preferences, CodexInfoViewModelFactory codexInfoVmFactory, CollectionTabVM tabVM) : base(codexInfoVmFactory, tabVM)
+        public HomeLayoutViewModel(
+            HomeLayoutPreferences preferences, 
+            CodexInfoViewModelFactory codexInfoVmFactory,
+            ImportFilesViewModelFactory importFilesVmFactory,
+            CodexCollectionOperations collectionOperations,
+            CollectionTabVM tabVM) : base(codexInfoVmFactory, importFilesVmFactory, collectionOperations, tabVM)
         {
             Preferences = preferences;
             tabVM.CollectionVM.CodexPropertyChanged += OnCodexPropertyChanged;
@@ -78,5 +86,16 @@ namespace COMPASS.Common.ViewModels.Layouts
                 }
             });
         }
+    }
+
+    public class HomeLayoutViewModelFactory(
+        IPreferencesService preferencesService,
+        CodexInfoViewModelFactory codexInfoVmFactory,
+        ImportFilesViewModelFactory importFilesVmFactory,
+        CodexCollectionOperations collectionOperations) : LayoutViewModelFactoryBase
+    {
+        public override LayoutViewModel Create(CollectionTabVM tabVm) => new HomeLayoutViewModel(
+            preferencesService.Preferences.HomeLayoutPreferences, codexInfoVmFactory,
+            importFilesVmFactory, collectionOperations, tabVm);
     }
 }
