@@ -1,6 +1,6 @@
-﻿using Avalonia.Input;
+﻿using Autofac.Features.Indexed;
+using Avalonia.Input;
 using Avalonia.Threading;
-using Autofac.Features.Indexed;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
@@ -8,7 +8,6 @@ using COMPASS.Common.Models;
 using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Models.Preferences;
-using COMPASS.Common.Services;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Sources;
 using COMPASS.Common.ViewModels;
@@ -227,9 +226,18 @@ namespace COMPASS.Common.Operations
         public void ShowInExplorer(Codex? toShow)
         {
             string? filePath = toShow?.Sources.Path;
-            if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath)) return;
-            
-            ioService.ShowInExplorer(filePath);
+
+            if (string.IsNullOrEmpty(filePath)) return;
+
+            try
+            {
+               ioService.ShowInExplorer(filePath);
+            }
+            catch (FileNotFoundException ex)
+            {
+                logger.Debug($"Showing {filePath} in explorer failed", ex);
+                notificationService.Notify(new Notification("Path not found", $"{filePath} could not be found"));
+            }
         }
 
         //Move Codex to other CodexCollection

@@ -1,5 +1,6 @@
 ﻿using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Input;
+using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Interfaces.ViewModels;
@@ -10,10 +11,9 @@ using COMPASS.Common.Services;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels.Import;
 using COMPASS.Common.ViewModels.Main;
+using COMPASS.Infra.Interfaces.Services;
 using COMPASS.Infra.Models;
-using COMPASS.Common.ViewModels.Tools;
-using COMPASS.Common.DependencyInjection;
-using COMPASS.Common.Operations;
+using COMPASS.Infra.Models.Enums;
 using System.Collections.ObjectModel;
 
 namespace COMPASS.Common.ViewModels.Modals
@@ -25,6 +25,7 @@ namespace COMPASS.Common.ViewModels.Modals
         private readonly IIOService _ioService;
         private readonly IPreferencesService _preferencesService;
         private readonly IFilesService _filesService;
+        private readonly INotificationService _notificationService;
         private readonly UpdateManager _updateManager;
         private readonly ImportFilesViewModelFactory _importFilesViewModelFactory;
 
@@ -36,6 +37,7 @@ namespace COMPASS.Common.ViewModels.Modals
             IIOService ioService,
             IPreferencesService preferencesService,
             IFilesService filesService,
+            INotificationService notificationService,
             UpdateManager updateManager,
             ImportFilesViewModelFactory importFilesViewModelFactory,
             ToolsViewModelFactory toolsViewModelFactory,
@@ -49,6 +51,7 @@ namespace COMPASS.Common.ViewModels.Modals
             _applicationDataService = applicationDataService;
             _ioService = ioService;
             _preferencesService = preferencesService;
+            _notificationService = notificationService;
             _filesService = filesService;
             _updateManager = updateManager;
             _importFilesViewModelFactory = importFilesViewModelFactory;
@@ -172,7 +175,7 @@ namespace COMPASS.Common.ViewModels.Modals
         #region Data Path 
 
         public string UserDataPath => _applicationDataService.UserDataPath;
-        public string LogsPath => Path.Combine(IApplicationDataService.ApplicationDataPath, Constants.DIR_LOGS);
+        public string LogsPath => Path.Combine(IApplicationDataService.ApplicationDataPath, Models.Constants.DIR_LOGS);
 
         public AsyncRelayCommand ChangeDataPathCommand => field ??= new(ChooseNewDataPath);
         private async Task ChooseNewDataPath()
@@ -242,8 +245,17 @@ namespace COMPASS.Common.ViewModels.Modals
         //Open folder in explorer
         public RelayCommand<string> ShowInExplorerCommand => field ??= new(path =>
         {
-            if (string.IsNullOrEmpty(path) || !Path.Exists(path)) return;
-            _ioService.ShowInExplorer(path);
+            if (string.IsNullOrEmpty(path)) return;
+
+            try
+            {
+                _ioService.ShowInExplorer(path);
+            }
+            catch(FileNotFoundException ex)
+            {
+                _logger.Debug($"Showing {path} in explorer failed", ex);
+                _notificationService.Notify(new Notification("Path not found", $"{path} could not be found", Severity.Warning));
+            }
         });
 
         #region Auto import folders
@@ -371,13 +383,14 @@ namespace COMPASS.Common.ViewModels.Modals
         IIOService ioService,
         IPreferencesService preferencesService,
         IFilesService filesService,
+        INotificationService notificationService,
         UpdateManager updateManager,
         ImportFilesViewModelFactory importFilesViewModelFactory,
         ToolsViewModelFactory toolsViewModelFactory,
         CollectionManager collectionManager)
     {
         public SettingsViewModel Create(string tabToOpen = "")
-            => new(logger, applicationDataService, ioService, preferencesService, filesService, updateManager,
+            => new(logger, applicationDataService, ioService, preferencesService, filesService, notificationService, updateManager,
                    importFilesViewModelFactory, toolsViewModelFactory, collectionManager, tabToOpen);
     }
 }
