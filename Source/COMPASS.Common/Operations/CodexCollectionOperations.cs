@@ -125,11 +125,8 @@ public class CodexCollectionOperations(
         return codex;
     }
 
-    public async Task ImportFilesAsync(IList<string> paths, string? targetCollectionId = null)
+    public async Task ImportFilesAsync(IList<string> paths, string targetCollectionId)
     {
-        targetCollectionId ??= TabsViewModel.GetInstance().ActiveTab?.CollectionVM.Identifier
-                               ?? throw new NoTabException("There is no open tab, so no collection to import the files to");
-
         using CollectionHandle targetCollectionHandle = collectionManager.Value.LoadCollection(targetCollectionId)
                                                         ?? throw new LoadException(targetCollectionId);
         var targetCollection = targetCollectionHandle.CollectionVM.Collection;

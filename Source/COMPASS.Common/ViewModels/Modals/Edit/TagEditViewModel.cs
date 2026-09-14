@@ -17,13 +17,11 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
     public class TagEditViewModel : EditViewModelBase<TagViewModel, Tag>
     {
         private readonly CodexCollectionVM _codexCollectionVm;
-        private readonly TagViewModelFactory _tagViewModelFactory;
         private readonly INotificationService _notificationService;
         
         public TagEditViewModel(TagViewModelFactory tagViewModelFactory, INotificationService notificationService, Tag sourceTag, CodexCollectionVM collectionVm, bool createNew) 
             : base(sourceTag, createNew, tag => tagViewModelFactory.Create(tag, collectionVm))
         {
-            _tagViewModelFactory = tagViewModelFactory;
             _notificationService = notificationService;
             _codexCollectionVm = collectionVm;
             _possibleParents = GetPossibleParents();

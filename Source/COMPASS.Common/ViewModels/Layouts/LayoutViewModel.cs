@@ -112,7 +112,7 @@ namespace COMPASS.Common.ViewModels.Layouts
                                 await tabVm.ImportSatchelAsync(files.First());
                                 break;
                             default:
-                                await codexCollectionOperations.ImportFilesAsync(files);
+                                await codexCollectionOperations.ImportFilesAsync(files, _tabViewModel.CollectionVM.Identifier);
                                 break;
                         }
                     }

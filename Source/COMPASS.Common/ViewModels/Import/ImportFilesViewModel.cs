@@ -192,15 +192,18 @@ public class ImportFilesViewModel : ViewModelBase, IDisposable
     [Factory]
     public class ImportFilesViewModelFactory(
         ILogger logger,
-        IIOService ioServcie, INotificationService notificationService, 
+        IIOService ioService, INotificationService notificationService, 
         ImportFolderWizardFactory importFolderWizardFactory,
+        Lazy<TabsViewModel> tabsViewModel,
         FolderFactory folderFactory,
         CodexCollectionOperations codexCollectionOperations,
         Lazy<CollectionManager> collectionManager)
     {
         public ImportFilesViewModel Create(bool autoImport)
         {
-            var targetCollectionId = TabsViewModel.GetInstance().ActiveTab?.CollectionVM.Identifier ??
+            //Lazy breaks the factory -> TabsViewModel -> CollectionManager -> factory cycle:
+            //resolved here at runtime, long after the container is built
+            var targetCollectionId = tabsViewModel.Value.ActiveTab?.CollectionVM.Identifier ??
                  throw new NoTabException("There is no open tab, so no collection to import the files to");
 
             return Create(targetCollectionId, autoImport);
@@ -209,7 +212,7 @@ public class ImportFilesViewModel : ViewModelBase, IDisposable
         public ImportFilesViewModel Create(string targetCollectionId, bool autoImport)
         {
             return new ImportFilesViewModel(
-                logger, ioServcie, notificationService, 
+                logger, ioService, notificationService, 
                 importFolderWizardFactory, folderFactory,
                 codexCollectionOperations, collectionManager.Value,
                 targetCollectionId, autoImport);

@@ -6,7 +6,6 @@ using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.Selection;
-using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.ViewModels.Modals
 {
