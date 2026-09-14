@@ -10,6 +10,7 @@ using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.Views.Windows;
+using COMPASS.Infra.Tools.Logging;
 using COMPASS.Infra.Tools;
 using NuGet.Versioning;
 

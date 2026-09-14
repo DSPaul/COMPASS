@@ -11,7 +11,9 @@ using System.Diagnostics;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels.Modals;
+using COMPASS.Infra.Interfaces.Services;
 using COMPASS.Infra.Tools;
+using COMPASS.Infra.Tools.Logging;
 
 namespace COMPASS.Common.Services
 {

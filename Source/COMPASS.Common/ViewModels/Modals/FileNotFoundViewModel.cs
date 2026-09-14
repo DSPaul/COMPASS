@@ -5,6 +5,7 @@ using COMPASS.Common.Interfaces.ViewModels;
 using COMPASS.Common.Models;
 using COMPASS.Common.Operations;
 using COMPASS.Common.Services.StateManagers;
+using COMPASS.Infra.Tools.Logging;
 using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.ViewModels.Modals

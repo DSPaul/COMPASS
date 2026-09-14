@@ -5,8 +5,10 @@ using COMPASS.Common.Models;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels;
 using COMPASS.Common.ViewModels.Main;
+using COMPASS.Infra.Interfaces.Services;
 using COMPASS.Infra.Models;
 using COMPASS.Infra.Models.Enums;
+using COMPASS.Infra.Tools.Logging;
 using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.Operations;

@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using Autofac.Features.Indexed;
 using COMPASS.Common.DependencyInjection;
-using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.ViewModels;
 using COMPASS.Common.Operations;
 using COMPASS.Common.Models;
@@ -10,6 +9,7 @@ using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Sources;
 using COMPASS.Common.ViewModels.Import;
 using COMPASS.Common.ViewModels.Modals.Edit;
+using COMPASS.Infra.Tools.Logging;
 
 namespace COMPASS.Common.ViewModels.Modals.Import
 {

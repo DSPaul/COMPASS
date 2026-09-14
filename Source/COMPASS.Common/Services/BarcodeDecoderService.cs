@@ -1,4 +1,5 @@
 ﻿using COMPASS.Common.Interfaces.Services;
+using COMPASS.Infra.Tools.Logging;
 using OpenCvSharp;
 using SkiaSharp;
 

@@ -17,6 +17,7 @@ using SharpCompress.Writers.Zip;
 using System.Text.Json;
 using Constants = COMPASS.Common.Models.Constants;
 using Notification = COMPASS.Infra.Models.Notification;
+using COMPASS.Infra.Tools.Logging;
 
 namespace COMPASS.Common.Services.Storage;
 

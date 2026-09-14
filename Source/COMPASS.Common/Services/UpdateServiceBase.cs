@@ -1,6 +1,5 @@
 ﻿using COMPASS.ApiClients.GitHub;
 using COMPASS.Common.Interfaces.Services;
-using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Infra.Interfaces.Services;
@@ -8,6 +7,7 @@ using COMPASS.Infra.Models;
 using COMPASS.Infra.Models.Enums;
 using COMPASS.Infra.Models.Updates;
 using COMPASS.Infra.Tools;
+using COMPASS.Infra.Tools.Logging;
 using NuGet.Versioning;
 using System.Diagnostics;
 

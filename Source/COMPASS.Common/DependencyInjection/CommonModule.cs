@@ -18,6 +18,7 @@ using COMPASS.Common.ViewModels;
 using COMPASS.Common.ViewModels.Layouts;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Infra.Interfaces.Services;
+using COMPASS.Infra.Tools.Logging;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace COMPASS.Common.DependencyInjection

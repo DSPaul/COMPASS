@@ -1,9 +1,8 @@
 ﻿using Autofac;
-using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
-using COMPASS.Common.Services;
 using COMPASS.Infra.Interfaces.Services;
+using COMPASS.Infra.Tools.Logging;
 using COMPASS.Tests.Common.Mocks;
 
 namespace COMPASS.Tests.Common

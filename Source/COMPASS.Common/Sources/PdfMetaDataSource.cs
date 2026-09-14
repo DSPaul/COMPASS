@@ -2,6 +2,7 @@
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
+using COMPASS.Infra.Tools.Logging;
 using COMPASS.Infra.Models;
 using COMPASS.Infra.Models.Enums;
 using COMPASS.Infra.Tools;

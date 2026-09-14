@@ -1,6 +1,7 @@
-using COMPASS.Common.Interfaces.Services;
+﻿using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
+using COMPASS.Infra.Tools.Logging;
 
 namespace COMPASS.Common.Services.Storage;
 

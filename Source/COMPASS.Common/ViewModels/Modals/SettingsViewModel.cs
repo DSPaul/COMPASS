@@ -14,6 +14,7 @@ using COMPASS.Common.ViewModels.Main;
 using COMPASS.Infra.Interfaces.Services;
 using COMPASS.Infra.Models;
 using COMPASS.Infra.Models.Enums;
+using COMPASS.Infra.Tools.Logging;
 using System.Collections.ObjectModel;
 
 namespace COMPASS.Common.ViewModels.Modals

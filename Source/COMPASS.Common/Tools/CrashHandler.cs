@@ -4,7 +4,6 @@ using Avalonia.Input;
 using Avalonia.Threading;
 using COMPASS.ApiClients.Compass;
 using COMPASS.ApiClients.Compass.Models;
-using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Services;
@@ -12,6 +11,7 @@ using COMPASS.Common.Services.StateManagers;
 using COMPASS.Infra.Models;
 using COMPASS.Infra.Models.Enums;
 using COMPASS.Infra.Tools;
+using COMPASS.Infra.Tools.Logging;
 
 namespace COMPASS.Common.Tools;
 

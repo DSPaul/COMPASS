@@ -2,6 +2,7 @@
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Infra.Interfaces.Services;
+using COMPASS.Infra.Tools.Logging;
 using COMPASS.Infra.Models;
 using COMPASS.Infra.Models.Updates;
 using System.Security.Cryptography;

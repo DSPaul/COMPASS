@@ -2,6 +2,7 @@
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Services;
 using COMPASS.Infra.Interfaces.Services;
+using COMPASS.Infra.Tools.Logging;
 using COMPASS.Infra.Models.Updates;
 
 namespace COMPASS.Windows.Services

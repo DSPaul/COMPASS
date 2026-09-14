@@ -1,9 +1,9 @@
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels;
-using COMPASS.Infra.Interfaces.Services;
 using COMPASS.Infra.Models;
 using COMPASS.Infra.Models.Enums;
+using COMPASS.Infra.Tools.Logging;
 using HtmlAgilityPack;
 using ImageMagick;
 using System.Text.Json.Nodes;

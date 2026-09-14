@@ -17,6 +17,7 @@ using COMPASS.Infra.Interfaces.Services;
 using COMPASS.Infra.Models;
 using COMPASS.Infra.Models.Enums;
 using COMPASS.Common.Models.Preferences;
+using COMPASS.Infra.Tools.Logging;
 
 namespace COMPASS.Common.ViewModels.Main;
 

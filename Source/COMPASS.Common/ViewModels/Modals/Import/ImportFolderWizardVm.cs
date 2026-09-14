@@ -1,8 +1,8 @@
 ﻿using COMPASS.Common.DependencyInjection;
-using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.ViewModels.Selection;
 using COMPASS.Infra.ExtensionMethods;
+using COMPASS.Infra.Tools.Logging;
 using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.ViewModels.Modals.Import

@@ -1,6 +1,6 @@
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Threading;
-using COMPASS.Common.Interfaces.Services;
+using COMPASS.Infra.Tools.Logging;
 
 namespace COMPASS.Common.Services.StateManagers;
 

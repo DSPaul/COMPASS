@@ -1,9 +1,9 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.Input;
-using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Models.Filters;
 using COMPASS.Common.Services.StateManagers;
+using COMPASS.Infra.Tools.Logging;
 using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.ViewModels.Main;

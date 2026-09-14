@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.DependencyInjection;
-using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Operations;
@@ -19,6 +18,7 @@ using COMPASS.Infra.Interfaces.Services;
 using COMPASS.Infra.Models;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using COMPASS.Infra.Tools.Logging;
 
 namespace COMPASS.Common.ViewModels.SidePanels
 {

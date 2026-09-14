@@ -2,7 +2,7 @@ using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using Serilog;
 using Serilog.Events;
-using ILogger = COMPASS.Common.Interfaces.Services.ILogger;
+using ILogger = COMPASS.Infra.Tools.Logging.ILogger;
 
 namespace COMPASS.Common.Tools.Logging;
 

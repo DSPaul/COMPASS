@@ -11,6 +11,7 @@ using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Infra.Avalonia.DragDrop;
 using COMPASS.Infra.ExtensionMethods;
+using COMPASS.Infra.Tools.Logging;
 using COMPASS.Infra.Models;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;

@@ -6,6 +6,7 @@ using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Common.Models.Preferences;
 using COMPASS.Common.Models.XmlDtos;
 using COMPASS.Common.Services.FileSystem;
+using COMPASS.Infra.Tools.Logging;
 
 namespace COMPASS.Common.Services
 {

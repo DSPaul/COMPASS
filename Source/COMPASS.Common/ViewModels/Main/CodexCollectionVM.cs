@@ -1,7 +1,6 @@
 using System.Collections.Specialized;
 using System.ComponentModel;
 using COMPASS.Common.Interfaces.Repos;
-using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Models;
@@ -13,6 +12,7 @@ using COMPASS.Infra.ExtensionMethods;
 using COMPASS.Infra.Interfaces.Services;
 using COMPASS.Infra.Models;
 using COMPASS.Infra.Models.Enums;
+using COMPASS.Infra.Tools.Logging;
 using Autofac.Features.Indexed;
 
 namespace COMPASS.Common.ViewModels.Main;

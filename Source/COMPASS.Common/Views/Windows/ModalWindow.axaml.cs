@@ -2,9 +2,9 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
-using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.ViewModels;
 using COMPASS.Infra.Tools;
+using COMPASS.Infra.Tools.Logging;
 
 namespace COMPASS.Common.Views.Windows;
 

@@ -17,6 +17,7 @@ using COMPASS.Infra.Tools;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using COMPASS.Common.Models.Preferences;
+using COMPASS.Infra.Tools.Logging;
 
 namespace COMPASS.Common.ViewModels.Main
 {

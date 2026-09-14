@@ -1,9 +1,9 @@
 ﻿using System.Collections.ObjectModel;
 using System.Text;
 using Avalonia.Media;
-using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Infra.ExtensionMethods;
+using COMPASS.Infra.Tools.Logging;
 using COMPASS.Infra.Tools;
 using NuGet.Versioning;
 

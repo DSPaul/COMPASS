@@ -2,10 +2,10 @@ using System.Diagnostics;
 using System.Reflection;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
-using COMPASS.Common.Interfaces.Services;
 using COMPASS.Infra.Interfaces.Services;
 using COMPASS.Infra.Models;
 using COMPASS.Infra.Tools;
+using COMPASS.Infra.Tools.Logging;
 
 namespace COMPASS.Common.Services;
 

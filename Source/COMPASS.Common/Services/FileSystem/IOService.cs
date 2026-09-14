@@ -3,8 +3,10 @@ using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels;
 using COMPASS.Common.Views.Windows;
+using COMPASS.Infra.Interfaces.Services;
 using COMPASS.Infra.Models;
 using COMPASS.Infra.Models.Enums;
+using COMPASS.Infra.Tools.Logging;
 
 namespace COMPASS.Common.Services.FileSystem
 {

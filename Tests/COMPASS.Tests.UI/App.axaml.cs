@@ -1,4 +1,4 @@
-using Autofac;
+﻿using Autofac;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
@@ -6,6 +6,7 @@ using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models.Preferences;
 using COMPASS.Common.Services.StateManagers;
+using COMPASS.Infra.Tools.Logging;
 using COMPASS.Infra.Tools;
 
 namespace COMPASS.Tests.UI;

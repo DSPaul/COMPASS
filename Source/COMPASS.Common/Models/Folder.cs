@@ -4,6 +4,7 @@ using COMPASS.Common.Interfaces.Services;
 using COMPASS.Infra.Models;
 using COMPASS.Infra.Models.Interfaces;
 using COMPASS.Infra.Tools;
+using COMPASS.Infra.Tools.Logging;
 
 namespace COMPASS.Common.Models
 {

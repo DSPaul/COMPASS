@@ -1,4 +1,4 @@
-namespace COMPASS.Common.Interfaces.Services;
+namespace COMPASS.Infra.Tools.Logging;
 
 public interface ILogger
 {

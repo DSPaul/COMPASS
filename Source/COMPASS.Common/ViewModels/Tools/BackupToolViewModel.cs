@@ -8,6 +8,7 @@ using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Views.Windows;
 using COMPASS.Infra.Interfaces.Services;
 using COMPASS.Infra.Models;
+using COMPASS.Infra.Tools.Logging;
 using SharpCompress.Archives;
 using SharpCompress.Archives.Zip;
 using SharpCompress.Readers;

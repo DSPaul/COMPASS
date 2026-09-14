@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Services.FileSystem;
+using COMPASS.Infra.Tools.Logging;
 
 namespace COMPASS.Windows.Services;
 

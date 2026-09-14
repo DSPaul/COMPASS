@@ -2,6 +2,7 @@
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Infra.ExtensionMethods;
+using COMPASS.Infra.Tools.Logging;
 using ImageMagick;
 
 namespace COMPASS.Common.Sources

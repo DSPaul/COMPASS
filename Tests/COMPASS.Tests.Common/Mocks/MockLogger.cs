@@ -1,4 +1,4 @@
-using COMPASS.Common.Interfaces.Services;
+﻿using COMPASS.Infra.Tools.Logging;
 
 namespace COMPASS.Tests.Common.Mocks;
 

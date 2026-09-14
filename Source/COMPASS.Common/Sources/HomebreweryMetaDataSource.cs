@@ -4,6 +4,7 @@ using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services;
 using COMPASS.Infra.ExtensionMethods;
 using COMPASS.Infra.Models.Enums;
+using COMPASS.Infra.Tools.Logging;
 using ImageMagick;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;

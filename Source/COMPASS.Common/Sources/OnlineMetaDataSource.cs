@@ -1,5 +1,6 @@
 ﻿using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
+using COMPASS.Infra.Tools.Logging;
 using OpenQA.Selenium;
 
 namespace COMPASS.Common.Sources

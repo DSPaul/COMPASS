@@ -1,5 +1,4 @@
 ﻿using COMPASS.Common.Interfaces.Repos;
-using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.XmlDtos;
@@ -10,6 +9,7 @@ using COMPASS.Infra.Interfaces.Services;
 using COMPASS.Infra.Models;
 using COMPASS.Infra.Models.Enums;
 using COMPASS.Infra.Tools;
+using COMPASS.Infra.Tools.Logging;
 using System.Diagnostics;
 using System.Xml;
 using System.Xml.Serialization;

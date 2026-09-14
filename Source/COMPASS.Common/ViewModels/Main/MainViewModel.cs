@@ -8,6 +8,7 @@ using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services;
 using COMPASS.Common.Services.StateManagers;
+using COMPASS.Infra.Tools.Logging;
 using Material.Icons;
 
 namespace COMPASS.Common.ViewModels.Main
