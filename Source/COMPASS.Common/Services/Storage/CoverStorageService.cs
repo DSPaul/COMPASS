@@ -50,6 +50,10 @@ public class CoverStorageService(
         {
             //File didn't exist, nothing to copy
         }
+        catch (DirectoryNotFoundException)
+        {
+            //Source directory didn't exist (e.g. satchel exported without covers), nothing to copy
+        }
         catch (Exception ex)
         {
             logger.Warn($"Failed to copy cover of {codex.Title}", ex);

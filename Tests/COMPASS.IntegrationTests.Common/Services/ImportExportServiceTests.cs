@@ -13,6 +13,7 @@ using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.Modals.Import;
 using COMPASS.Infra.Tools;
 using COMPASS.Tests.Common.DataGenerators;
+using COMPASS.Tests.Common.Mocks;
 using SharpCompress.Archives;
 using SharpCompress.Archives.Zip;
 using SharpCompress.Common;
@@ -42,6 +43,7 @@ namespace COMPASS.IntegrationTests.Common.Services
             var container = BuildContainer();
             var storageService = container.Resolve<IImportExportService>();
             var repo = container.ResolveKeyed<ICodexCollectionRepository>(StorageStrategy.Xml);
+            var satchelLogger = container.Resolve<MockLogger>();
 
             await using (var zip = await ZipArchive.CreateAsyncArchive())
             {
@@ -55,6 +57,10 @@ namespace COMPASS.IntegrationTests.Common.Services
             //Because satchel does not contain a codexInfo file, should work
             var collection = await storageService.OpenSatchel(path);
             Assert.That(collection, Is.Not.Null);
+
+            Assert.That(satchelLogger.Errors, Is.Empty, "OpenSatchel logged errors on happy path");
+            Assert.That(satchelLogger.Warnings, Is.Empty, "OpenSatchel logged warnings on happy path");
+            Assert.That(satchelLogger.Fatals, Is.Empty, "OpenSatchel logged fatals on happy path");
             repo.DeleteCollection(collection.Name);
 
             //Now add a codex file
@@ -72,6 +78,11 @@ namespace COMPASS.IntegrationTests.Common.Services
             collection = await storageService.OpenSatchel(path);
             Assert.That(collection, Is.Null);
 
+            Assert.That(satchelLogger.Warnings, Has.Count.EqualTo(1), "Version rejection should log exactly one warning");
+            Assert.That(satchelLogger.Warnings[0], Does.Contain("incompatible"), "Version rejection warning should explain incompatibility");
+            Assert.That(satchelLogger.Errors, Is.Empty, "Version rejection should not log errors");
+            Assert.That(satchelLogger.Fatals, Is.Empty, "Version rejection should not log fatals");
+
             File.Delete(path);
         }
 
@@ -86,6 +97,7 @@ namespace COMPASS.IntegrationTests.Common.Services
             string testCollectionId = "__SatchelExport";
             var testCollection = CollectionGenerator.GetCompleteCollection(testCollectionId);
             var importExportService = container.Resolve<IImportExportService>();
+            var exportLogger = container.Resolve<MockLogger>();
 
             //Export
             var filePath = Path.GetTempPath() + Guid.NewGuid().ToString() + Constants.SatchelExtension;
@@ -98,6 +110,10 @@ namespace COMPASS.IntegrationTests.Common.Services
             var fileInfo = new FileInfo(filePath);
             Assert.That(fileInfo.Length, Is.GreaterThan(0), "Exported satchel file is empty");
 
+            Assert.That(exportLogger.Errors, Is.Empty, "ExportCollection logged errors");
+            Assert.That(exportLogger.Warnings, Is.Empty, "ExportCollection logged warnings");
+            Assert.That(exportLogger.Fatals, Is.Empty, "ExportCollection logged fatals");
+
             CodexCollectionVM? deserializedCollectionVm = null;
             CodexCollectionVM? importedCollection = null;
             try
@@ -105,6 +121,10 @@ namespace COMPASS.IntegrationTests.Common.Services
                 //Deserialize Satchel
                 var deserializedCollection = await importExportService.OpenSatchel(filePath);
                 Assert.That(deserializedCollection, Is.Not.Null);
+
+                Assert.That(exportLogger.Errors, Is.Empty, "OpenSatchel of exported collection logged errors");
+                Assert.That(exportLogger.Warnings, Is.Empty, "OpenSatchel of exported collection logged warnings");
+                Assert.That(exportLogger.Fatals, Is.Empty, "OpenSatchel of exported collection logged fatals");
                 deserializedCollectionVm = container.Resolve<CodexCollectionVMFactory>().Create(deserializedCollection, StorageStrategy.Xml);
                 ImportCollectionViewModel importViewModel = container.Resolve<ImportCollectionViewModelFactory>().Create(deserializedCollectionVm);
 
@@ -122,6 +142,10 @@ namespace COMPASS.IntegrationTests.Common.Services
                 Assert.That(importedCollection, Is.Not.Null, "Imported collection not found after import");
                 Assert.That(importedCollection.Collection.AllCodices, Has.Count.EqualTo(deserializedCollection.AllCodices.Count));
                 Assert.That(importedCollection.Collection.AllTags, Has.Count.EqualTo(deserializedCollection.AllTags.Count));
+
+                Assert.That(exportLogger.Errors, Is.Empty, "Import Finish logged errors");
+                Assert.That(exportLogger.Warnings, Is.Empty, "Import Finish logged warnings");
+                Assert.That(exportLogger.Fatals, Is.Empty, "Import Finish logged fatals");
             }
             finally
             {

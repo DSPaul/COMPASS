@@ -10,13 +10,17 @@ namespace COMPASS.UnitTests.Models
     {
         private string _tempRoot = "";
         private FolderFactory _folderFactory = null!;
+        private MockLogger _folderFactoryLogger = null!;
+        private MockLogger _ioServiceLogger = null!;
 
         [SetUp]
         public void SetUp()
         {
             _tempRoot = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(_tempRoot);
-            _folderFactory = new FolderFactory(new MockLogger(), new MockIOService(new MockFilesService(), new MockLogger()));
+            _folderFactoryLogger = new MockLogger();
+            _ioServiceLogger = new MockLogger();
+            _folderFactory = new FolderFactory(_folderFactoryLogger, new MockIOService(new MockFilesService(), _ioServiceLogger));
         }
 
         [TearDown]
@@ -48,6 +52,15 @@ namespace COMPASS.UnitTests.Models
 
             // Assert
             Assert.That(subFolders.Select(f => f.Name).ToHashSet(), Is.EqualTo(new HashSet<string> { "subA", "subB" }));
+            AssertNoWarningsOrErrors(_folderFactoryLogger);
+            AssertNoWarningsOrErrors(_ioServiceLogger);
+        }
+
+        private static void AssertNoWarningsOrErrors(MockLogger mockLogger)
+        {
+            Assert.That(mockLogger.Warnings, Is.Empty, "Unexpected warnings logged");
+            Assert.That(mockLogger.Errors, Is.Empty, "Unexpected errors logged");
+            Assert.That(mockLogger.Fatals, Is.Empty, "Unexpected fatals logged");
         }
 
         [Test]
@@ -62,6 +75,8 @@ namespace COMPASS.UnitTests.Models
 
             // Assert: an eager snapshot would still be empty here
             Assert.That(subFolders.Select(f => f.Name).ToList(), Is.EqualTo(new List<string> { "late" }));
+            AssertNoWarningsOrErrors(_folderFactoryLogger);
+            AssertNoWarningsOrErrors(_ioServiceLogger);
         }
 
         [Test]
@@ -73,6 +88,8 @@ namespace COMPASS.UnitTests.Models
             // Act + Assert
             Assert.That(() => folder.SubFolders.ToList(), Throws.Nothing);
             Assert.That(folder.SubFolders, Is.Empty);
+            AssertNoWarningsOrErrors(_folderFactoryLogger);
+            AssertNoWarningsOrErrors(_ioServiceLogger);
         }
 
         [Test]
@@ -88,6 +105,8 @@ namespace COMPASS.UnitTests.Models
 
             // Assert
             Assert.That(folder.SubFolders.Select(f => f.Name).ToList(), Is.EqualTo(new List<string> { "new" }));
+            AssertNoWarningsOrErrors(_folderFactoryLogger);
+            AssertNoWarningsOrErrors(_ioServiceLogger);
         }
 
         [Test]
@@ -119,6 +138,11 @@ namespace COMPASS.UnitTests.Models
             Assert.That(level1.Select(f => f.Name).ToList(), Is.EqualTo(new List<string> { "real" }));
             Assert.That(level2.Select(f => f.Name).ToList(), Is.EqualTo(new List<string> { "loop" }));
             Assert.That(level3, Is.Empty);
+
+            Assert.That(_folderFactoryLogger.Warnings, Has.Count.EqualTo(1));
+            Assert.That(_folderFactoryLogger.Warnings[0], Does.Contain("cycle"));
+            Assert.That(_folderFactoryLogger.Errors, Is.Empty);
+            Assert.That(_folderFactoryLogger.Fatals, Is.Empty);
         }
 
         [Test]
@@ -146,6 +170,8 @@ namespace COMPASS.UnitTests.Models
             // Assert: previous explicits untouched, no partial empty state
             Assert.That(folder.HasAllSubFolders, Is.False);
             Assert.That(folder.SubFolders.Select(f => f.FullPath).ToList(), Is.EqualTo(new List<string> { subA }));
+            AssertNoWarningsOrErrors(_folderFactoryLogger);
+            AssertNoWarningsOrErrors(_ioServiceLogger);
         }
 
         /// <summary>
@@ -175,7 +201,8 @@ namespace COMPASS.UnitTests.Models
         {
             // Arrange: real dirs (pass the existence pre-checks), lying listings
             string child = CreateSubDirectory(_tempRoot, "child");
-            var factory = new FolderFactory(new MockLogger(), new CyclicListingIOService(_tempRoot, child));
+            var cyclicListingLogger = new MockLogger();
+            var factory = new FolderFactory(cyclicListingLogger, new CyclicListingIOService(_tempRoot, child));
             Folder folder = factory.Create(_tempRoot);
 
             // Act: eager recursion would StackOverflow here, unguarded lazy would hang
@@ -185,6 +212,11 @@ namespace COMPASS.UnitTests.Models
             // Assert
             Assert.That(level1.Select(f => f.Name).ToList(), Is.EqualTo(new List<string> { "child" }));
             Assert.That(level2, Is.Empty);
+
+            Assert.That(cyclicListingLogger.Warnings, Has.Count.EqualTo(1));
+            Assert.That(cyclicListingLogger.Warnings[0], Does.Contain("cycle"));
+            Assert.That(cyclicListingLogger.Errors, Is.Empty);
+            Assert.That(cyclicListingLogger.Fatals, Is.Empty);
         }
     }
 }
