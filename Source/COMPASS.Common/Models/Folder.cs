@@ -9,10 +9,12 @@ namespace COMPASS.Common.Models
 {
     public class Folder : ObservableObject, IHasChildren<Folder>
     {
-        public Folder(string path, IEnumerable<Folder> allSubFolders)
+        private readonly Func<Folder, IEnumerable<Folder>> _findSubfoldersOnDisk;
+
+        public Folder(string path,  Func<Folder, IEnumerable<Folder>> findSubfoldersOnDisk)
         {
-            FullPath = path.Trim(Path.DirectorySeparatorChar).Trim(Path.AltDirectorySeparatorChar);
-            _allSubFolders = new RangeObservableCollection<Folder>(allSubFolders);
+            FullPath = path.TrimEnd(Path.DirectorySeparatorChar).TrimEnd(Path.AltDirectorySeparatorChar);
+            _findSubfoldersOnDisk = findSubfoldersOnDisk;
         }
 
         public bool HasAllSubFolders => _explicitSubFolders == null;
@@ -24,14 +26,24 @@ namespace COMPASS.Common.Models
         }
 
         private RangeObservableCollection<Folder>? _explicitSubFolders;
-        private RangeObservableCollection<Folder> _allSubFolders;
+        private RangeObservableCollection<Folder>? _allSubFolders;
 
         public RangeObservableCollection<Folder> SubFolders
         {
-            get => _explicitSubFolders ?? _allSubFolders;
+            get
+            {
+                if(_explicitSubFolders != null)
+                {
+                    return _explicitSubFolders;
+                }
+
+                // If no explicit subfolders are set, return all subfolders found on disk
+                _allSubFolders ??= new(_findSubfoldersOnDisk(this));
+                return _allSubFolders;
+            }
         }
 
-        public IReadOnlyList<Folder> AllSubFolders => _allSubFolders;
+        public IReadOnlyList<Folder> AllSubFolders => _allSubFolders ??= new(_findSubfoldersOnDisk(this));
 
         public void SetExplicitSubfolders(IEnumerable<Folder> folders)
         {
@@ -51,9 +63,12 @@ namespace COMPASS.Common.Models
             OnPropertyChanged(nameof(SubFolders));
         }
 
-        public void UpdateAllSubFolders(FolderFactory folderFactory)
+        public void UpdateAllSubFolders()
         {
-            _allSubFolders = folderFactory.Create(FullPath)._allSubFolders;
+            //Invalidate the cache,
+            //this means new instances of subfolders will be created,
+            //always compare folders by fullpath for this reason
+            _allSubFolders = null;
             OnPropertyChanged(nameof(SubFolders));
         }
 
@@ -64,13 +79,43 @@ namespace COMPASS.Common.Models
     }
 
     [Factory]
-    public class FolderFactory(IIOService ioService)
+    public class FolderFactory(ILogger logger, IIOService ioService)
     {
-        public Folder Create(string path)
+        public Folder Create(string path) => Create(path, new HashSet<string>(PathUtils.PathComparer));
+
+        private Folder Create(string path, HashSet<string> ancestorIdentities)
         {
-            var subFolders = ioService.TryGetDirectories(path);
-            var folder = new Folder(path, subFolders.Select(Create));
-            return folder;
+            if (!Path.Exists(path))
+            {
+                logger.Debug($"Folder not found on disk: '{path}'");
+            }
+
+            return new Folder(path, f => GetSubfoldersFromDisk(f, ancestorIdentities));
+        }
+
+        private IEnumerable<Folder> GetSubfoldersFromDisk(Folder f, ICollection<string> ancestorIdentities)
+        {
+            if (!Path.Exists(f.FullPath))
+            {
+                logger.Debug($"Folder not found on disk: '{f.FullPath}' while looking for subfolders");
+                yield break;
+            }
+
+            //Make copy so each folder only has as list of direct parents, instead of sharing list with whole tree
+            var ancestors = new HashSet<string>(ancestorIdentities, PathUtils.PathComparer)
+            {
+                PathUtils.GetDirectoryIdentity(f.FullPath)
+            };
+
+            foreach (string subFolder in ioService.TryGetDirectories(f.FullPath))
+            {
+                if (ancestors.Contains(PathUtils.GetDirectoryIdentity(subFolder)))
+                {
+                    logger.Warn($"Skipping '{subFolder}': filesystem cycle detected.");
+                    continue;
+                }
+                yield return Create(subFolder, ancestors);
+            }
         }
     }
 }

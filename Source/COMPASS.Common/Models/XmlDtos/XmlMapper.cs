@@ -384,14 +384,7 @@ namespace COMPASS.Common.Models.XmlDtos
             
             if(!dto.HasAllSubFolders)
             {
-                var subFoldersDtos = dto.SubFolders?.Where(sf => Directory.Exists(sf.FullPath)).ToList() ?? [];
-
-                foreach(var removedFolder in dto.SubFolders?.Except(subFoldersDtos) ?? [])
-                {
-                    Logger.Warn($"Folder {removedFolder.FullPath} was not found as a subfolder of {dto.FullPath} and will be ignored.");
-                }
-
-                var subFolders = subFoldersDtos.Select(sf => sf.ToModel(folderFactory));
+                var subFolders = dto.SubFolders?.Select(sf => sf.ToModel(folderFactory)) ?? [];
                 try
                 {
                     folder.SetExplicitSubfolders(subFolders);

@@ -236,7 +236,7 @@ namespace COMPASS.Common.Operations
             catch (FileNotFoundException ex)
             {
                 logger.Debug($"Showing {filePath} in explorer failed", ex);
-                notificationService.Notify(new Notification("Path not found", $"{filePath} could not be found"));
+                notificationService.Notify(new Notification("Path not found", $"{filePath} could not be found", Severity.Warning));
             }
         }
 

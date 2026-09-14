@@ -185,4 +185,19 @@ public static class PathUtils
         matcher.AddIncludePatterns(globs);
         return matcher.Match(filePath).HasMatches;
     }
+
+    /// <summary>
+    /// Identity for symlink cycle detection
+    /// </summary>
+    public static string GetDirectoryIdentity(string path)
+    {
+        try
+        {
+            return new DirectoryInfo(path).ResolveLinkTarget(returnFinalTarget: true)?.FullName ?? NormalizePath(path);
+        }
+        catch (Exception)
+        {
+            return NormalizePath(path);
+        }
+    }
 }

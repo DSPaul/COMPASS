@@ -13,7 +13,6 @@ using COMPASS.Infra.ExtensionMethods;
 using COMPASS.Infra.Interfaces.Services;
 using COMPASS.Infra.Models;
 using COMPASS.Infra.Models.Enums;
-using COMPASS.Infra.Tools;
 using Autofac.Features.Indexed;
 
 namespace COMPASS.Common.ViewModels.Main;
@@ -25,7 +24,6 @@ public class CodexCollectionVM : ModelViewModelBase<CodexCollection>
     private readonly INotificationService _notificationService;
     private readonly IImportExportService _importExportService;
     private readonly ICoverStorageService _coverStorageService;
-    private readonly FolderFactory _folderFactory;
     private readonly CodexViewModelFactory _codexViewModelFactory;
     private readonly TagViewModelFactory _tagViewModelFactory;
     private readonly ImportFilesViewModelFactory _importFilesViewModelFactory;
@@ -33,14 +31,13 @@ public class CodexCollectionVM : ModelViewModelBase<CodexCollection>
 
     public CodexCollectionVM(string identifier, CodexCollection collection, 
         ICodexCollectionRepository repo, ILogger logger, INotificationService notificationService, IImportExportService importExportService, 
-        ICoverStorageService coverStorageService, FolderFactory folderFactory, CodexViewModelFactory codexViewModelFactory, TagViewModelFactory tagViewModelFactory,
+        ICoverStorageService coverStorageService, CodexViewModelFactory codexViewModelFactory, TagViewModelFactory tagViewModelFactory,
         ImportFilesViewModelFactory importFilesViewModelFactory, CollectionManager collectionManager)
         : base(collection)
     {
         _logger = logger;
         _notificationService = notificationService;
         _importExportService = importExportService;
-        _folderFactory = folderFactory;
         _coverStorageService = coverStorageService;
         _codexViewModelFactory = codexViewModelFactory;
         _tagViewModelFactory = tagViewModelFactory;
@@ -212,7 +209,7 @@ public class CodexCollectionVM : ModelViewModelBase<CodexCollection>
             //Check for any new folders
             foreach (var folder in autoImportFolders)
             {
-                folder.UpdateAllSubFolders(_folderFactory);
+                folder.UpdateAllSubFolders();
             }
 
             folderImportVM.NonRecursiveDirectories = Collection.Info.AutoImportFolders.Flatten().Select(f => f.FullPath).ToList() ?? [];
@@ -276,7 +273,6 @@ public class CodexCollectionVMFactory(
     IImportExportService importExportService,
     ICoverStorageService coverStorageService,
     IIndex<StorageStrategy, ICodexCollectionRepository> repoIndex,
-    FolderFactory folderFactory,
     CodexViewModelFactory codexViewModelFactory,
     TagViewModelFactory tagViewModelFactory,
     ImportFilesViewModelFactory importFilesViewModelFactory,
@@ -284,7 +280,7 @@ public class CodexCollectionVMFactory(
 {
     public CodexCollectionVM Create(CodexCollection collection, ICodexCollectionRepository repo)
         => new(collection.Name, collection, repo, logger, notificationService, importExportService, coverStorageService,
-               folderFactory, codexViewModelFactory, tagViewModelFactory, importFilesViewModelFactory, collectionManager.Value);
+               codexViewModelFactory, tagViewModelFactory, importFilesViewModelFactory, collectionManager.Value);
 
     public CodexCollectionVM Create(CodexCollection collection, StorageStrategy storageStrategy)
         => Create(collection, repoIndex[storageStrategy]);

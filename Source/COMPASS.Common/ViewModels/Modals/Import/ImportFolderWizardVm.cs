@@ -211,12 +211,12 @@ namespace COMPASS.Common.ViewModels.Modals.Import
                         checkedDirectories.Push(parentFolder);
                     }
 
-                    if (foundParent != null) //there is a parent folder of 'folder' allready in autoimport
+                    if (foundParent != null) //there is a parent folder of 'folder' already in autoimport
                     {
-                        //go back down the tree, checking all neccessary subfolders along the way
+                        //go back down the tree, checking all necessary subfolders along the way
                         while (checkedDirectories.TryPop(out var parentFolderPath)) 
                         {
-                            foundParent.UpdateAllSubFolders(_folderFactory);
+                            foundParent.UpdateAllSubFolders();
                             Folder? lowerParent = foundParent.SubFolders.SingleOrDefault(sf => PathUtils.PathsEqual(sf.FullPath, parentFolderPath));
                             
                             //if not an included subfolder already, take it from allSubFolders and add it to subfolders
