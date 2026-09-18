@@ -1,9 +1,8 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services;
-using COMPASS.Infra.Models.Enums;
 using COMPASS.Infra.Tools.Logging;
 using HtmlAgilityPack;
 using ImageMagick;
@@ -21,7 +20,7 @@ namespace COMPASS.Common.Sources
         public override MetaDataSourceType Type => MetaDataSourceType.GmBinder;
         public override string UrlPrefix => "https://www.gmbinder.com/share/";
 
-        public override async Task<SourceMetaData> GetMetaData(SourceSet sources, IList<Tag> availableTags)
+        public override async Task<SourceMetaData> GetMetaData(SourceSet sources, IList<Tag> availableTags, CancellationToken cancellationToken = default)
         {
             Debug.Assert(IsValidSource(sources), "Invalid Codex was used in GM Binder source");
             
@@ -30,13 +29,13 @@ namespace COMPASS.Common.Sources
                 Publisher = "GM Binder"
             };
             
-            ProgressVM.AddLogEntry(new(Severity.Info, $"Downloading metadata from GM Binder"));
-            HtmlDocument? doc = await WebService.ScrapeSite(sources.SourceURL);
+            Logger.Info($"Downloading metadata from GM Binder");
+            HtmlDocument? doc = await WebService.ScrapeSite(sources.SourceURL, cancellationToken);
             HtmlNode? src = doc?.DocumentNode;
 
             if (doc is null || src is null)
             {
-                ProgressVM.AddLogEntry(new(Severity.Error, $"Could not reach {sources.SourceURL}"));
+                Logger.Error($"Could not reach {sources.SourceURL}", new HttpRequestException());
                 return new();
             }
             
@@ -49,17 +48,17 @@ namespace COMPASS.Common.Sources
             return metaData;
         }
 
-        public override async Task<IMagickImage<byte>?> FetchCover(SourceSet sources)
+        public override async Task<IMagickImage<byte>?> FetchCover(SourceSet sources, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrEmpty(sources.SourceURL)) { return null; }
-            ProgressVM.AddLogEntry(new(Severity.Info, $"Downloading cover from {sources.SourceURL}"));
-            using WebDriver? driver = await GetWebDriverAsync().ConfigureAwait(false);
+            Logger.Info($"Downloading cover from {sources.SourceURL}");
+            using WebDriver? driver = await GetWebDriverAsync(cancellationToken).ConfigureAwait(false);
 
             if (driver is null) { return null; }
 
             try
             {
-                await Task.Run(() => driver.Navigate().GoToUrl(sources.SourceURL)).ConfigureAwait(false);
+                await driver.Navigate().GoToUrlAsync(sources.SourceURL).ConfigureAwait(false);
                 IWebElement coverPage = driver.FindElement(By.Id("p1"));
                 //screenshot and download the image
                 return CoverService.GetCroppedScreenShot(driver, coverPage);
@@ -68,7 +67,6 @@ namespace COMPASS.Common.Sources
             {
                 string msg = $"Failed to get cover from {sources.SourceURL}";
                 Logger.Error(msg, ex);
-                ProgressVM.AddLogEntry(new(Severity.Error, msg));
             }
             return null;
         }

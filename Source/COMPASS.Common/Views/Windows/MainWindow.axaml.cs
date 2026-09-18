@@ -1,11 +1,8 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using COMPASS.Common.Interfaces.Services;
-using COMPASS.Common.Models.Preferences;
 using COMPASS.Common.Services.StateManagers;
-using COMPASS.Common.ViewModels;
 using COMPASS.Common.ViewModels.Main;
-using COMPASS.Infra.Interfaces.Services;
 using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.Views.Windows;
@@ -45,7 +42,10 @@ public partial class MainWindow : Window
 
     private void Window_Closing(object? sender, Avalonia.Controls.WindowClosingEventArgs e)
     {
-        ProgressViewModel.GetInstance().CancelBackgroundTask();
+        ServiceResolver.Resolve<ProgressTrackingManager>().CancelAll();
+
+        //TODO Maybe wait until all tasks are actually cancelled
+
         if (MainViewModel.SaveOnClose)
         {
             UpdateWindowPlacement();

@@ -13,10 +13,10 @@ namespace COMPASS.Common.Sources
             base(logger, preferencesService) { }
         public override MetaDataSourceType Type => MetaDataSourceType.File;
 
-        public override Task<IMagickImage<byte>?> FetchCover(SourceSet sources) => throw new System.NotImplementedException();
+        public override Task<IMagickImage<byte>?> FetchCover(SourceSet sources, CancellationToken cancellationToken = default) => throw new System.NotImplementedException();
         public override bool IsValidSource(SourceSet sources) => sources.HasOfflineSource();
 
-        public override Task<SourceMetaData> GetMetaData(SourceSet sources, IList<Tag> availableTags)
+        public override Task<SourceMetaData> GetMetaData(SourceSet sources, IList<Tag> availableTags, CancellationToken cancellationToken = default)
         {
             SourceMetaData metaData = new()
             {

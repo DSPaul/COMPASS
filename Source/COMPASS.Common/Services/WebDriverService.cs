@@ -29,7 +29,7 @@ namespace COMPASS.Common.Services
             Safari
         }
 
-        public async Task<WebDriver?> GetWebDriver()
+        public async Task<WebDriver?> GetWebDriver(CancellationToken cancellationToken = default)
         {
             if (_browser == Browser.Unknown)
             {
@@ -80,7 +80,7 @@ namespace COMPASS.Common.Services
 
                         co.AddArguments(chromeArgs);
 
-                        webDriver = await Task.Run(() => new ChromeDriver(chromeDriverService, co));
+                        webDriver = await Task.Run(() => new ChromeDriver(chromeDriverService, co), cancellationToken);
                         break;
 
                     case FirefoxDriverService firefoxDriverService:
@@ -90,7 +90,7 @@ namespace COMPASS.Common.Services
                         {
                             fo.BinaryLocation = _browserPath;
                         }
-                        webDriver = await Task.Run(() => new FirefoxDriver(firefoxDriverService, fo));
+                        webDriver = await Task.Run(() => new FirefoxDriver(firefoxDriverService, fo), cancellationToken);
                         break;
 
                     case EdgeDriverService edgeDriverService:
@@ -100,7 +100,7 @@ namespace COMPASS.Common.Services
                         {
                             eo.BinaryLocation = _browserPath;
                         }
-                        webDriver = await Task.Run(() => new EdgeDriver(edgeDriverService, eo));
+                        webDriver = await Task.Run(() => new EdgeDriver(edgeDriverService, eo), cancellationToken);
                         break;
 
                     case SafariDriverService safariDriverService:
@@ -110,7 +110,7 @@ namespace COMPASS.Common.Services
                         {
                             so.BinaryLocation = _browserPath;
                         }
-                        webDriver = await Task.Run(() => new SafariDriver(safariDriverService, so));
+                        webDriver = await Task.Run(() => new SafariDriver(safariDriverService, so), cancellationToken);
                         break;
                 }
             }

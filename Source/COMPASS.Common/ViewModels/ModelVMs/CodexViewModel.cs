@@ -1,4 +1,4 @@
-using Avalonia.Input;
+﻿using Avalonia.Input;
 using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Adorners;
@@ -384,8 +384,8 @@ public class CodexViewModel : ModelViewModelBase<Codex>
     private async Task BanishCodex() => await _codexOperations.BanishCodex(_model);
 
     //Get Metadata
-    public AsyncRelayCommand GetMetaDataCommand => field ??= new(StartGetMetaDataProcess);
-    private async Task StartGetMetaDataProcess() => await _codexOperations.StartGetMetaDataProcess(_model);
+    public AsyncRelayCommand GetMetaDataCommand => field ??= new(GetMetadata);
+    private async Task GetMetadata() => await _codexOperations.FetchMetadata(_model);
     
     //Get Cover
     public AsyncRelayCommand GetCoverCommand => field ??= new(GetCover);

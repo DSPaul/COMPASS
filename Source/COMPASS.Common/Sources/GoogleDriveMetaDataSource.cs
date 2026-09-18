@@ -1,8 +1,7 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
-using COMPASS.Infra.Models.Enums;
 using COMPASS.Infra.Tools.Logging;
 using HtmlAgilityPack;
 using ImageMagick;
@@ -18,7 +17,7 @@ namespace COMPASS.Common.Sources
         public override MetaDataSourceType Type => MetaDataSourceType.GoogleDrive;
         public override string UrlPrefix => "https://drive.google.com/file/";
 
-        public override Task<SourceMetaData> GetMetaData(SourceSet sources, IList<Tag> availableTags)
+        public override Task<SourceMetaData> GetMetaData(SourceSet sources, IList<Tag> availableTags, CancellationToken cancellationToken = default)
         {
             Debug.Assert(IsValidSource(sources), "Invalid Codex was used in Google drive source");
             
@@ -30,14 +29,14 @@ namespace COMPASS.Common.Sources
             return Task.FromResult(metaData);
         }
 
-        public override async Task<IMagickImage<byte>?> FetchCover(SourceSet sources)
+        public override async Task<IMagickImage<byte>?> FetchCover(SourceSet sources, CancellationToken cancellationToken = default)
         {
             if (String.IsNullOrEmpty(sources.SourceURL)) { return null; }
-            ProgressVM.AddLogEntry(new(Severity.Info, $"Downloading cover from Google Drive"));
+            Logger.Info($"Downloading cover from Google Drive");
             try
             {
                 //cover art is on store page, redirect there by going to /credits which every book has
-                HtmlDocument? doc = await WebService.ScrapeSite(sources.SourceURL);
+                HtmlDocument? doc = await WebService.ScrapeSite(sources.SourceURL, cancellationToken);
                 HtmlNode? src = doc?.DocumentNode;
                 if (src is null) return null;
 
@@ -56,14 +55,18 @@ namespace COMPASS.Common.Sources
 
                 if (!string.IsNullOrEmpty(imgURL))
                 {
-                    return await WebService.DownloadImageAsync(imgURL);
+                    return await WebService.DownloadImageAsync(imgURL, cancellationToken: cancellationToken);
                 }
+            }
+            catch(OperationCanceledException)
+            {
+                //To be handled by the caller
+                throw;
             }
             catch (Exception ex)
             {
                 string msg = $"Failed to get cover from {sources.SourceURL}";
                 Logger.Error(msg, ex);
-                ProgressVM.AddLogEntry(new(Severity.Error, msg));
             }
 
             return null;

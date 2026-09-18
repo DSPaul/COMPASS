@@ -24,7 +24,8 @@ namespace COMPASS.Common.ViewModels.Main
 
         public MainViewModel(ILogger logger, IUIService uiService, UpdateManager updateManager, CollectionManager collectionManager, ConnectivityManager connectivityManager, TabsViewModel tabsVm,
             LeftDockViewModelFactory leftDockViewModelFactory,
-            SettingsViewModelFactory settingsViewModelFactory)
+            SettingsViewModelFactory settingsViewModelFactory,
+            ProgressViewModel tasksVM)
         {
             _logger = logger;
             _uiService = uiService;
@@ -41,6 +42,8 @@ namespace COMPASS.Common.ViewModels.Main
             TabsVM = tabsVm;
             TabsVM.TabCreated += TabsVM_TabCreated;
             TabsVM.CreateTab();
+
+            TasksVM = tasksVM;
 
             LeftDockVM = leftDockViewModelFactory.Create(TabsVM);
 
@@ -98,7 +101,11 @@ namespace COMPASS.Common.ViewModels.Main
 
         public string VersionName => $"v{ApplicationService.Version}";
         public bool UpdateAvailable { get; set => SetProperty(ref field, value); }
-        public ProgressViewModel ProgressVM => ProgressViewModel.GetInstance();
+
+        /// <summary>
+        /// Monitor for tracked progress shown in the bottom bar.
+        /// </summary>
+        public ProgressViewModel TasksVM { get; }
 
         #endregion
 

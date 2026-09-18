@@ -8,6 +8,8 @@ using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Views.Windows;
 using COMPASS.Infra.Interfaces.Services;
 using COMPASS.Infra.Models;
+using COMPASS.Infra.Models.Measuring;
+using COMPASS.Infra.Models.Progress;
 using COMPASS.Infra.Tools.Logging;
 using SharpCompress.Archives;
 using SharpCompress.Archives.Zip;
@@ -22,6 +24,7 @@ public class BackupToolViewModel : ViewModelBase, IToolViewModel
     private readonly IImportExportService _importExportService;
     private readonly INotificationService _notificationService;
     private readonly CollectionManager _collectionManager;
+    private readonly ProgressTrackingManager _progressTrackingManager;
     private readonly ILogger _logger;
 
     public BackupToolViewModel(
@@ -30,6 +33,7 @@ public class BackupToolViewModel : ViewModelBase, IToolViewModel
         IImportExportService importExportService,
         INotificationService notificationService,
         CollectionManager collectionManager,
+        ProgressTrackingManager progressTrackingManager,
         ILogger logger)
     {
         _applicationDataService = applicationDataService;
@@ -37,6 +41,7 @@ public class BackupToolViewModel : ViewModelBase, IToolViewModel
         _importExportService = importExportService;
         _notificationService = notificationService;
         _collectionManager = collectionManager;
+        _progressTrackingManager = progressTrackingManager;
         _logger = logger;
     }
     
@@ -65,7 +70,14 @@ public class BackupToolViewModel : ViewModelBase, IToolViewModel
             //save first
             _collectionManager.SaveAllCollections();
 
-            await Task.Run(() => _importExportService.CompressUserDataToZip(targetPath));
+            //System.IO.Compression reports no progress: indeterminate tracker, loading window stays
+            ProgressTracker backupProgressTracker = new(Quantities.Items())
+            {
+                StatusMessage = "Creating backup..."
+            };
+
+            await _progressTrackingManager.RunAsync(backupProgressTracker, "Creating backup",
+                (_, ct) => Task.Run(() => _importExportService.CompressUserDataToZip(targetPath), ct));
 
             loadingWindow.Close();
         }
@@ -104,16 +116,22 @@ public class BackupToolViewModel : ViewModelBase, IToolViewModel
             _logger.Warn("Cannot extract sourcePath as it does not exit");
             return;
         }
-        
-        var progressVm = ProgressViewModel.GetInstance();
-        progressVm.Clear();
 
-        var options = new ReaderOptions()
+        ProgressTracker restoreProgressTracker = new(Quantities.Items())
         {
-            Progress = progressVm
+            StatusMessage = "Restoring backup..."
         };
-        await using var archive = await ZipArchive.OpenAsyncArchive(sourcePath, options);
-        await archive.WriteToDirectoryAsync(_applicationDataService.UserDataPath);
+
+        await _progressTrackingManager.RunAsync(restoreProgressTracker, "Restoring backup",
+            async (track, ct) =>
+            {
+                var options = new ReaderOptions()
+                {
+                    Progress = track
+				};
+                await using var archive = await ZipArchive.OpenAsyncArchive(sourcePath, options, ct);
+                await archive.WriteToDirectoryAsync(_applicationDataService.UserDataPath, progress: track, cancellationToken: ct);
+            });
     }
 }
 
@@ -124,8 +142,9 @@ public class BackupToolViewModelFactory(
     IImportExportService importExportService,
     INotificationService notificationService,
     CollectionManager collectionManager,
+    ProgressTrackingManager progressTrackingManager,
     ILogger logger)
 {
     public BackupToolViewModel Create()
-        => new(applicationDataService, filesService, importExportService, notificationService, collectionManager, logger);
+        => new(applicationDataService, filesService, importExportService, notificationService, collectionManager, progressTrackingManager, logger);
 }

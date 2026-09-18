@@ -4,7 +4,6 @@ using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Infra.Tools.Logging;
 using COMPASS.Infra.Models;
-using COMPASS.Infra.Models.Enums;
 using COMPASS.Infra.Tools;
 using ImageMagick;
 using UglyToad.PdfPig;
@@ -23,7 +22,7 @@ namespace COMPASS.Common.Sources
         public override MetaDataSourceType Type => MetaDataSourceType.PDF;
         public override bool IsValidSource(SourceSet sources) => FileFormatUtils.IsPDFFile(sources.Path);
 
-        public override async Task<SourceMetaData> GetMetaData(SourceSet sources, IList<Tag> availableTags)
+        public override async Task<SourceMetaData> GetMetaData(SourceSet sources, IList<Tag> availableTags, CancellationToken cancellationToken = default)
         {
             Debug.Assert(IsValidSource(sources), "Codex without pdf found in pdf source");
 
@@ -36,7 +35,7 @@ namespace COMPASS.Common.Sources
                     using var fileStream = new FileStream(sources.Path, FileMode.Open, FileAccess.Read, FileShare.Read);
                     using PdfDocument pdfDoc = PdfDocument.Open(fileStream, new ParsingOptions()
                     {
-                        Logger = new PdfLogger(Logger)
+                        Logger = new PdfLogger(Logger),
                     });
 
                     metaData.Title = pdfDoc.Information.Title ?? string.Empty;
@@ -52,6 +51,8 @@ namespace COMPASS.Common.Sources
                     //Search for an ISBN in first 5 pages
                     for (int pageNum = 1; pageNum <= Math.Min(5, pdfDoc.NumberOfPages); pageNum++)
                     {
+                        cancellationToken.ThrowIfCancellationRequested();
+
                         Page page = pdfDoc.GetPage(pageNum);
                         //strip text of spaces
                         string pageContent = RegexConstants.Whitespace().Replace(ContentOrderTextExtractor.GetText(page), "");
@@ -63,7 +64,7 @@ namespace COMPASS.Common.Sources
                             break;
                         }
                     }
-                });
+                }, cancellationToken);
             }
 
             catch (Exception ex)
@@ -71,14 +72,13 @@ namespace COMPASS.Common.Sources
                 //in case pdf is corrupt: PdfDocument.Open will throw error
                 //in those cases: import the pdf without opening it
                 Logger.Error($"Failed to read metadata from {Path.GetFileName(sources.Path)}", ex);
-                LogEntry logEntry = new(Severity.Warning, $"Failed to read metadata from {metaData.Title}");
-                ProgressVM.AddLogEntry(logEntry);
+                Logger.Warn($"Failed to read metadata from {metaData.Title}");
             }
 
             return metaData;
         }
 
-        public override Task<IMagickImage<byte>?> FetchCover(SourceSet sources)
+        public override Task<IMagickImage<byte>?> FetchCover(SourceSet sources, CancellationToken cancellationToken = default)
         {
             //return false if the file doesn't exist
             if (!FileFormatUtils.IsPDFFile(sources.Path) ||
@@ -101,8 +101,6 @@ namespace COMPASS.Common.Sources
             {
                 string logMsg = $"Failed to generate cover from {Path.GetFileName(sources.Path)}";
                 Logger.Error(logMsg, ex);
-                LogEntry logEntry = new(Severity.Warning, logMsg);
-                ProgressVM.AddLogEntry(logEntry);
                 return Task.FromResult<IMagickImage<byte>?>(null);
             }
         }

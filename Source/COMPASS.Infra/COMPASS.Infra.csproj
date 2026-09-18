@@ -11,6 +11,7 @@
       <PackageReference Include="FuzzySharp" Version="2.0.2" />
       <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="10.0.12" />
       <PackageReference Include="NuGet.Versioning" Version="7.9.0" />
+      <PackageReference Include="SharpCompress" Version="0.50.4" />
     </ItemGroup>
     <ItemGroup>
       <Reference Include="Microsoft.Extensions.FileSystemGlobbing">

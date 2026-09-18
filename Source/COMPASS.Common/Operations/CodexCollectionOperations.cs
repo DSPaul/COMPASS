@@ -1,13 +1,9 @@
-using COMPASS.Common.Exceptions;
+﻿using COMPASS.Common.Exceptions;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Services.StateManagers;
-using COMPASS.Common.ViewModels;
 using COMPASS.Common.ViewModels.Main;
-using COMPASS.Infra.Interfaces.Services;
-using COMPASS.Infra.Models;
-using COMPASS.Infra.Models.Enums;
 using COMPASS.Infra.Tools.Logging;
 using COMPASS.Infra.Tools;
 
@@ -156,53 +152,24 @@ public class CodexCollectionOperations(
                                                         ?? throw new LoadException(targetCollectionId);
         var targetCollection = targetCollectionHandle.CollectionVM.Collection;
 
-        var progressVM = ProgressViewModel.GetInstance();
-
-        progressVM.TotalAmount = sourceSets.Count;
-        progressVM.ResetCounter();
-        progressVM.Text = "Importing new items...";
-
         if (sourceSets.Count == 0) return;
 
         List<Codex> newCodices = [];
 
         //make new codices synchronously so they all have a valid ID
-        foreach (var sourceSet in sourceSets)
+        foreach (SourceSet sourceSet in sourceSets)
         {
-            try
-            {
-                ProgressViewModel.GlobalCancellationTokenSource.Token.ThrowIfCancellationRequested();
-            }
-            catch (OperationCanceledException)
-            {
-                ProgressViewModel.GetInstance().ConfirmCancellation();
-                break;
-            }
-
             Codex newCodex = CreateNewCodex(targetCollection);
             newCodex.Sources = sourceSet;
             newCodices.Add(newCodex);
             targetCollection.AllCodices.Add(newCodex);
-
-            LogEntry logEntry = new(Severity.Info, $"Importing {sourceSet}");
-            progressVM.IncrementCounter();
-            progressVM.AddLogEntry(logEntry);
         }
 
         targetCollection.Save();
 
         //now get metadata and cover async
-        try
-        {
-            await codexOperations.StartGetMetaDataProcess(newCodices);
-                await coverService.GetAndApplyCover(newCodices);
-        }
-        catch (OperationCanceledException ex)
-        {
-            logger.Warn("Import has been cancelled", ex);
-            await Task.Run(() => ProgressViewModel.GetInstance().ConfirmCancellation());
-            return;
-        }
+        await codexOperations.FetchMetadata(newCodices);
+        await coverService.GetAndApplyCover(newCodices);
 
         foreach (Codex codex in newCodices)
         {

@@ -1,10 +1,9 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Net;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Infra.ExtensionMethods;
-using COMPASS.Infra.Models.Enums;
 using COMPASS.Infra.Tools.Logging;
 using HtmlAgilityPack;
 using ImageMagick;
@@ -22,22 +21,22 @@ namespace COMPASS.Common.Sources
         public override string UrlPrefix => "https://";
         protected override IEnumerable<string> AcceptedUrlPrefixes => ["https://", "http://"];
 
-        public override Task<IMagickImage<byte>?> FetchCover(SourceSet sources) => throw new NotImplementedException();
+        public override Task<IMagickImage<byte>?> FetchCover(SourceSet sources, CancellationToken cancellationToken = default) => throw new NotImplementedException();
 
-        public override async Task<SourceMetaData> GetMetaData(SourceSet sources, IList<Tag> availableTags)
+        public override async Task<SourceMetaData> GetMetaData(SourceSet sources, IList<Tag> availableTags, CancellationToken cancellationToken = default)
         {
             Debug.Assert(IsValidSource(sources), "Codex without URL was used in Generic URL source");
             
             SourceMetaData metaData = new();
 
             // Scrape metadata
-            ProgressVM.AddLogEntry(new(Severity.Info, $"Extracting metadata from website header"));
-            HtmlDocument? doc = await WebService.ScrapeSite(sources.SourceURL);
+            Logger.Info($"Extracting metadata from website header");
+            HtmlDocument? doc = await WebService.ScrapeSite(sources.SourceURL, cancellationToken);
             HtmlNode? src = doc?.DocumentNode;
 
             if (src is null)
             {
-                ProgressVM.AddLogEntry(new(Severity.Error, $"Could not reach {sources.SourceURL}"));
+                Logger.Error($"Could not reach {sources.SourceURL}", new HttpRequestException());
                 return metaData;
             }
 

@@ -12,6 +12,8 @@ using COMPASS.Infra.ExtensionMethods;
 using COMPASS.Infra.Interfaces.Services;
 using COMPASS.Infra.Models;
 using COMPASS.Infra.Models.Enums;
+using COMPASS.Infra.Models.Measuring;
+using COMPASS.Infra.Models.Progress;
 using COMPASS.Infra.Tools.Logging;
 using Autofac.Features.Indexed;
 
@@ -28,11 +30,12 @@ public class CodexCollectionVM : ModelViewModelBase<CodexCollection>
     private readonly TagViewModelFactory _tagViewModelFactory;
     private readonly ImportFilesViewModelFactory _importFilesViewModelFactory;
     private readonly CollectionManager _collectionManager;
+    private readonly ProgressTrackingManager _progressTrackingManager;
 
     public CodexCollectionVM(string identifier, CodexCollection collection, 
         ICodexCollectionRepository repo, ILogger logger, INotificationService notificationService, IImportExportService importExportService, 
         ICoverStorageService coverStorageService, CodexViewModelFactory codexViewModelFactory, TagViewModelFactory tagViewModelFactory,
-        ImportFilesViewModelFactory importFilesViewModelFactory, CollectionManager collectionManager)
+        ImportFilesViewModelFactory importFilesViewModelFactory, CollectionManager collectionManager, ProgressTrackingManager progressTrackingManager)
         : base(collection)
     {
         _logger = logger;
@@ -43,6 +46,7 @@ public class CodexCollectionVM : ModelViewModelBase<CodexCollection>
         _tagViewModelFactory = tagViewModelFactory;
         _importFilesViewModelFactory = importFilesViewModelFactory;
         _collectionManager = collectionManager;
+        _progressTrackingManager = progressTrackingManager;
 
         _identifier = identifier;
         _repo = repo;
@@ -200,25 +204,41 @@ public class CodexCollectionVM : ModelViewModelBase<CodexCollection>
     
     public async Task AutoImport()
     {
+        // Created and configured on the calling (UI) thread; only the scan + import run in the background.
+        ImportFilesViewModel folderImportVM = _importFilesViewModelFactory.Create(autoImport: true);
+        folderImportVM.NonRecursiveDirectories = Collection.Info.AutoImportFolders.Flatten().Select(f => f.FullPath).ToList() ?? [];
+
+        ProgressTracker autoImportProgressTracker = new(Quantities.Items())
+        {
+            StatusMessage = "Auto-importing..."
+        };
+
         try
         {
-            //Start Auto Imports
-            using ImportFilesViewModel folderImportVM = _importFilesViewModelFactory.Create(autoImport: true);
-            var autoImportFolders = Collection.Info.AutoImportFolders.Flatten();
+            await _progressTrackingManager.RunAsync(autoImportProgressTracker, $"Auto-importing {Identifier}",
+                async (_, cancellationToken) =>
+                {
+                    //Check for any new folders
+                    foreach (var folder in Collection.Info.AutoImportFolders.Flatten())
+                    {
+                        folder.UpdateAllSubFolders();
+                    }
 
-            //Check for any new folders
-            foreach (var folder in autoImportFolders)
-            {
-                folder.UpdateAllSubFolders();
-            }
-
-            folderImportVM.NonRecursiveDirectories = Collection.Info.AutoImportFolders.Flatten().Select(f => f.FullPath).ToList() ?? [];
-            await Task.Delay(TimeSpan.FromSeconds(2));
-            await folderImportVM.Import();
+                    await Task.Delay(TimeSpan.FromSeconds(2), cancellationToken);
+                    await folderImportVM.Import();
+                });
         }
-        catch (Exception ex) 
-        { 
+        catch (OperationCanceledException)
+        {
+            _logger.Info("Auto import was cancelled");
+        }
+        catch (Exception ex)
+        {
             _logger.Error("Error during auto import", ex);
+        }
+        finally
+        {
+            folderImportVM.Dispose();
         }
     }
     
@@ -276,11 +296,12 @@ public class CodexCollectionVMFactory(
     CodexViewModelFactory codexViewModelFactory,
     TagViewModelFactory tagViewModelFactory,
     ImportFilesViewModelFactory importFilesViewModelFactory,
-    Lazy<CollectionManager> collectionManager)
+    Lazy<CollectionManager> collectionManager,
+    ProgressTrackingManager progressTrackingManager)
 {
     public CodexCollectionVM Create(CodexCollection collection, ICodexCollectionRepository repo)
         => new(collection.Name, collection, repo, logger, notificationService, importExportService, coverStorageService,
-               codexViewModelFactory, tagViewModelFactory, importFilesViewModelFactory, collectionManager.Value);
+               codexViewModelFactory, tagViewModelFactory, importFilesViewModelFactory, collectionManager.Value, progressTrackingManager);
 
     public CodexCollectionVM Create(CodexCollection collection, StorageStrategy storageStrategy)
         => Create(collection, repoIndex[storageStrategy]);

@@ -13,7 +13,7 @@ namespace COMPASS.Common.Services.StateManagers
         ILogger logger,
         IUpdateService updateService,
         IPreferencesService preferencesService,
-        INotificationService notificationService)
+        INotificationService notificationService) : IDisposable
     {
         private readonly CancellationTokenSource _cts = new();
 
@@ -61,16 +61,16 @@ namespace COMPASS.Common.Services.StateManagers
 
         private async Task RunUpdateCheckLoop(CancellationToken cancellationToken)
         {
-            await CheckForUpdates().ConfigureAwait(false);
+            await CheckForUpdates(cancellationToken).ConfigureAwait(false);
 
             using var timer = new PeriodicTimer(TimeSpan.FromHours(6));
             while (await timer.WaitForNextTickAsync(cancellationToken).ConfigureAwait(false))
             {
-                await CheckForUpdates().ConfigureAwait(false);
+                await CheckForUpdates(cancellationToken).ConfigureAwait(false);
             }
         }
 
-        private async Task CheckForUpdates()
+        private async Task CheckForUpdates(CancellationToken cancellationToken = default)
         {
             //Guard to prevent manual and automatic updates from running at the same time
             //More likely then you think because downloads can happen in this method which takes time
@@ -82,6 +82,8 @@ namespace COMPASS.Common.Services.StateManagers
 
             try
             {
+                cancellationToken.ThrowIfCancellationRequested();
+
                 var updatePrefs = preferencesService.Preferences.UpdatePreferences;
                 _updates.Clear();
                 var updates = await updateService.CheckForUpdates(updatePrefs.IncludePrerelease).ConfigureAwait(false);
@@ -120,6 +122,11 @@ namespace COMPASS.Common.Services.StateManagers
             var hashString = BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
             
             return hashString == checksum;
+        }
+
+        public void Dispose()
+        {
+            _cts.Dispose();
         }
     }
 }

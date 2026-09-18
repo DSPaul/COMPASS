@@ -1,12 +1,7 @@
 ﻿using Avalonia.Platform.Storage;
 using COMPASS.Common.Interfaces.Services;
-using COMPASS.Common.Services.StateManagers;
-using COMPASS.Common.ViewModels;
-using COMPASS.Common.Views.Windows;
-using COMPASS.Infra.Interfaces.Services;
-using COMPASS.Infra.Models;
-using COMPASS.Infra.Models.Enums;
 using COMPASS.Infra.Tools.Logging;
+using COMPASS.Infra.Models.Progress;
 
 namespace COMPASS.Common.Services.FileSystem
 {
@@ -81,59 +76,50 @@ namespace COMPASS.Common.Services.FileSystem
         
         #region Manipulate data on disk
 
-        public async Task<bool> CopyDataAsync(string sourceDir, string destDir)
+        public async Task<bool> CopyDataAsync(string sourceDir, string destDir, IProgress<IProgressReport>? progressTracker = null, CancellationToken cancellationToken = default)
         {
-            ProgressViewModel progressVM = ProgressViewModel.GetInstance();
-            ProgressWindow progressWindow = new();
-
-            var toCopy = Directory.GetFiles(sourceDir, "*.*", SearchOption.AllDirectories);
-
-            progressVM.TotalAmount = toCopy.Length;
-            progressVM.ResetCounter();
-            progressVM.Text = "Copying Files";
-
-            progressWindow.Show(WindowManager.ActiveWindow);
-
             try
             {
+                string[] filesToCopy = await Task.Run(() => Directory.GetFiles(sourceDir, "*.*", SearchOption.AllDirectories), cancellationToken);
+                progressTracker?.Report(ProgressReports.XOutOfY(0, filesToCopy.Length));
+
                 //Create all the directories
                 foreach (string dirPath in Directory.GetDirectories(sourceDir, "*", SearchOption.AllDirectories))
                 {
                     Directory.CreateDirectory(dirPath.Replace(sourceDir, destDir));
                 }
 
-                //Copy all the files & Replaces any files with the same name
+                //Copy all the files & replace any files with the same name
                 await Task.Run(() =>
                 {
-                    foreach (string sourcePath in toCopy)
+                    foreach (string sourcePath in filesToCopy)
                     {
-                        ProgressViewModel.GlobalCancellationTokenSource.Token.ThrowIfCancellationRequested();
+                        cancellationToken.ThrowIfCancellationRequested();
 
-                        // don't copy log file, causes error because log file is open
-                        if (Path.GetExtension(sourcePath) != ".log")
+                        // don't copy log files, causes error because log file is open
+                        bool skippedOpenLog = Path.GetExtension(sourcePath) == ".log";
+                        if (!skippedOpenLog)
                         {
                             File.Copy(sourcePath, sourcePath.Replace(sourceDir, destDir), true);
+                            logger.Info($"Copied {sourcePath}");
                         }
 
-                        progressVM.IncrementCounter();
-                        progressVM.AddLogEntry(new LogEntry(Severity.Info, $"Copied {sourcePath}"));
+                        progressTracker?.Report(ProgressReports.Increment);
                     }
-                }).ConfigureAwait(false);
+                }, cancellationToken).ConfigureAwait(false);
+
+                return true;
             }
-            catch (OperationCanceledException ex)
+            catch (OperationCanceledException)
             {
-                logger.Warn($"Transfer was cancelled", ex);
-                progressVM.ConfirmCancellation();
-                return false;
+                //let caller decide what to do with the cancellation
+                throw;
             }
             catch (Exception ex)
             {
                 logger.Error($"Could not move data to {destDir}", ex);
-                progressVM.Clear();
                 return false;
             }
-
-            return true;
         }
 
         #endregion

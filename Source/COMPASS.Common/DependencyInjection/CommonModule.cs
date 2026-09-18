@@ -31,8 +31,10 @@ namespace COMPASS.Common.DependencyInjection
             builder.RegisterModule<ApiClientsModule>();
             RegisterHttpClients(builder);
 
-            // Logging: single Serilog pipeline (rolling file + in-app panel sinks)
+            // Logging: single Serilog pipeline (rolling file + in-app panel sinks),
+            // decorated so logs inside a LoggerScope also reach the scoped tracker.
             builder.RegisterType<SerilogLogger>().As<ILogger>().SingleInstance();
+            builder.RegisterDecorator<ScopedForwardingLogger, ILogger>();
 
             //Data Repos: singletons so locks on files work
             builder.RegisterType<CodexCollectionXmlRepository>().Keyed<ICodexCollectionRepository>(StorageStrategy.Xml).SingleInstance();
@@ -46,9 +48,10 @@ namespace COMPASS.Common.DependencyInjection
             builder.RegisterType<WebDriverService>().As<IWebDriverService>().SingleInstance();
 
             //Managers (stateful services)
-            builder.RegisterType<UpdateManager>().AsSelf().SingleInstance();
+            builder.RegisterType<ProgressTrackingManager>().AsSelf().SingleInstance();
             builder.RegisterType<CollectionManager>().AsSelf().SingleInstance();
             builder.RegisterType<ConnectivityManager>().AsSelf().SingleInstance();
+            builder.RegisterType<UpdateManager>().AsSelf().SingleInstance();
 
             //Services are singletons: all are stateless and several are held by singleton
             //operations/managers where transient would just pin one copy per consumer anyway

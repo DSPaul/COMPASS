@@ -208,10 +208,6 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             {
                 await _coverService.GetAndApplyCover(WorkingCopy.GetModel());
             }
-            catch (OperationCanceledException)
-            {
-                return;
-            }
             finally
             {
                 //Restore cover preference

@@ -64,6 +64,7 @@ namespace COMPASS.Common.Services
             var notifiedUpdates = preferencesService.Preferences.UpdatePreferences.NotifiedUpdates;
 
             //download required assets in the background first for a smoother user experience
+            //TODO might want to add some progress tracking here for larger updates
             await AssureUpdateDownloaded(latest);
 
             if(notifiedUpdates.Contains(latest.Version.ToString()))

@@ -721,7 +721,8 @@
           "CommunityToolkit.Mvvm": "[8.4.2, )",
           "FuzzySharp": "[2.0.2, )",
           "Microsoft.Extensions.FileSystemGlobbing": "[10.0.12, )",
-          "NuGet.Versioning": "[7.9.0, )"
+          "NuGet.Versioning": "[7.9.0, )",
+          "SharpCompress": "[0.50.4, )"
         }
       },
       "compass.infra.avalonia": {

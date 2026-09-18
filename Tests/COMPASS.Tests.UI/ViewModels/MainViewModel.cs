@@ -1,47 +1,55 @@
-using Avalonia.Rendering;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Input;
-using COMPASS.Common.Models;
-using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services;
-using COMPASS.Common.Tools;
-using COMPASS.Common.ViewModels;
+using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Views.Windows;
 using COMPASS.Infra.Models;
 using COMPASS.Infra.Models.Enums;
+using COMPASS.Infra.Models.Measuring;
+using COMPASS.Infra.Models.Progress;
 
 namespace COMPASS.Tests.UI.ViewModels;
 
 public class MainViewModel
 {
-    public RelayCommand OpenProgressWindowCommand => field ??= new(OpenProgressWindow);
+    public AsyncRelayCommand OpenProgressWindowCommand => field ??= new(OpenProgressWindow);
     public AsyncRelayCommand OpenInfoWindowCommand => field ??= new(OpenInfoWindow);
     public AsyncRelayCommand OpenWarningWindowCommand => field ??= new(OpenWarningWindow);
     public AsyncRelayCommand OpenErrorWindowCommand => field ??= new(OpenErrorWindow);
     public RelayCommand OpenLoadingWindowCommand => field ??= new(OpenLoadingWindow);
 
-    private static void OpenProgressWindow()
+    private static async Task OpenProgressWindow()
     {
-        var progressVm = ProgressViewModel.GetInstance();
-        int iterations = 100;
-        
-        progressVm.Clear();
-        progressVm.TotalAmount = iterations;
-        progressVm.Text = "Doing stuff";
-        
-        ProgressWindow w = new();
-        w.Show();
-
-        Task.Run(() =>
+        const int iterations = 100;
+        ProgressTracker progressTracker = new(Quantities.Items())
         {
-            for (int i = 0; i < iterations; i++)
+            StatusMessage = "Doing stuff",
+            Total = iterations
+        };
+
+        using ProgressTrackingManager trackingManager = new();
+        TrackedOperation demoOperation = trackingManager.Track(progressTracker, "Doing stuff");
+        ProgressWindow demoWindow = new(demoOperation);
+        demoWindow.Show();
+
+        try
+        {
+            await Task.Run(() =>
             {
-                Thread.Sleep(50);
-                LogEntry entry = new(Severity.Info, $"Iteration {i}");
-                progressVm.AddLogEntry(entry);
-                progressVm.IncrementCounter();
-            }
-        });
+                for (int i = 0; i < iterations; i++)
+                {
+                    Thread.Sleep(50);
+                    progressTracker.Report(ProgressReports.Log(new LogEntry(Severity.Info, $"Iteration {i}")));
+                    progressTracker.Report(ProgressReports.Increment);
+                }
+            });
+        }
+        finally
+        {
+            trackingManager.Untrack(demoOperation);
+            demoOperation.Dispose();
+            await Dispatcher.UIThread.InvokeAsync(demoWindow.Close);
+        }
     }
 
     private static async Task OpenInfoWindow()

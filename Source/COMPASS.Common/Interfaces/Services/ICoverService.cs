@@ -9,8 +9,8 @@ public interface ICoverService
     /// <summary>
     /// Fetches a cover image for the given codex
     /// </summary>
-    /// <exception cref="System.OperationCanceledException">The token has had cancellation requested.</exception>
-    Task GetAndApplyCover(Codex codex, ChooseMetaDataViewModel? chooseMetaDataViewModel = null);
+    /// <exception cref="System.OperationCanceledException"></exception>
+    Task GetAndApplyCover(Codex codex, ChooseMetaDataViewModel? chooseMetaDataViewModel = null, CancellationToken cancellationToken = default);
 
     Task GetAndApplyCover(List<Codex> codices);
 

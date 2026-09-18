@@ -2,12 +2,12 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:vm="using:COMPASS.Common.ViewModels"
+        xmlns:bt="using:COMPASS.Common.Services.StateManagers"
         xmlns:specialConverters="using:COMPASS.Common.Converters"
         xmlns:controls="clr-namespace:COMPASS.Common.Controls"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="COMPASS.Common.Views.Windows.ProgressWindow"
-        x:DataType="vm:ProgressViewModel" WindowDecorations="None"
+        x:DataType="bt:TrackedOperation" WindowDecorations="None"
         Background="Transparent"
         Title="Progress Window" Height="250" Width="450" WindowStartupLocation="CenterOwner">
     <Window.Resources>
@@ -21,7 +21,7 @@
         <Grid >
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                 <DockPanel>
-                    <TextBlock Text="{Binding FullText, Mode=OneWay, FallbackValue=Stuff in Progress}" 
+                    <TextBlock Text="{Binding Title, Mode=OneWay, FallbackValue=Background task}"
                                FontSize="20" DockPanel.Dock="Left"/>
                     <controls:IconButton 
                         Icon="Close" Background="{StaticResource CancelFill}" 
@@ -29,14 +29,23 @@
                         Theme="{StaticResource IconOnly}" CornerRadius="3"
                         DockPanel.Dock="Right" HorizontalAlignment="Right" Click="Close_Click" 
                         Width="20" Height="20"/>
+                    <controls:IconButton 
+                        Icon="CloseCircleOutline" Background="Transparent"
+                        ToolTip.Tip="Cancel task"
+                        Theme="{StaticResource IconOnly}" CornerRadius="3"
+                        DockPanel.Dock="Right" HorizontalAlignment="Right" Click="Cancel_Click" 
+                        Width="20" Height="20"/>
                 </DockPanel>
+                <TextBlock Text="{Binding Tracker.StatusMessage, Mode=OneWay}" 
+                           FontSize="14" Margin="0,2"/>
                 <ProgressBar x:Name="ProgBar" Minimum="0" Maximum="100" 
-                             Value="{Binding Percentage, FallbackValue=30, Mode=OneWay}" 
-                                Width="400" Margin="0,5" ValueChanged="ProgBar_OnValueChanged"/>
+                             Value="{Binding Tracker.Percentage, FallbackValue=0, Mode=OneWay}"
+                             IsIndeterminate="{Binding Tracker.IsIndeterminate, Mode=OneWay}"
+                                 Width="400" Margin="0,5"/>
                 <Border Height="175" Width="400" Background="{StaticResource LogBackground}" 
                         CornerRadius="5" BorderBrush="{StaticResource LogBorder}" BorderThickness="1" Margin="0,5">
                     <ScrollViewer x:Name="Scroller" VerticalScrollBarVisibility="Auto">
-                        <ItemsControl x:Name="LogsControl" BorderThickness="0" ItemsSource="{Binding Log, Mode=OneWay}" Margin="10,5">
+                        <ItemsControl x:Name="LogsControl" BorderThickness="0" ItemsSource="{Binding Tracker.MessageLog, Mode=OneWay}" Margin="10,5">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding Msg, FallbackValue=Message}" FontSize="12"  TextWrapping="Wrap"

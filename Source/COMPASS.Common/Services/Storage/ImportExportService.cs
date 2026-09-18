@@ -5,9 +5,11 @@ using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
-using COMPASS.Common.ViewModels;
+using COMPASS.Common.Services.StateManagers;
 using COMPASS.Infra.Interfaces.Services;
 using COMPASS.Infra.Models.Enums;
+using COMPASS.Infra.Models.Measuring;
+using COMPASS.Infra.Models.Progress;
 using COMPASS.Infra.Tools;
 using NuGet.Versioning;
 using SharpCompress.Archives;
@@ -28,6 +30,7 @@ public class ImportExportService(
     IIOService ioService,
     INotificationService windowedNotificationService,
     ILogger logger,
+    ProgressTrackingManager progressTrackingManager,
     IIndex<StorageStrategy, ICodexCollectionRepository> repositories)
     : IImportExportService
 {
@@ -176,24 +179,28 @@ public class ImportExportService(
         //make sure any previous temp data is gone
         ioService.ClearTmpData(tmpCollectionPath);
 
-        //unzip the file to tmp folder
-        await using var archive = await ZipArchive.OpenAsyncArchive(zipFile);
+        ProgressTracker progressTracker = new(Quantities.FileSize)
+        {
+            StatusMessage = $"Reading {zipFile}"
+        };
 
-        //report progress
-        var progressVM = ProgressViewModel.GetInstance();
-        progressVM.Text = $"Reading {zipFile}";
-        progressVM.ResetCounter();
-
-        //extract
         try
         {
-            Directory.CreateDirectory(tmpCollectionPath);
-            await archive.WriteToDirectoryAsync(tmpCollectionPath, progress: progressVM);
+            await progressTrackingManager.RunAsync(progressTracker, "Importing collection",
+                async (tracker, ct) =>
+                {
+                    //unzip the file to tmp folder
+                    await using var archive = await ZipArchive.OpenAsyncArchive(zipFile, cancellationToken: ct);
+
+                    //extract on a background thread; SharpCompress reports byte progress into the tracker
+                    Directory.CreateDirectory(tmpCollectionPath);
+                    await archive.WriteToDirectoryAsync(tmpCollectionPath, progress: tracker, cancellationToken: ct);
+                });
         }
-        catch
+        catch(OperationCanceledException)
         {
-            progressVM.Clear();
-            throw;
+            logger.Info($"Import of {zipFile} was canceled");
+            ioService.ClearTmpData(tmpCollectionPath);
         }
 
         return tmpCollectionPath;
@@ -205,8 +212,6 @@ public class ImportExportService(
 
     public async Task ExportCollection(CodexCollection collection, IStorageFile? file, bool includeFiles, bool includeCovers)
     {
-        var progressVM = ProgressViewModel.GetInstance();
-
         try
         {
             if (file == null)
@@ -222,7 +227,7 @@ public class ImportExportService(
 
             await using var archive = await ZipArchive.CreateAsyncArchive();
 
-            //Add the files themselves as well as cover art if requested
+            //Add the files themselves as well as cover art if requested.
             if (includeFiles)
             {
                 await AddUserFilesToArchive(collection, archive);
@@ -249,25 +254,38 @@ public class ImportExportService(
             using var infoStream = new MemoryStream(JsonSerializer.SerializeToUtf8Bytes(info));
             await archive.AddEntryAsync(Constants.SatchelInfoFileName, infoStream);
 
-            //Prepare progress reporting
-            progressVM.Text = "Exporting Collection";
-            progressVM.ShowCount = false;
-            progressVM.ResetCounter();
-
-            //Write archive
-            var writerOptions = new ZipWriterOptions(CompressionType.None)
+            //Only the final write runs in the background as it does the actual IO
+            ProgressTracker progressTracker = new(Quantities.FileSize)
             {
-                Progress = progressVM
+                StatusMessage = "Exporting collection"
             };
-            await using var stream = await file.OpenWriteAsync();
-            await archive.SaveToAsync(stream, writerOptions);
+
+            try
+            {
+                await progressTrackingManager.RunAsync(progressTracker, "Exporting collection",
+                    async (tracker, ct) =>
+                    {
+                        await using var stream = await file.OpenWriteAsync();
+                        var writerOptions = new ZipWriterOptions(CompressionType.None)
+                        {
+                            Progress = tracker
+                        };
+
+                        await archive.SaveToAsync(stream, writerOptions, ct);
+                    });
+            }
+            catch(OperationCanceledException)
+            {
+                logger.Info($"Export of {collection.Name} was canceled");
+                await file.DeleteAsync();
+                return;
+            }
 
             logger.Info($"Exported {collection.Name} to {file.TryGetLocalPath()}");
         }
         catch (Exception ex)
         {
             logger.Error("Export failed", ex);
-            progressVM.Clear();
         }
         finally
         {

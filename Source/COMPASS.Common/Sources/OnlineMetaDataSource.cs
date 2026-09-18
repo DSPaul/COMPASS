@@ -15,7 +15,7 @@ namespace COMPASS.Common.Sources
         IWebDriverService webDriverService) : MetaDataSource(logger, preferencesService)
     {
         protected IWebService WebService => webService;
-        protected private async Task<WebDriver?> GetWebDriverAsync() => await webDriverService.GetWebDriver().ConfigureAwait(false);
+        protected private async Task<WebDriver?> GetWebDriverAsync(CancellationToken cancellationToken = default) => await webDriverService.GetWebDriver(cancellationToken).ConfigureAwait(false);
 
         /// <summary>
         /// The prefix of the URL for this source. For example, "https://www.example.com/metadata/".

@@ -1,151 +1,112 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Input;
-using COMPASS.Infra.Models;
-using COMPASS.Infra.Tools;
-using SharpCompress.Common;
+using COMPASS.Common.Services.StateManagers;
+using COMPASS.Infra.Models.Progress;
 
-namespace COMPASS.Common.ViewModels
+namespace COMPASS.Common.ViewModels;
+
+/// <summary>
+/// UI layer over <see cref="ProgressTrackingManager"/>
+/// </summary>
+public class ProgressViewModel : ViewModelBase, IDisposable
 {
-    public class ProgressViewModel : ViewModelBase, IProgress<ProgressReport>
+    private readonly ProgressTrackingManager _progressManager;
+
+    public ProgressViewModel(ProgressTrackingManager progressManager)
     {
+        _progressManager = progressManager;
+        _progressManager.TrackingChanged += OnTrackingChanged;
+        RefreshTrackers();
+    }
 
-        #region Singleton pattern
-        private static ProgressViewModel? _progressVM;
+    public ObservableCollection<TrackedOperation> TrackedOperations { get; } = [];
 
-        /// <summary>
-        /// Accessor for code that cannot receive constructor injection (static
-        /// helpers, view code-behind). Services should inject ProgressViewModel instead.
-        /// </summary>
-        public static ProgressViewModel GetInstance() => _progressVM ??= ServiceResolver.Resolve<ProgressViewModel>();
-
-        #endregion
-
-        public ObservableCollection<LogEntry> Log
+    public TrackedOperation? PrimaryOperation
+    {
+        get;
+        private set
         {
-            get;
-            set => SetProperty(ref field, value);
-        } = [];
+            SetProperty(ref field, value);
+            OnPropertyChanged(nameof(HasActivity));
+            OnPropertyChanged(nameof(DisplayText));
+            OnPropertyChanged(nameof(Percentage));
+            OnPropertyChanged(nameof(IsIndeterminate));
+        }
+    }
 
+    public bool HasActivity => PrimaryOperation is not null;
 
-        public int Counter
+    public string DisplayText
+    {
+        get
         {
-            get;
-            private set
-            {
-                SetProperty(ref field, value);
-                OnPropertyChanged(nameof(Percentage));
-                OnPropertyChanged(nameof(FullText));
-                OnPropertyChanged(nameof(WorkInProgress));
-            }
+            if (PrimaryOperation is null) return "";
+
+            string statusMessage = PrimaryOperation.Tracker.StatusMessage;
+            return string.IsNullOrEmpty(statusMessage)
+                ? PrimaryOperation.Title
+                : $"{PrimaryOperation.Title} — {statusMessage}";
+        }
+    }
+
+    public double Percentage => PrimaryOperation?.Tracker.Percentage ?? 0;
+
+    public bool IsIndeterminate => PrimaryOperation?.Tracker.IsIndeterminate ?? false;
+
+    public RelayCommand CancelPrimaryCommand => field ??= new(CancelPrimary);
+    private void CancelPrimary() => PrimaryOperation?.Cancel();
+
+    public RelayCommand CancelAllCommand => field ??= new(() => _progressManager.CancelAll());
+
+    private void OnTrackingChanged(object? sender, EventArgs e) => Dispatcher.UIThread.Post(RefreshTrackers);
+
+    private void OnTrackerPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName is not (nameof(ProgressTracker.Fraction) or nameof(ProgressTracker.StatusMessage)
+            or nameof(ProgressTracker.Percentage) or nameof(ProgressTracker.IsIndeterminate))) return;
+        Dispatcher.UIThread.Post(() =>
+        {
+            OnPropertyChanged(nameof(DisplayText));
+            OnPropertyChanged(nameof(Percentage));
+            OnPropertyChanged(nameof(IsIndeterminate));
+        });
+    }
+
+    private void RefreshTrackers()
+    {
+        List<TrackedOperation> freshSnapshot = _progressManager.GetSnapshot().ToList();
+
+        for (int operationIndex = TrackedOperations.Count - 1; operationIndex >= 0; operationIndex--)
+        {
+            TrackedOperation knownOperation = TrackedOperations[operationIndex];
+            if (freshSnapshot.Contains(knownOperation)) continue;
+            knownOperation.Tracker.PropertyChanged -= OnTrackerPropertyChanged;
+            TrackedOperations.RemoveAt(operationIndex);
         }
 
-        public int TotalAmount
+        foreach (TrackedOperation freshOperation in freshSnapshot)
         {
-            get;
-            set
-            {
-                if (value == field) return;
-                SetProperty(ref field, value);
-                OnPropertyChanged(nameof(Percentage));
-                OnPropertyChanged(nameof(FullText));
-                OnPropertyChanged(nameof(WorkInProgress));
-            }
+            if (TrackedOperations.Contains(freshOperation)) continue;
+            freshOperation.Tracker.PropertyChanged += OnTrackerPropertyChanged;
+            TrackedOperations.Add(freshOperation);
         }
 
-        public int Percentage
+        PrimaryOperation = TrackedOperations.LastOrDefault();
+        OnPropertyChanged(nameof(HasActivity));
+        OnPropertyChanged(nameof(DisplayText));
+        OnPropertyChanged(nameof(Percentage));
+        OnPropertyChanged(nameof(IsIndeterminate));
+    }
+
+    public void Dispose()
+    {
+        _progressManager.TrackingChanged -= OnTrackingChanged;
+        foreach (TrackedOperation operation in TrackedOperations)
         {
-            get
-            {
-                if (TotalAmount == 0) return 100;
-                return Counter * 100 / TotalAmount;
-            }
+            operation.Tracker.PropertyChanged -= OnTrackerPropertyChanged;
         }
-
-        /// <summary>
-        /// Displays [x/y] next to export title
-        /// </summary>
-        public bool ShowCount { get; set; } = true;
-
-        public string Text
-        {
-            get;
-            set
-            {
-                SetProperty(ref field, value);
-                OnPropertyChanged(nameof(FullText));
-            }
-        } = "";
-
-        public string FullText
-        {
-            get
-            {
-                if (Cancelling) return $"Cancelling {Text}...";
-                string result = $"{Text}";
-                if (ShowCount) result += $" [{Counter} / {TotalAmount}]";
-                return result;
-            }
-        }
-
-        public bool WorkInProgress => TotalAmount > 0 && Counter < TotalAmount;
-
-        private readonly Mutex _progressMutex = new();
-        public void IncrementCounter()
-        {
-            _progressMutex.WaitOne();
-            Counter++;
-            _progressMutex.ReleaseMutex();
-        }
-
-        public void Report(ProgressReport report)
-        {
-            if (report.PercentComplete != null)
-            {
-                TotalAmount = 100;
-                Counter = (int)report.PercentComplete;
-            }
-        }
-
-        public void ResetCounter()
-        {
-            _progressMutex.WaitOne();
-            Counter = 0;
-            _progressMutex.ReleaseMutex();
-        }
-
-        public void Clear()
-        {
-            ResetCounter();
-            TotalAmount = 0;
-        }
-
-        public void AddLogEntry(LogEntry entry) =>
-            Dispatcher.UIThread.Invoke(() =>
-            Log.Add(entry)
-        );
-
-        public bool Cancelling { get; set; } = false;
-        public static CancellationTokenSource GlobalCancellationTokenSource { get; private set; } = new();
-        public void ConfirmCancellation()
-        {
-            //Reset any progress
-            Clear();
-            //create a new tokenSource
-            GlobalCancellationTokenSource = new();
-            //force refresh the command so that it grabs the right cancel function
-            _cancelTasksCommand = null;
-            OnPropertyChanged(nameof(CancelTasksCommand));
-            Cancelling = false;
-        }
-
-        private RelayCommand? _cancelTasksCommand;
-        public RelayCommand CancelTasksCommand => _cancelTasksCommand ??= new(CancelBackgroundTask);
-        public void CancelBackgroundTask()
-        {
-            GlobalCancellationTokenSource.Cancel();
-            Cancelling = true;
-            OnPropertyChanged(nameof(FullText));
-        }
+        GC.SuppressFinalize(this);
     }
 }

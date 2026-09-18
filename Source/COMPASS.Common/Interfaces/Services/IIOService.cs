@@ -1,3 +1,5 @@
+using COMPASS.Infra.Models.Progress;
+
 namespace COMPASS.Common.Interfaces.Services;
 
 public interface IIOService
@@ -28,7 +30,15 @@ public interface IIOService
 
     #region Manipulate data on disk
 
-    Task<bool> CopyDataAsync(string sourceDir, string destDir);
+    /// <summary>
+    /// Copies all files from <paramref name="sourceDir"/> to <paramref name="destDir"/>
+    /// </summary>
+    /// <param name="sourceDir"></param>
+    /// <param name="destDir"></param>
+    /// <param name="progressTracker"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>True if the copy was successful, false if canceled or an error occurred</returns>
+    Task<bool> CopyDataAsync(string sourceDir, string destDir, IProgress<IProgressReport>? progressTracker = null, CancellationToken cancellationToken = default);
 
     #endregion
 

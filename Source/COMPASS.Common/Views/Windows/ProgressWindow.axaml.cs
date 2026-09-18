@@ -1,45 +1,32 @@
 using System.Collections.Specialized;
 using Avalonia.Controls;
-using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
-using COMPASS.Common.ViewModels;
+using COMPASS.Common.Services.StateManagers;
 
 namespace COMPASS.Common.Views.Windows;
 
 public partial class ProgressWindow : Window
 {
-    public ProgressWindow(): this(1)
+    private readonly TrackedOperation _operation;
+
+    public ProgressWindow(TrackedOperation operation)
     {
-        
-    }
-    
-    public ProgressWindow(int bars)
-    {
-        DataContext = ProgressViewModel.GetInstance();
-        _totalBars = bars;
+        _operation = operation ?? throw new ArgumentNullException(nameof(operation));
+        DataContext = operation;
         InitializeComponent();
         ((INotifyCollectionChanged)LogsControl.Items).CollectionChanged += Logs_CollectionChanged;
     }
-
-    private int _barsDone = 0;
-    private int _totalBars;
 
     private void Logs_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
         if (e.Action == NotifyCollectionChangedAction.Add)
         {
-            // scroll the new item into view   
+            // scroll the new item into view
             Scroller.ScrollToEnd();
         }
     }
 
     private void Close_Click(object sender, RoutedEventArgs e) => Close();
 
-    private void ProgBar_OnValueChanged(object? sender, RangeBaseValueChangedEventArgs e)
-    {
-        if (ProgBar.Value >= 100 || _barsDone >= _totalBars)
-        {
-            Close();
-        }
-    }
+    private void Cancel_Click(object sender, RoutedEventArgs e) => _operation.Cancel();
 }

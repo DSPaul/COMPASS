@@ -1,5 +1,6 @@
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
+using COMPASS.Infra.Models.Progress;
 using COMPASS.Infra.Tools;
 using COMPASS.Tests.Common.Mocks;
 
@@ -191,7 +192,7 @@ namespace COMPASS.UnitTests.Models
             public void ShowInExplorer(string filePath) => throw new NotImplementedException();
             public Task<string?> PickFolder() => throw new NotImplementedException();
             public Task<IList<string>> TryPickFolders() => throw new NotImplementedException();
-            public Task<bool> CopyDataAsync(string sourceDir, string destDir) => throw new NotImplementedException();
+            public Task<bool> CopyDataAsync(string sourceDir, string destDir, IProgress<IProgressReport>? progressTracker, CancellationToken cancellationToken) => throw new NotImplementedException();
             public bool EnsureDirectoryExists(string path) => throw new NotImplementedException();
             public IEnumerable<string> TryGetFilesInFolder(string path) => [];
         }

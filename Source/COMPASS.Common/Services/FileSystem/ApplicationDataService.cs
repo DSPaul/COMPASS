@@ -8,6 +8,8 @@ using COMPASS.Common.ViewModels.Modals;
 using COMPASS.Infra.Interfaces.Services;
 using COMPASS.Infra.Models;
 using COMPASS.Infra.Models.Enums;
+using COMPASS.Infra.Models.Measuring;
+using COMPASS.Infra.Models.Progress;
 using COMPASS.Infra.Tools.Logging;
 
 namespace COMPASS.Common.Services.FileSystem;
@@ -17,7 +19,8 @@ public class ApplicationDataService(
     INotificationService notificationService,
     ILogger logger,
     Lazy<IPreferencesService> preferencesService,
-    Lazy<CollectionManager> collectionManager)
+    Lazy<CollectionManager> collectionManager,
+    ProgressTrackingManager progressTrackingManager)
     : IApplicationDataService
 {
     private const string RedirectFileName = "data_location.redirect";
@@ -167,12 +170,29 @@ public class ApplicationDataService(
         preferencesService.Value.SavePreferences();
 
         //Move data to new location if chosen
-        if (action == ChangeDataLocationActions.Move || 
+        if (action == ChangeDataLocationActions.Move ||
             action == ChangeDataLocationActions.Copy)
         {
             string oldPath = UserDataPath;
-            bool success = await ioService.CopyDataAsync(oldPath, newPath);
-            if (!success)
+            ProgressTracker progressTracker = new(Quantities.Items("Files"))
+            {
+                StatusMessage = "Copying data..."
+            };
+
+            bool copySucceeded = false;
+
+            try
+            {
+                await progressTrackingManager.RunAsync(progressTracker, "Moving data",
+                    async (tracker, ct) => copySucceeded = await ioService.CopyDataAsync(oldPath, newPath, tracker, ct));
+            }
+            catch (OperationCanceledException)
+            {
+                logger.Info("Data location change was cancelled, staying at the current location");
+                return false;
+            }
+
+            if (!copySucceeded)
             {
                 Notification notMoved = new("Move failed", $"Failed to move data to {newPath}, please try again or choose a different location",
                     Severity.Error);
@@ -197,7 +217,7 @@ public class ApplicationDataService(
         }
 
         //Delete data in previous location if chosen
-        if (action == ChangeDataLocationActions.Wipe || 
+        if (action == ChangeDataLocationActions.Wipe ||
             action == ChangeDataLocationActions.Move)
         {
             try

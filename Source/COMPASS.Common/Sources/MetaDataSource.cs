@@ -1,7 +1,6 @@
 ﻿using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
-using COMPASS.Common.ViewModels;
 using COMPASS.Infra.Tools.Logging;
 using COMPASS.Infra.Tools;
 using ImageMagick;
@@ -21,18 +20,17 @@ namespace COMPASS.Common.Sources
 
         #region Import Logic
 
-        protected ProgressViewModel ProgressVM => ProgressViewModel.GetInstance();
-
         public abstract MetaDataSourceType Type { get; }
 
         public abstract bool IsValidSource(SourceSet sources);
 
         /// <param name="sources">The sources to get metadata for</param>
         /// <param name="availableTags">Tags that sources can choose from</param>
+        /// <param name="cancellationToken">A token to cancel the operation</param>
         /// <returns></returns>
-        public abstract Task<SourceMetaData> GetMetaData(SourceSet sources, IList<Tag> availableTags);
+        public abstract Task<SourceMetaData> GetMetaData(SourceSet sources, IList<Tag> availableTags, CancellationToken cancellationToken = default);
 
-        public abstract Task<IMagickImage<byte>?> FetchCover(SourceSet sources);
+        public abstract Task<IMagickImage<byte>?> FetchCover(SourceSet sources, CancellationToken cancellationToken = default);
         #endregion
 
         protected virtual List<Tag> GetMatchingTags(SourceSet sources, IList<Tag> availableTags)

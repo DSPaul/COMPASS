@@ -10,7 +10,6 @@ using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Models.Preferences;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Sources;
-using COMPASS.Common.ViewModels;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.Modals;
 using COMPASS.Common.ViewModels.Modals.Edit;
@@ -19,6 +18,8 @@ using COMPASS.Infra.ExtensionMethods;
 using COMPASS.Infra.Interfaces.Services;
 using COMPASS.Infra.Models;
 using COMPASS.Infra.Models.Enums;
+using COMPASS.Infra.Models.Measuring;
+using COMPASS.Infra.Models.Progress;
 using COMPASS.Infra.Tools.Logging;
 using COMPASS.Infra.Tools;
 using System.Collections;
@@ -39,6 +40,7 @@ namespace COMPASS.Common.Operations
         Lazy<FileNotFoundViewModelFactory> fileNotFoundViewModelFactory,
         ChooseMetaDataViewModelFactory chooseMetaDataViewModelFactory,
         Lazy<CollectionManager> collectionManager,
+        ProgressTrackingManager progressTrackingManager,
         IIndex<string, MetaDataSource> metaDataSources)
     {
         #region Open Codex
@@ -431,170 +433,193 @@ namespace COMPASS.Common.Operations
         }
 
         //Get Metadata
-        public async Task StartGetMetaDataProcess(Codex? codex)
+        public async Task FetchMetadata(Codex? codex)
         {
-            try
-            {
-                if (codex == null) { return; }
-                await StartGetMetaDataProcess(new List<Codex>() { codex });
-            }
-            catch (OperationCanceledException ex)
-            {
-                logger.Warn("Renewing metadata has been cancelled", ex);
-                await Task.Run(() => ProgressViewModel.GetInstance().ConfirmCancellation());
-            }
+            if (codex == null) return;
+            await FetchMetadata(new List<Codex>() { codex });
         }
-        public async Task StartGetMetaDataProcess(IList<Codex> codices)
-        {            
+
+        public async Task FetchMetadata(IList<Codex> codices)
+        {
             if (!codices.Any()) return;
 
-            var codicesGroupedByCollection = codices.GroupBy(codex => codex.Collection).ToList();
-            
-            //If spread over multiple collection, to them one collection at a time
-            if (codicesGroupedByCollection.Count > 1)
+            ProgressTracker progressTracker = new(Quantities.Items())
             {
-                foreach (var group in codicesGroupedByCollection)
-                {
-                    await StartGetMetaDataProcess(group.ToList());
-                }
-                return;
-            }
-            
-            using CollectionHandle? localCollectionHandle = codices.First().Collection.Load();
-            if (localCollectionHandle == null)
-            {
-                logger.Warn("Could not get metadata for items as they could not be loaded");
-                return;;
-            }
-            
-            var progressVM = ProgressViewModel.GetInstance();
-            progressVM.ResetCounter();
-            progressVM.Text = "Getting MetaData";
-            progressVM.TotalAmount = codices.Count;
-
-            ParallelOptions parallelOptions = new()
-            {
-                MaxDegreeOfParallelism = Math.Max(Environment.ProcessorCount / 2, 1)
+                StatusMessage = "Getting metadata...",
+                Total = codices.Count
             };
-
-            ChooseMetaDataViewModel chooseMetaDataVM = chooseMetaDataViewModelFactory.Create();
 
             try
             {
-                await Parallel.ForEachAsync(codices, parallelOptions, async (codex, _) => await GetMetaData(codex, chooseMetaDataVM));
+                await progressTrackingManager.RunAsync(progressTracker, "Getting metadata", async (tracker, ct) => 
+                { 
+                    var codicesGroupedByCollection = codices.GroupBy(codex => codex.Collection).ToList();
+                
+                    //If spread over multiple collections, fetch per collection so each group
+                    //saves its own collection, all under one shared tracker.
+                    if (codicesGroupedByCollection.Count > 1)
+                    {
+                         await Task.WhenAll(codicesGroupedByCollection.Select(group =>
+                                FetchMetaData(group.ToList(), tracker, ct)));
+                        return;
+                    }
+
+                    await FetchMetaData(codices, tracker, ct);
+                });
             }
             catch (OperationCanceledException)
             {
-                ProgressViewModel.GetInstance().ConfirmCancellation();
+                logger.Info("Fetching metadata has been cancelled");
             }
+        }
+
+        private async Task FetchMetaData(IList<Codex> codices, IProgress<IProgressReport> progressTracker, CancellationToken cancellationToken)
+        {
+            Debug.Assert(codices.HasCommonValue(c => c.Collection, out CodexCollection? collection), "FetchMetaDataAsync called with empty codices list");
+
+            using CollectionHandle? localCollectionHandle = collection?.Load();
+            if (localCollectionHandle == null)
+            {
+                logger.Warn("Could not get metadata for items as they could not be loaded");
+                return;
+            }
+
+            ChooseMetaDataViewModel chooseMetaDataVM = chooseMetaDataViewModelFactory.Create();
+
+            ParallelOptions parallelOptions = new()
+            {
+                MaxDegreeOfParallelism = Math.Max(Environment.ProcessorCount / 2, 1),
+                CancellationToken = cancellationToken
+            };
+            await Parallel.ForEachAsync(codices, parallelOptions,
+                async (codex, ct) =>
+                {
+                    try
+                    {
+                        await GetMetaData(codex, chooseMetaDataVM, ct);
+                    }
+                    finally
+                    {
+                        progressTracker.Report(ProgressReports.Increment);
+                    }
+                });
 
             if (chooseMetaDataVM.MetaDataProposals.Any())
             {
                 await WindowManager.OpenModal(chooseMetaDataVM);
             }
-            
+
             //Save at the end
             localCollectionHandle.SaveCodices();
         }
-        private async Task GetMetaData(Codex codex, ChooseMetaDataViewModel chooseMetaDataVM)
+
+        private async Task GetMetaData(Codex codex, ChooseMetaDataViewModel chooseMetaDataVM, CancellationToken ct)
         {
-            SourceMetaData existingMetaData = new(codex);
-
-            // Lazy load metadata from all the sources, use dict to store
-            Dictionary<string, SourceMetaData> metaDataFromSource = new();
-
-            //First try to get sources from other sources
-            //Pdf can contain ISBN number
-            if (metaDataSources.TryGetValue(nameof(MetaDataSourceType.PDF), out MetaDataSource? pdfSource)
-                && pdfSource.IsValidSource(codex.Sources)
-                && string.IsNullOrEmpty(codex.Sources.ISBN))
+            try
             {
-                SourceMetaData pdfData = await pdfSource.GetMetaData(codex.Sources, codex.Collection.AllTags);
+                ct.ThrowIfCancellationRequested();
+                SourceMetaData existingMetaData = new(codex);
 
-                //already store this so pdf doesn't need to be opened twice
-                metaDataFromSource.Add(nameof(MetaDataSourceType.PDF), pdfData);
-            }
+                // Lazy load metadata from all the sources, use dict to store
+                Dictionary<string, SourceMetaData> metaDataFromSource = new();
 
-            //metadata that will be shown to the user, and asked if they want to use it
-            SourceMetaData toAsk = new();
-            bool shouldAsk = false;
-
-            //Iterate over all the properties and set them
-            foreach (var prop in preferencesService.Preferences.ImportableCodexProperties)
-            {
-                if (prop.OverwriteMode == MetaDataOverwriteMode.Never) continue;
-                if (prop is CoverProperty) continue; //Covers are done separately
-
-                //preferredMetadata will hold the metadata from the top preferred source
-                SourceMetaData preferredMetadata = new();
-
-                //iterate over the sources in reverse because overwriting causes the last ones to remain
-                foreach (var sourceType in prop.SourcePriority.Select(s => s.ToString()).Reverse())
+                //First try to get sources from other sources
+                //Pdf can contain ISBN number
+                if (metaDataSources.TryGetValue(nameof(MetaDataSourceType.PDF), out MetaDataSource? pdfSource)
+                    && pdfSource.IsValidSource(codex.Sources)
+                    && string.IsNullOrEmpty(codex.Sources.ISBN))
                 {
-                    ProgressViewModel.GlobalCancellationTokenSource.Token.ThrowIfCancellationRequested();
+                    SourceMetaData pdfData = await pdfSource.GetMetaData(codex.Sources, codex.Collection.AllTags, ct);
 
-                    // Check if there is metadata from this source to use
-                    if (!metaDataFromSource.TryGetValue(sourceType, out SourceMetaData? metadata))
-                    {
-                        if (!metaDataSources.TryGetValue(sourceType, out MetaDataSource? source)) continue;
-                        if (!source.IsValidSource(codex.Sources)) continue;
-                        metadata = await source.GetMetaData(codex.Sources, codex.Collection.AllTags);
-                        metaDataFromSource.Add(sourceType, metadata);
-                    }
-
-                    //If there is, make it the new preferred
-                    if (!prop.IsEmpty(metadata))
-                    {
-                        prop.Copy(metadata, preferredMetadata);
-                    }
+                    //already store this so pdf doesn't need to be opened twice
+                    metaDataFromSource.Add(nameof(MetaDataSourceType.PDF), pdfData);
                 }
 
-                //if no (new) value was found for this prop, do nothing
-                if (prop.IsEmpty(preferredMetadata) || !prop.HasNewValue(preferredMetadata, codex)) continue;
+                //metadata that will be shown to the user, and asked if they want to use it
+                SourceMetaData toAsk = new();
+                bool shouldAsk = false;
+
+                //Iterate over all the properties and set them
+                foreach (var prop in preferencesService.Preferences.ImportableCodexProperties)
+                {
+                    ct.ThrowIfCancellationRequested();
+
+                    if (prop.OverwriteMode == MetaDataOverwriteMode.Never) continue;
+                    if (prop is CoverProperty) continue; //Covers are done separately
+
+                    //preferredMetadata will hold the metadata from the top preferred source
+                    SourceMetaData preferredMetadata = new();
+
+                    //iterate over the sources in reverse because overwriting causes the last ones to remain
+                    foreach (var sourceType in prop.SourcePriority.Select(s => s.ToString()).Reverse())
+                    {
+                        ct.ThrowIfCancellationRequested();
+
+                        // Check if there is metadata from this source to use
+                        if (!metaDataFromSource.TryGetValue(sourceType, out SourceMetaData? metadata))
+                        {
+                            if (!metaDataSources.TryGetValue(sourceType, out MetaDataSource? source)) continue;
+                            if (!source.IsValidSource(codex.Sources)) continue;
+                            metadata = await source.GetMetaData(codex.Sources, codex.Collection.AllTags, ct);
+                            metaDataFromSource.Add(sourceType, metadata);
+                        }
+
+                        //If there is, make it the new preferred
+                        if (!prop.IsEmpty(metadata))
+                        {
+                            prop.Copy(metadata, preferredMetadata);
+                        }
+                    }
+
+                    //if no (new) value was found for this prop, do nothing
+                    if (prop.IsEmpty(preferredMetadata) || !prop.HasNewValue(preferredMetadata, codex)) continue;
                 
-                if ((prop.OverwriteMode == MetaDataOverwriteMode.IfEmpty && prop.IsEmpty(existingMetaData)) ||
-                    prop.OverwriteMode == MetaDataOverwriteMode.Always)
-                {
-                    prop.Apply(preferredMetadata, codex);
+                    if ((prop.OverwriteMode == MetaDataOverwriteMode.IfEmpty && prop.IsEmpty(existingMetaData)) ||
+                        prop.OverwriteMode == MetaDataOverwriteMode.Always)
+                    {
+                        prop.Apply(preferredMetadata, codex);
+                    }
+                    else if ((prop.OverwriteMode == MetaDataOverwriteMode.IfEmpty && !prop.IsEmpty(existingMetaData)) ||
+                             prop.OverwriteMode == MetaDataOverwriteMode.Ask )
+                    {
+                        prop.Copy(preferredMetadata, toAsk);
+                        shouldAsk = true; //set shouldAsk to true when we found at least one non-empty prop that should be asked
+                    }
                 }
-                else if ((prop.OverwriteMode == MetaDataOverwriteMode.IfEmpty && !prop.IsEmpty(existingMetaData)) ||
-                         prop.OverwriteMode == MetaDataOverwriteMode.Ask )
-                {
-                    prop.Copy(preferredMetadata, toAsk);
-                    shouldAsk = true; //set shouldAsk to true when we found at lease one none empty prop that should be asked
-                }
-            }
 
-            if (shouldAsk)
+                if (shouldAsk)
+                {
+                    chooseMetaDataVM.AddMetaDataProposal(codex, toAsk);
+                }
+
+                logger.Info($"Got metadata for {codex.Title}");
+            }
+            catch (OperationCanceledException)
             {
-                chooseMetaDataVM.AddMetaDataProposal(codex, toAsk);
+                //let cancelation bubble up
+                throw;
             }
-
-            ProgressViewModel.GetInstance().IncrementCounter();
+            catch (Exception ex)
+            {
+                //handle other exceptions
+                logger.Error($"Failed to get metadata for {codex.Title}", ex);
+            }
         }
 
         public AsyncRelayCommand<IList> GetMetaDataBulkCommand => field ??= new(GetMetaDataBulk);
 
         private async Task GetMetaDataBulk(IList? items)
         {
-            try
-            {
-                var codices = GatherCodices(items);
-                if(!codices.SafeAny()) return;
-                await StartGetMetaDataProcess(codices);
-            }
-            catch (OperationCanceledException ex)
-            {
-                logger.Warn("Renewing metadata has been cancelled", ex);
-                await Task.Run(() => ProgressViewModel.GetInstance().ConfirmCancellation());
-            }
+            var codices = GatherCodices(items);
+            if (!codices.SafeAny()) return;
+            await FetchMetadata(codices);
         }
         
         //Get Cover
         public async Task GetCover(Codex? codex)
         {
             if (codex is null) return;
-            await coverService.GetAndApplyCover([codex]);
+            await coverService.GetAndApplyCover(codex);
         }
 
         public AsyncRelayCommand<IList> GetCoverBulkCommand => field ??= new(GetCoverBulk);

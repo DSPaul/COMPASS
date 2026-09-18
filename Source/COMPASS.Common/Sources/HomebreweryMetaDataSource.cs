@@ -1,9 +1,8 @@
-using COMPASS.Common.Interfaces.Services;
+﻿using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services;
 using COMPASS.Infra.ExtensionMethods;
-using COMPASS.Infra.Models.Enums;
 using COMPASS.Infra.Tools.Logging;
 using ImageMagick;
 using OpenQA.Selenium;
@@ -22,7 +21,7 @@ namespace COMPASS.Common.Sources
         public override MetaDataSourceType Type => MetaDataSourceType.Homebrewery;
         public override string UrlPrefix => "https://homebrewery.naturalcrit.com/share/";
 
-        public override async Task<SourceMetaData> GetMetaData(SourceSet sources, IList<Tag> availableTags)
+        public override async Task<SourceMetaData> GetMetaData(SourceSet sources, IList<Tag> availableTags, CancellationToken cancellationToken = default)
         {
             Debug.Assert(IsValidSource(sources), "Invalid Codex was used in Homebrewery source");
 
@@ -33,14 +32,14 @@ namespace COMPASS.Common.Sources
                 Publisher = "Homebrewery",
             };
 
-            ProgressVM.AddLogEntry(new(Severity.Info, $"Downloading metadata from Homebrewery"));
-            JsonNode? metadata = await WebService.GetJsonAsync(uri);
+            Logger.Info($"Downloading metadata from Homebrewery");
+            JsonNode? metadata = await WebService.GetJsonAsync(uri, cancellationToken);
 
             if (metadata is null || metadata.AsObject().Count == 0)
             {
                 string message = $"homebrew {sources.SourceURL} was not found on homebrewery \n" +
                     $"Please check the url and check if the homebrewery.naturalcrit.com website is up.";
-                ProgressVM.AddLogEntry(new(Severity.Warning, message));
+                Logger.Warn(message);
                 Logger.Warn($"Could not find homebrew {sources.SourceURL} on homebrewery");
                 return new();
             }
@@ -58,11 +57,11 @@ namespace COMPASS.Common.Sources
             return metaData;
         }
 
-        public override async Task<IMagickImage<byte>?> FetchCover(SourceSet sources)
+        public override async Task<IMagickImage<byte>?> FetchCover(SourceSet sources, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrEmpty(sources.SourceURL)) { return null; }
-            ProgressVM.AddLogEntry(new(Severity.Info, $"Downloading cover from Homebrewery"));
-            using WebDriver? driver = await GetWebDriverAsync().ConfigureAwait(false);
+            Logger.Info($"Downloading cover from Homebrewery");
+            using WebDriver? driver = await GetWebDriverAsync(cancellationToken).ConfigureAwait(false);
 
             if (driver == null) { return null; }
 
@@ -76,16 +75,16 @@ namespace COMPASS.Common.Sources
                 var pageSelector = By.Id("p1");
 
                 await driver.Navigate().GoToUrlAsync(url).ConfigureAwait(false);
-                wait.Until(d => d.FindElement(frameSelector));
+                wait.Until(d => d.FindElement(frameSelector), cancellationToken);
 
                 IWebElement frame = driver.FindElement(frameSelector);
                 System.Drawing.Point location = frame.Location;
 
                 //TODO add cancelationtoken when redoing background processs system
-                wait.Until(d => d.SwitchTo().Frame(frame));
-                wait.Until(d => d.FindElement(pageSelector)?.Displayed == true);
+                wait.Until(d => d.SwitchTo().Frame(frame), cancellationToken);
+                wait.Until(d => d.FindElement(pageSelector)?.Displayed == true, cancellationToken);
 
-                Thread.Sleep(1000); //Homebrewery can take some time to render everything
+                await Task.Delay(1000, cancellationToken); //Homebrewery can take some time to render everything
 
                 IWebElement coverPage = driver.FindElement(pageSelector);
                 location.X += coverPage.Location.X;
@@ -98,7 +97,6 @@ namespace COMPASS.Common.Sources
             {
                 string msg = $"Failed to get cover from {sources.SourceURL}";
                 Logger.Error(msg, ex);
-                ProgressVM.AddLogEntry(new(Severity.Error, msg));
             }
 
             return null;

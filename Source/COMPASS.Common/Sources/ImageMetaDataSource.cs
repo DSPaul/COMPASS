@@ -21,7 +21,7 @@ namespace COMPASS.Common.Sources
 
         public override bool IsValidSource(SourceSet sources) => File.Exists(sources.Path) && FileFormatUtils.IsImageFile(sources.Path);
 
-        public override Task<SourceMetaData> GetMetaData(SourceSet sources, IList<Tag> availableTags)
+        public override Task<SourceMetaData> GetMetaData(SourceSet sources, IList<Tag> availableTags, CancellationToken cancellationToken = default)
         {
             SourceMetaData metaData = new()
             {
@@ -30,7 +30,7 @@ namespace COMPASS.Common.Sources
 
             return Task.FromResult(metaData);
         }
-        public override async Task<IMagickImage<byte>?> FetchCover(SourceSet sources) => await Task.Run(() => 
-            _coverService.GetCoverFromImage(sources.Path));
+        public override async Task<IMagickImage<byte>?> FetchCover(SourceSet sources, CancellationToken cancellationToken = default) => await Task.Run(() => 
+            _coverService.GetCoverFromImage(sources.Path), cancellationToken);
     }
 }

@@ -3,7 +3,8 @@ using COMPASS.Common.Models;
 using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Sources;
-using COMPASS.Common.ViewModels;
+using COMPASS.Infra.Models.Measuring;
+using COMPASS.Infra.Models.Progress;
 using ImageMagick;
 using ImageMagick.Factories;
 using OpenQA.Selenium;
@@ -11,7 +12,6 @@ using System.Diagnostics;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels.Modals;
-using COMPASS.Infra.Interfaces.Services;
 using COMPASS.Infra.Tools;
 using COMPASS.Infra.Tools.Logging;
 
@@ -22,6 +22,7 @@ namespace COMPASS.Common.Services
         IPreferencesService preferencesService,
         IIOService ioService,
         ChooseMetaDataViewModelFactory chooseMetaDataViewModelFactory,
+        ProgressTrackingManager progressTrackingManager,
         IIndex<string, MetaDataSource> metaDataSources) : ICoverService
     {
 
@@ -33,9 +34,10 @@ namespace COMPASS.Common.Services
         /// </summary>
         /// <param name="codex"></param>
         /// <param name="chooseMetaDataViewModel"></param>
-        /// <exception cref="System.OperationCanceledException">The token has had cancellation requested.</exception>
-        public async Task GetAndApplyCover(Codex codex, ChooseMetaDataViewModel? chooseMetaDataViewModel = null)
+        /// <exception cref="System.OperationCanceledException"></exception>
+        public async Task GetAndApplyCover(Codex codex, ChooseMetaDataViewModel? chooseMetaDataViewModel = null, CancellationToken ct = default)
         {
+            //TODO add visual feedback while fetching, like a spinner on the thumbnail
             IMagickImage<byte>? coverFromSource = null;
             try
             {
@@ -56,7 +58,7 @@ namespace COMPASS.Common.Services
 
                 foreach (var sourceType in coverProp.SourcePriority)
                 {
-                    ProgressViewModel.GlobalCancellationTokenSource.Token.ThrowIfCancellationRequested();
+                    ct.ThrowIfCancellationRequested();
 
                     if (!metaDataSources.TryGetValue(sourceType.ToString(), out MetaDataSource? source)) continue;
                     if (!source.IsValidSource(codex.Sources)) continue;
@@ -89,7 +91,6 @@ namespace COMPASS.Common.Services
             finally
             {
                 coverFromSource?.Dispose();
-                ProgressViewModel.GetInstance().IncrementCounter();
             }
         }
 
@@ -97,26 +98,53 @@ namespace COMPASS.Common.Services
         {
             if (!codices.Any()) return;
 
-            var progressVM = ProgressViewModel.GetInstance();
-            progressVM.ResetCounter();
-            progressVM.TotalAmount = codices.Count;
-            progressVM.Text = "Getting Cover";
+            ProgressTracker progressTracker = new(Quantities.Items())
+            {
+                StatusMessage = "Getting covers...",
+                Total = codices.Count
+            };
 
             ChooseMetaDataViewModel chooseMetaDataVM = chooseMetaDataViewModelFactory.Create();
 
-            ParallelOptions parallelOptions = new()
-            {
-                MaxDegreeOfParallelism = Math.Max(Environment.ProcessorCount / 2, 1)
-            };
-
             try
             {
-                await Parallel.ForEachAsync(codices, parallelOptions, async (codex, _) => await GetAndApplyCover(codex, chooseMetaDataVM));
+                await progressTrackingManager.RunAsync(progressTracker, "Getting covers",
+                    async (tracker, ct) =>
+                    {
+                        ParallelOptions workerOptions = new()
+                        {
+                            MaxDegreeOfParallelism = Math.Max(Environment.ProcessorCount / 2, 1),
+                            CancellationToken = ct
+                        };
+                        await Parallel.ForEachAsync(codices, workerOptions, async (codex, ct) =>
+                        {
+                            try
+                            {
+                                await GetAndApplyCover(codex, chooseMetaDataVM, ct);
+                            }
+                            catch (OperationCanceledException)
+                            {
+                                throw;
+                            }
+                            catch (Exception ex)
+                            {
+                                logger.Error($"Failed to fetch cover for {codex.Title}", ex);
+                            }
+                            finally
+                            {
+                                tracker.Report(ProgressReports.Increment);
+                            }
+                        });
+                    });
             }
-            catch (OperationCanceledException ex)
+            catch (OperationCanceledException)
             {
-                logger.Warn("Renewing covers has been cancelled", ex);
-                await Task.Run(() => ProgressViewModel.GetInstance().ConfirmCancellation());
+                logger.Info("Cover fetching was canceled");
+                return;
+            }
+            catch (Exception ex)
+            {
+                logger.Error("Failed to fetch covers", ex);
             }
 
             if (chooseMetaDataVM.MetaDataProposals.Any())
@@ -215,17 +243,25 @@ namespace COMPASS.Common.Services
             {
                 File.Delete(codex.CoverArtPath);
                 logger.Info("Corrupt cover removed, attempting to fetch a new cover...");
-                GetAndApplyCover([codex]).ContinueWith(t =>
-                {
-                    if (t.IsCompletedSuccessfully)
-                    {
-                        CreateThumbnail(codex);
-                    }
-                });
+                _ = ReapplyCoverAfterCorruptionAsync(codex);
             }
             catch (Exception ex)
             {
                 logger.Error($"Failed to delete corrupt image file {codex.CoverArtPath}", ex);
+            }
+        }
+
+        private async Task ReapplyCoverAfterCorruptionAsync(Codex codex)
+        {
+            try
+            {
+                await GetAndApplyCover([codex]);
+                // Explicitly create a new thumbnail as an old corrupt one might still exist
+                CreateThumbnail(codex);
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"Failed to fetch a new cover for {codex.Title} after removing the corrupt one", ex);
             }
         }
 

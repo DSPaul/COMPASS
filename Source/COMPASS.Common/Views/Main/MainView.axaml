@@ -163,19 +163,20 @@
 
             <!--Tasks in Progress Indicator-->
             <StackPanel Grid.Column="2" HorizontalAlignment="Center"
-                        IsVisible="{Binding ProgressVM.WorkInProgress}">
-                <TextBlock Text="{Binding ProgressVM.FullText, FallbackValue=Stuff in Progress, Mode=OneWay}"
-                           Margin="20,0"
-                           FontFamily="Segoe UI" />
+                        IsVisible="{Binding TasksVM.HasActivity}">
+                <TextBlock Text="{Binding TasksVM.DisplayText, FallbackValue=Stuff in Progress, Mode=OneWay}"
+                            Margin="20,0"
+                            FontFamily="Segoe UI" />
                 <ProgressBar x:Name="ProgBar" Minimum="0" Maximum="100" Width="200"
-                             Value="{Binding ProgressVM.Percentage, FallbackValue=100, Mode=OneWay}"/>
+                              Value="{Binding TasksVM.Percentage, FallbackValue=100, Mode=OneWay}"
+                              IsIndeterminate="{Binding TasksVM.IsIndeterminate, Mode=OneWay}"/>
                 <controls:IconButton
                     Icon="CloseCircleOutline"
                     Margin="5,0"
                     Background="Transparent"
                     Height="18" Width="20"
                     Theme="{StaticResource IconOnly}"
-                    Command="{Binding ProgressVM.CancelTasksCommand}"
+                    Command="{Binding TasksVM.CancelPrimaryCommand}"
                     ToolTip.Tip="Cancel Task" />
             </StackPanel>
 

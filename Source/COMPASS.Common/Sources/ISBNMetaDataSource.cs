@@ -3,7 +3,6 @@ using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Infra.Models;
-using COMPASS.Infra.Models.Enums;
 using ImageMagick;
 using System.Text.Json.Nodes;
 using COMPASS.Infra.ExtensionMethods;
@@ -24,23 +23,22 @@ namespace COMPASS.Common.Sources
         public override MetaDataSourceType Type => MetaDataSourceType.ISBN;
         public override bool IsValidSource(SourceSet sources) => !String.IsNullOrWhiteSpace(sources.ISBN);
 
-        public override async Task<SourceMetaData> GetMetaData(SourceSet sources, IList<Tag> availableTags)
+        public override async Task<SourceMetaData> GetMetaData(SourceSet sources, IList<Tag> availableTags, CancellationToken cancellationToken = default)
         {
             Debug.Assert(IsValidSource(sources), "Codex without ISBN was used in ISBN Source");
             
             SourceMetaData metaData = new();
             
-            ProgressVM.AddLogEntry(new(Severity.Info, $"Downloading Metadata from openlibrary.org"));
+            Logger.Info($"Downloading Metadata from openlibrary.org");
             string uri = $"https://openlibrary.org/api/books?bibkeys=ISBN:{sources.ISBN.Trim('-', ' ')}&format=json&jscmd=details";
 
-            JsonNode? openLibraryData = await _webService.GetJsonAsync(uri);
+            JsonNode? openLibraryData = await _webService.GetJsonAsync(uri, cancellationToken);
 
             if (openLibraryData is not JsonObject openLibraryObject || openLibraryObject.Count == 0)
             {
                 string message = $"ISBN {sources.ISBN} was not found on openlibrary.org \n" +
                     $"You can contribute by submitting this book at \n" +
                     $"https://openlibrary.org/books/add";
-                ProgressVM.AddLogEntry(new(Severity.Warning, message));
                 Logger.Warn($"Could not find ISBN {sources.ISBN} on openlibrary.org");
                 return metaData;
             }
@@ -102,21 +100,20 @@ namespace COMPASS.Common.Sources
             return metaData;
         }
 
-        public override async Task<IMagickImage<byte>?> FetchCover(SourceSet sources)
+        public override async Task<IMagickImage<byte>?> FetchCover(SourceSet sources, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrEmpty(sources.ISBN)) return null;
-            ProgressVM.AddLogEntry(new(Severity.Info, $"Downloading cover from openlibrary.org"));
+            Logger.Info($"Downloading cover from openlibrary.org");
             try
             {
                 string uri = $"https://openlibrary.org/isbn/{sources.ISBN}.json";
-                JsonNode? metadata = await _webService.GetJsonAsync(uri);
+                JsonNode? metadata = await _webService.GetJsonAsync(uri, cancellationToken);
 
                 if (metadata is not JsonObject metadataObject || metadataObject.Count == 0)
                 {
                     string message = $"ISBN {sources.ISBN} was not found on openlibrary.org \n" +
                         $"You can contribute by submitting this book at \n" +
                         $"https://openlibrary.org/books/add";
-                    ProgressVM.AddLogEntry(new(Severity.Warning, message));
                     Logger.Warn($"Could not find ISBN {sources.ISBN} on openlibrary.org");
                     return null;
                 }
@@ -124,13 +121,17 @@ namespace COMPASS.Common.Sources
                 string? imgId = metadata["covers"]?[0]?.GetIntValue()?.ToString();
                 if (imgId is null) return null;
                 string imgURL = $"https://covers.openlibrary.org/b/id/{imgId}.jpg";
-                return await _webService.DownloadImageAsync(imgURL);
+                return await _webService.DownloadImageAsync(imgURL, cancellationToken: cancellationToken);
+            }
+            catch (OperationCanceledException)
+            {
+                //to be handled by the caller
+                throw;
             }
             catch (Exception ex)
             {
                 string msg = $"Failed to get cover from OpenLibrary for ISBN {sources.ISBN}";
                 Logger.Error(msg, ex);
-                ProgressVM.AddLogEntry(new(Severity.Warning, msg));
                 return null;
             }
         }
