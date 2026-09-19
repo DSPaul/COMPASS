@@ -445,13 +445,12 @@ namespace COMPASS.Common.Operations
 
             ProgressTracker progressTracker = new(Quantities.Items())
             {
-                StatusMessage = "Getting metadata...",
                 Total = codices.Count
             };
 
             try
             {
-                await progressTrackingManager.RunAsync(progressTracker, "Getting metadata", async (tracker, ct) => 
+                await progressTrackingManager.RunAsync(progressTracker, "Getting metadata...", async (tracker, ct) => 
                 { 
                     var codicesGroupedByCollection = codices.GroupBy(codex => codex.Collection).ToList();
                 

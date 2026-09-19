@@ -8,7 +8,11 @@ public sealed class ScopedForwardingLogger(ILogger innerLogger) : ILogger
 {
     public void Info(string message)
     {
-        innerLogger.Info(message);
+        //If there is a local scope, keep info logs contained to that scope
+        if(LoggerScope.Current == null)
+        {
+            innerLogger.Info(message);
+        }
         LoggerScope.Current?.Info(message);
     }
 

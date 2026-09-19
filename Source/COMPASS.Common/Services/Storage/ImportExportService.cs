@@ -179,14 +179,11 @@ public class ImportExportService(
         //make sure any previous temp data is gone
         ioService.ClearTmpData(tmpCollectionPath);
 
-        ProgressTracker progressTracker = new(Quantities.FileSize)
-        {
-            StatusMessage = $"Reading {zipFile}"
-        };
+        ProgressTracker progressTracker = new(Quantities.FileSize);
 
         try
         {
-            await progressTrackingManager.RunAsync(progressTracker, "Importing collection",
+            await progressTrackingManager.RunAsync(progressTracker, $"Importing {fileName}",
                 async (tracker, ct) =>
                 {
                     //unzip the file to tmp folder
@@ -255,14 +252,11 @@ public class ImportExportService(
             await archive.AddEntryAsync(Constants.SatchelInfoFileName, infoStream);
 
             //Only the final write runs in the background as it does the actual IO
-            ProgressTracker progressTracker = new(Quantities.FileSize)
-            {
-                StatusMessage = "Exporting collection"
-            };
+            ProgressTracker progressTracker = new(Quantities.FileSize);
 
             try
             {
-                await progressTrackingManager.RunAsync(progressTracker, "Exporting collection",
+                await progressTrackingManager.RunAsync(progressTracker, $"Exporting {collection.Name}",
                     async (tracker, ct) =>
                     {
                         await using var stream = await file.OpenWriteAsync();

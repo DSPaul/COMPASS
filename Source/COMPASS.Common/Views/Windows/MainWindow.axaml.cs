@@ -42,10 +42,6 @@ public partial class MainWindow : Window
 
     private void Window_Closing(object? sender, Avalonia.Controls.WindowClosingEventArgs e)
     {
-        ServiceResolver.Resolve<ProgressTrackingManager>().CancelAll();
-
-        //TODO Maybe wait until all tasks are actually cancelled
-
         if (MainViewModel.SaveOnClose)
         {
             UpdateWindowPlacement();

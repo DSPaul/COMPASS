@@ -71,12 +71,9 @@ public class BackupToolViewModel : ViewModelBase, IToolViewModel
             _collectionManager.SaveAllCollections();
 
             //System.IO.Compression reports no progress: indeterminate tracker, loading window stays
-            ProgressTracker backupProgressTracker = new(Quantities.Items())
-            {
-                StatusMessage = "Creating backup..."
-            };
+            ProgressTracker backupProgressTracker = new(Quantities.Items());
 
-            await _progressTrackingManager.RunAsync(backupProgressTracker, "Creating backup",
+            await _progressTrackingManager.RunAsync(backupProgressTracker, "Creating backup...",
                 (_, ct) => Task.Run(() => _importExportService.CompressUserDataToZip(targetPath), ct));
 
             loadingWindow.Close();
@@ -117,12 +114,9 @@ public class BackupToolViewModel : ViewModelBase, IToolViewModel
             return;
         }
 
-        ProgressTracker restoreProgressTracker = new(Quantities.Items())
-        {
-            StatusMessage = "Restoring backup..."
-        };
+        ProgressTracker restoreProgressTracker = new(Quantities.Items());
 
-        await _progressTrackingManager.RunAsync(restoreProgressTracker, "Restoring backup",
+        await _progressTrackingManager.RunAsync(restoreProgressTracker, "Restoring backup...",
             async (track, ct) =>
             {
                 var options = new ReaderOptions()

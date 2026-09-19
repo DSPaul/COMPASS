@@ -208,14 +208,11 @@ public class CodexCollectionVM : ModelViewModelBase<CodexCollection>
         ImportFilesViewModel folderImportVM = _importFilesViewModelFactory.Create(autoImport: true);
         folderImportVM.NonRecursiveDirectories = Collection.Info.AutoImportFolders.Flatten().Select(f => f.FullPath).ToList() ?? [];
 
-        ProgressTracker autoImportProgressTracker = new(Quantities.Items())
-        {
-            StatusMessage = "Auto-importing..."
-        };
+        ProgressTracker autoImportProgressTracker = new(Quantities.Items());
 
         try
         {
-            await _progressTrackingManager.RunAsync(autoImportProgressTracker, $"Auto-importing {Identifier}",
+            await _progressTrackingManager.RunAsync(autoImportProgressTracker, $"Importing dicovered file...",
                 async (_, cancellationToken) =>
                 {
                     //Check for any new folders

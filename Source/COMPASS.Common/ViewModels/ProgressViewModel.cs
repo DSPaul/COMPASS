@@ -47,7 +47,7 @@ public class ProgressViewModel : ViewModelBase, IDisposable
             string statusMessage = PrimaryOperation.Tracker.StatusMessage;
             return string.IsNullOrEmpty(statusMessage)
                 ? PrimaryOperation.Title
-                : $"{PrimaryOperation.Title} — {statusMessage}";
+                : $"{PrimaryOperation.Title} - {statusMessage}";
         }
     }
 

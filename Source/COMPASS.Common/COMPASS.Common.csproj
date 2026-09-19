@@ -64,4 +64,9 @@
   <ItemGroup>
     <InternalsVisibleTo Include="COMPASS.UnitTests" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Views\Modals\ChooseMetaDataView.axaml.cs">
+      <DependentUpon>ChooseMetadataView.axaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
 </Project>

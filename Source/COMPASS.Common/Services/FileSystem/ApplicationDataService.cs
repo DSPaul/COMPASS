@@ -174,16 +174,13 @@ public class ApplicationDataService(
             action == ChangeDataLocationActions.Copy)
         {
             string oldPath = UserDataPath;
-            ProgressTracker progressTracker = new(Quantities.Items("Files"))
-            {
-                StatusMessage = "Copying data..."
-            };
+            ProgressTracker progressTracker = new(Quantities.Items("Files"));
 
             bool copySucceeded = false;
 
             try
             {
-                await progressTrackingManager.RunAsync(progressTracker, "Moving data",
+                await progressTrackingManager.RunAsync(progressTracker, "Copying files...",
                     async (tracker, ct) => copySucceeded = await ioService.CopyDataAsync(oldPath, newPath, tracker, ct));
             }
             catch (OperationCanceledException)

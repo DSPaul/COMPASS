@@ -100,7 +100,6 @@ namespace COMPASS.Common.Services
 
             ProgressTracker progressTracker = new(Quantities.Items())
             {
-                StatusMessage = "Getting covers...",
                 Total = codices.Count
             };
 
@@ -108,7 +107,7 @@ namespace COMPASS.Common.Services
 
             try
             {
-                await progressTrackingManager.RunAsync(progressTracker, "Getting covers",
+                await progressTrackingManager.RunAsync(progressTracker, "Getting covers...",
                     async (tracker, ct) =>
                     {
                         ParallelOptions workerOptions = new()

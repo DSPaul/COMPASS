@@ -23,7 +23,6 @@ public class MainViewModel
         const int iterations = 100;
         ProgressTracker progressTracker = new(Quantities.Items())
         {
-            StatusMessage = "Doing stuff",
             Total = iterations
         };
 
