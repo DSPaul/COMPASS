@@ -99,21 +99,21 @@ namespace COMPASS.Common.DependencyInjection
 
         private static void RegisterMetadataSources(ContainerBuilder builder)
         {
-            Dictionary<MetaDataSourceType, Type> metaDataSources = new()
+            Dictionary<MetadataSourceType, Type> metaDataSources = new()
             {
-                { MetaDataSourceType.File, typeof(FileMetaDataSource) },
-                { MetaDataSourceType.PDF, typeof(PdfMetaDataSource) },
-                { MetaDataSourceType.Image, typeof(ImageMetaDataSource) },
-                { MetaDataSourceType.ISBN, typeof(ISBNMetaDataSource) },
-                { MetaDataSourceType.GmBinder, typeof(GmBinderMetaDataSource) },
-                { MetaDataSourceType.Homebrewery, typeof(HomebreweryMetaDataSource) },
-                { MetaDataSourceType.GoogleDrive, typeof(GoogleDriveMetaDataSource) },
-                { MetaDataSourceType.GenericURL, typeof(GenericOnlineMetaDataSource) }
+                { MetadataSourceType.File, typeof(FileMetadataSource) },
+                { MetadataSourceType.PDF, typeof(PdfMetadataSource) },
+                { MetadataSourceType.Image, typeof(ImageMetadataSource) },
+                { MetadataSourceType.ISBN, typeof(ISBNMetadataSource) },
+                { MetadataSourceType.GmBinder, typeof(GmBinderMetadataSource) },
+                { MetadataSourceType.Homebrewery, typeof(HomebreweryMetadataSource) },
+                { MetadataSourceType.GoogleDrive, typeof(GoogleDriveMetadataSource) },
+                { MetadataSourceType.GenericURL, typeof(GenericOnlineMetadataSource) }
             };
 
             foreach (var kvp in metaDataSources)
             {
-                builder.RegisterType(kvp.Value).Keyed<MetaDataSource>(kvp.Key.ToString()).SingleInstance();
+                builder.RegisterType(kvp.Value).Keyed<MetadataSource>(kvp.Key.ToString()).SingleInstance();
             }
         }
 

@@ -5,12 +5,12 @@ using COMPASS.Tests.Common.Mocks;
 namespace COMPASS.UnitTests.Sources
 {
     [TestFixture]
-    public class OnlineMetaDataSourceTests
+    public class OnlineMetadataSourceTests
     {
-        private static GenericOnlineMetaDataSource CreateGenericSource() =>
+        private static GenericOnlineMetadataSource CreateGenericSource() =>
             new(new MockLogger(), new MockPreferencesService(), null!, null!);
 
-        private static GmBinderMetaDataSource CreateGmBinderSource() =>
+        private static GmBinderMetadataSource CreateGmBinderSource() =>
             new(new MockLogger(), new MockPreferencesService(), null!, null!);
 
         private static SourceSet UrlSources(string url) => new() { SourceURL = url };

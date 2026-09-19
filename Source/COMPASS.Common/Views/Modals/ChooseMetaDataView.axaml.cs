@@ -2,9 +2,9 @@ using Avalonia.Controls;
 
 namespace COMPASS.Common.Views.Modals;
 
-public partial class ChooseMetaDataView : UserControl
+public partial class ChooseMetadataView : UserControl
 {
-    public ChooseMetaDataView()
+    public ChooseMetadataView()
     {
         InitializeComponent();
     }

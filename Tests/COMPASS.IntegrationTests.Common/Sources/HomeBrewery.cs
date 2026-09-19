@@ -14,7 +14,7 @@ public class HomeBrewery
     private const string TEST_URL = @"https://homebrewery.naturalcrit.com/share/FegJIEB2KUUo";
 
     [Test]
-    public async Task GetMetaDataFromHomeBrewery()
+    public async Task GetMetadataFromHomeBrewery()
     {
         SourceSet sources = new()
         {
@@ -22,9 +22,9 @@ public class HomeBrewery
         };
 
         var collection = new CodexCollection("TEST_COLLECTION");
-        var source = ServiceResolver.Resolve<IIndex<string, MetaDataSource>>()[MetaDataSourceType.Homebrewery.ToString()];
+        var source = ServiceResolver.Resolve<IIndex<string, MetadataSource>>()[MetadataSourceType.Homebrewery.ToString()];
 
-        SourceMetaData response = await source.GetMetaData(sources, collection.AllTags);
+        SourceMetadata response = await source.GetMetadata(sources, collection.AllTags);
 
         Assert.Multiple(() =>
         {
@@ -40,7 +40,7 @@ public class HomeBrewery
     public async Task GetCoverFromHomeBrewery()
     {
         //Setup
-        var source = ServiceResolver.Resolve<IIndex<string, MetaDataSource>>()[MetaDataSourceType.Homebrewery.ToString()];
+        var source = ServiceResolver.Resolve<IIndex<string, MetadataSource>>()[MetadataSourceType.Homebrewery.ToString()];
         var sources = new SourceSet()
         {
             SourceURL = TEST_URL

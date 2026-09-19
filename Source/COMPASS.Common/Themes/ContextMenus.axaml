@@ -63,8 +63,8 @@
         
         <Separator/>
         
-        <MenuItem Header="Renew MetaData"
-                  Command="{Binding SelectedCodex.GetMetaDataCommand}"
+        <MenuItem Header="Renew Metadata"
+                  Command="{Binding SelectedCodex.GetMetadataCommand}"
                   Icon="{materialIcons:MaterialIconExt Kind=FileRefreshOutline}"/>
         
         <MenuItem Header="Renew Cover"
@@ -117,8 +117,8 @@
         
         <Separator />
         
-        <MenuItem Header="Renew MetaData"
-                  Command="{Binding CodexCommands.GetMetaDataBulkCommand}"
+        <MenuItem Header="Renew Metadata"
+                  Command="{Binding CodexCommands.GetMetadataBulkCommand}"
                   CommandParameter="{Binding SelectedCodices}"
                   Icon="{materialIcons:MaterialIconExt Kind=FileRefreshOutline}"/>
         

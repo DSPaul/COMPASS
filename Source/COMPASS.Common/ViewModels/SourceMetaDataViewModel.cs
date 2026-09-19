@@ -7,28 +7,28 @@ using ImageMagick;
 
 namespace COMPASS.Common.ViewModels;
 
-public class SourceMetaDataViewModel : IDisposable
+public class SourceMetadataViewModel : IDisposable
 {    
-    private readonly SourceMetaData _sourceMetaData;
+    private readonly SourceMetadata _sourceMetadata;
     
-    public SourceMetaDataViewModel(SourceMetaData sourceMetaData)
+    public SourceMetadataViewModel(SourceMetadata sourceMetadata)
     {
-        _sourceMetaData = sourceMetaData;
-        Cover = sourceMetaData.Cover?.ToWriteableBitmap();
+        _sourceMetadata = sourceMetadata;
+        Cover = sourceMetadata.Cover?.ToWriteableBitmap();
     }
-    public string Title => _sourceMetaData.Title;
-    public string AuthorsAsString => string.Join(", ", _sourceMetaData.Authors);
-    public string Publisher => _sourceMetaData.Publisher;
-    public string Description => _sourceMetaData.Description;
-    public DateTime? ReleaseDate => _sourceMetaData.ReleaseDate;
-    public int PageCount => _sourceMetaData.PageCount;
-    public string Version => _sourceMetaData.Version;
+    public string Title => _sourceMetadata.Title;
+    public string AuthorsAsString => string.Join(", ", _sourceMetadata.Authors);
+    public string Publisher => _sourceMetadata.Publisher;
+    public string Description => _sourceMetadata.Description;
+    public DateTime? ReleaseDate => _sourceMetadata.ReleaseDate;
+    public int PageCount => _sourceMetadata.PageCount;
+    public string Version => _sourceMetadata.Version;
     
-    public IList<Tag> Tags => _sourceMetaData.Tags;
+    public IList<Tag> Tags => _sourceMetadata.Tags;
     public Bitmap? Cover { get; }
 
     //Make this a method rather than a property to avoid binding to it
-    public SourceMetaData GetSourceMetaData() =>  _sourceMetaData;
+    public SourceMetadata GetSourceMetadata() =>  _sourceMetadata;
     
     public void Dispose()
     {
@@ -38,7 +38,7 @@ public class SourceMetaDataViewModel : IDisposable
     public void DeepDispose()
     {
         //We didn't create the _sourceMetadata so should dispose it by default
-        _sourceMetaData.Dispose();
+        _sourceMetadata.Dispose();
         Dispose();
     }
 }

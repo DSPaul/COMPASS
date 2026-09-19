@@ -16,25 +16,25 @@ namespace COMPASS.Common.Models.CodexProperties
             return codex switch
             {
                 Codex c => !File.Exists(c.CoverArtPath),
-                SourceMetaData md => md.Cover == null,
+                SourceMetadata md => md.Cover == null,
                 _ => true
             };
         }
 
-        public override void Copy(SourceMetaData target, SourceMetaData source) => target.Cover = source.Cover;
-        public override void Apply(SourceMetaData source, Codex target)
+        public override void Copy(SourceMetadata target, SourceMetadata source) => target.Cover = source.Cover;
+        public override void Apply(SourceMetadata source, Codex target)
         {
             throw new InvalidOperationException("Cover is special case, does IO so use ApplyAsync instead");
         }
 
-        public async Task ApplyAsync(SourceMetaData source, Codex target, ICoverService coverService)
+        public async Task ApplyAsync(SourceMetadata source, Codex target, ICoverService coverService)
         {
             if (source.Cover == null) return;
             await coverService.SaveCover(target, source.Cover);
             source.Cover.Dispose();
         }
 
-        public override bool HasNewValue(SourceMetaData toEvaluate, Codex reference)
+        public override bool HasNewValue(SourceMetadata toEvaluate, Codex reference)
         {
             IMagickImage? coverToEval = GetCover(toEvaluate);
 
@@ -59,7 +59,7 @@ namespace COMPASS.Common.Models.CodexProperties
             return hasCodexMetadata switch
             {
                 Codex c => new(c.CoverArtPath),
-                SourceMetaData md => md.Cover is IMagickImage<byte> mi ? new MagickImage(mi) : null,
+                SourceMetadata md => md.Cover is IMagickImage<byte> mi ? new MagickImage(mi) : null,
                 _ => null
             };
         }

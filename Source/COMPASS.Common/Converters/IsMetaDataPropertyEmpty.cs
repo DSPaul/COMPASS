@@ -8,7 +8,7 @@ using COMPASS.Common.ViewModels;
 
 namespace COMPASS.Common.Converters
 {
-    public class IsMetaDataPropertyEmpty : IValueConverter
+    public class IsMetadataPropertyEmpty : IValueConverter
     {
         public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
@@ -34,7 +34,7 @@ namespace COMPASS.Common.Converters
 
             return value switch
             {
-                SourceMetaDataViewModel metaDataVM => !prop.IsEmpty(metaDataVM.GetSourceMetaData()),
+                SourceMetadataViewModel metaDataVM => !prop.IsEmpty(metaDataVM.GetSourceMetadata()),
                 IHasCodexMetadata metadata => !prop.IsEmpty(metadata),
                 _ => false
             };

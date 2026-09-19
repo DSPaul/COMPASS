@@ -18,11 +18,11 @@ namespace COMPASS.Common.ViewModels.Modals.Import
         private readonly CodexEditViewModelFactory _codexEditViewModelFactory;
         private readonly CodexCollectionOperations _codexCollectionOperations;
         private readonly ConnectivityManager _connectivityManager;
-        private readonly IIndex<string, MetaDataSource> _metaDataSources;
+        private readonly IIndex<string, MetadataSource> _metaDataSources;
         private readonly ILogger _logger;
-        private readonly OnlineMetaDataSource? _metadataSource;
+        private readonly OnlineMetadataSource? _metadataSource;
 
-        public ImportURLViewModel(ILogger logger, CodexEditViewModelFactory codexEditViewModelFactory, CodexCollectionOperations codexCollectionOperations, ConnectivityManager connectivityManager, IIndex<string, MetaDataSource> metaDataSources, ImportSource importSource)
+        public ImportURLViewModel(ILogger logger, CodexEditViewModelFactory codexEditViewModelFactory, CodexCollectionOperations codexCollectionOperations, ConnectivityManager connectivityManager, IIndex<string, MetadataSource> metaDataSources, ImportSource importSource)
         {
             _logger = logger;
             _codexEditViewModelFactory = codexEditViewModelFactory;
@@ -43,14 +43,14 @@ namespace COMPASS.Common.ViewModels.Modals.Import
             //with optional metadatasource to narrow it down, rather than these almost identical enums
             var associatedMetadataSource = importSource switch
             {
-                ImportSource.GmBinder => MetaDataSourceType.GmBinder,
-                ImportSource.Homebrewery => MetaDataSourceType.Homebrewery,
-                ImportSource.GoogleDrive => MetaDataSourceType.GoogleDrive,
-                _ => MetaDataSourceType.GenericURL
+                ImportSource.GmBinder => MetadataSourceType.GmBinder,
+                ImportSource.Homebrewery => MetadataSourceType.Homebrewery,
+                ImportSource.GoogleDrive => MetadataSourceType.GoogleDrive,
+                _ => MetadataSourceType.GenericURL
             };
 
-            var metadataSource = _metaDataSources.TryGetValue(associatedMetadataSource.ToString(), out MetaDataSource? source)
-                ? source as OnlineMetaDataSource
+            var metadataSource = _metaDataSources.TryGetValue(associatedMetadataSource.ToString(), out MetadataSource? source)
+                ? source as OnlineMetadataSource
                 : null;
             _metadataSource = metadataSource;
 
@@ -159,7 +159,7 @@ namespace COMPASS.Common.ViewModels.Modals.Import
         CodexEditViewModelFactory codexEditViewModelFactory, 
         CodexCollectionOperations codexCollectionOperations, 
         ConnectivityManager connectivityManager, 
-        IIndex<string, MetaDataSource> metaDataSources)
+        IIndex<string, MetadataSource> metaDataSources)
     {
         public ImportURLViewModel Create(ImportSource importSource)
             => new(logger, codexEditViewModelFactory, codexCollectionOperations, connectivityManager, metaDataSources, importSource);

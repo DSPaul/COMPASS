@@ -10,21 +10,21 @@ using OpenQA.Selenium;
 
 namespace COMPASS.Common.Sources
 {
-    public class GmBinderMetaDataSource : OnlineMetaDataSource
+    public class GmBinderMetadataSource : OnlineMetadataSource
     {
 
-        public GmBinderMetaDataSource(ILogger logger, IPreferencesService preferencesService, IWebService webService, IWebDriverService webDriverService) :
+        public GmBinderMetadataSource(ILogger logger, IPreferencesService preferencesService, IWebService webService, IWebDriverService webDriverService) :
             base(logger, preferencesService, webService, webDriverService)
         { }
         
-        public override MetaDataSourceType Type => MetaDataSourceType.GmBinder;
+        public override MetadataSourceType Type => MetadataSourceType.GmBinder;
         public override string UrlPrefix => "https://www.gmbinder.com/share/";
 
-        public override async Task<SourceMetaData> GetMetaData(SourceSet sources, IList<Tag> availableTags, CancellationToken cancellationToken = default)
+        public override async Task<SourceMetadata> GetMetadata(SourceSet sources, IList<Tag> availableTags, CancellationToken cancellationToken = default)
         {
             Debug.Assert(IsValidSource(sources), "Invalid Codex was used in GM Binder source");
             
-            SourceMetaData metaData = new()
+            SourceMetadata metaData = new()
             {
                 Publisher = "GM Binder"
             };

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Xml.Serialization;
 using COMPASS.Common.Models.Enums;
 
@@ -16,9 +15,11 @@ namespace COMPASS.Common.Models.XmlDtos
 
         #region Import Sources
 
-        public List<MetaDataSourceType> SourcePriority { get; set; } = [];
+        //Use to be called ...MetaData so we are stuck with that spelling for backwards compatibility
+        [XmlArrayItem(ElementName = "MetaDataSourceType")]
+        public List<MetadataSourceType> SourcePriority { get; set; } = [];
 
-        public MetaDataOverwriteMode OverwriteMode { get; set; } = MetaDataOverwriteMode.IfEmpty;
+        public MetadataOverwriteMode OverwriteMode { get; set; } = MetadataOverwriteMode.IfEmpty;
 
 
         #endregion

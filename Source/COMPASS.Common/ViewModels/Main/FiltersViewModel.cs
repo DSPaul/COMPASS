@@ -52,12 +52,12 @@ namespace COMPASS.Common.ViewModels.Main
             ExcludedFilters.CollectionChanged += HandleRefilter;
             collectionVM.AllCodexVms.CollectionChanged += (_, _) =>
             {
-                PopulateMetaDataCollections();
+                PopulateMetadataCollections();
                 TriggerFilter();
             };
             collectionVM.CodexPropertyChanged += OnCodexPropertyChanged;
 
-            PopulateMetaDataCollections();
+            PopulateMetadataCollections();
 
             TriggerFilter();
 
@@ -291,7 +291,7 @@ namespace COMPASS.Common.ViewModels.Main
                 e.PropertyName == nameof(CodexViewModel.Publisher) ||
                 e.PropertyName == nameof(CodexViewModel.Sources))
             {
-                PopulateMetaDataCollections();
+                PopulateMetadataCollections();
             }
 
             bool influencesSort = e.PropertyName == SortProperty;
@@ -341,7 +341,7 @@ namespace COMPASS.Common.ViewModels.Main
             }
         }
 
-        public void PopulateMetaDataCollections()
+        public void PopulateMetadataCollections()
         {
             //snapshot on the UI thread because _allCodexVms may be mutated there while we enumerate
             List<CodexViewModel> codexVmsSnapshot = [.. _allCodexVms];

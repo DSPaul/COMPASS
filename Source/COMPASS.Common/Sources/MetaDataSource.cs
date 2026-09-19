@@ -7,9 +7,9 @@ using ImageMagick;
 
 namespace COMPASS.Common.Sources
 {
-    public abstract class MetaDataSource
+    public abstract class MetadataSource
     {
-        protected MetaDataSource(ILogger logger, IPreferencesService preferencesService)
+        protected MetadataSource(ILogger logger, IPreferencesService preferencesService)
         {
             Logger = logger;
             Preferences = preferencesService;
@@ -20,7 +20,7 @@ namespace COMPASS.Common.Sources
 
         #region Import Logic
 
-        public abstract MetaDataSourceType Type { get; }
+        public abstract MetadataSourceType Type { get; }
 
         public abstract bool IsValidSource(SourceSet sources);
 
@@ -28,7 +28,7 @@ namespace COMPASS.Common.Sources
         /// <param name="availableTags">Tags that sources can choose from</param>
         /// <param name="cancellationToken">A token to cancel the operation</param>
         /// <returns></returns>
-        public abstract Task<SourceMetaData> GetMetaData(SourceSet sources, IList<Tag> availableTags, CancellationToken cancellationToken = default);
+        public abstract Task<SourceMetadata> GetMetadata(SourceSet sources, IList<Tag> availableTags, CancellationToken cancellationToken = default);
 
         public abstract Task<IMagickImage<byte>?> FetchCover(SourceSet sources, CancellationToken cancellationToken = default);
         #endregion

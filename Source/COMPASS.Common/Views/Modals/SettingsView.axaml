@@ -358,7 +358,7 @@
                                            Grid.Row="1" Grid.Column="0"/>
             
                                 <ItemsControl Grid.Row="2" Grid.ColumnSpan="3" Grid.Column="0"
-                                              ItemsSource="{Binding MetaDataPreferences}">
+                                              ItemsSource="{Binding MetadataPreferences}">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
                                             <Grid RowDefinitions="auto,auto" ColumnDefinitions="*,2*,2*" ColumnSpacing="5">
@@ -368,16 +368,16 @@
                                                 <StackPanel Margin="10,0,20,0" Grid.Row="0" Grid.Column="2">
                                                     <RadioButton Content="Never"
                                                                  IsChecked="{Binding OverwriteMode, Converter={StaticResource EnumForRadioBtnConverter},
-                                                                 ConverterParameter={x:Static enums:MetaDataOverwriteMode.Never}}" />
+                                                                 ConverterParameter={x:Static enums:MetadataOverwriteMode.Never}}" />
                                                     <RadioButton Content="If existing metadata is empty"
                                                                  IsChecked="{Binding OverwriteMode, Converter={StaticResource EnumForRadioBtnConverter},
-                                                                 ConverterParameter={x:Static enums:MetaDataOverwriteMode.IfEmpty}}" />
+                                                                 ConverterParameter={x:Static enums:MetadataOverwriteMode.IfEmpty}}" />
                                                     <RadioButton Content="Ask every time"
                                                                  IsChecked="{Binding OverwriteMode, Converter={StaticResource EnumForRadioBtnConverter},
-                                                                 ConverterParameter={x:Static enums:MetaDataOverwriteMode.Ask}}" />
+                                                                 ConverterParameter={x:Static enums:MetadataOverwriteMode.Ask}}" />
                                                     <RadioButton Content="Always"
                                                                  IsChecked="{Binding OverwriteMode, Converter={StaticResource EnumForRadioBtnConverter},
-                                                                 ConverterParameter={x:Static enums:MetaDataOverwriteMode.Always}}" />
+                                                                 ConverterParameter={x:Static enums:MetadataOverwriteMode.Always}}" />
                                                 </StackPanel>
                                                 <Rectangle Classes="SeparatorStyle" Grid.ColumnSpan="3"
                                                            Grid.Column="0" Grid.Row="1"/>

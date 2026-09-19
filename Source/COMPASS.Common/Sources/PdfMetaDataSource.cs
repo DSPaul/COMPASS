@@ -13,20 +13,20 @@ using UglyToad.PdfPig.Logging;
 
 namespace COMPASS.Common.Sources
 {
-    public class PdfMetaDataSource : MetaDataSource
+    public class PdfMetadataSource : MetadataSource
     {
-        public PdfMetaDataSource(ILogger logger, IPreferencesService preferencesService) :
+        public PdfMetadataSource(ILogger logger, IPreferencesService preferencesService) :
             base(logger, preferencesService)
         { }
 
-        public override MetaDataSourceType Type => MetaDataSourceType.PDF;
+        public override MetadataSourceType Type => MetadataSourceType.PDF;
         public override bool IsValidSource(SourceSet sources) => FileFormatUtils.IsPDFFile(sources.Path);
 
-        public override async Task<SourceMetaData> GetMetaData(SourceSet sources, IList<Tag> availableTags, CancellationToken cancellationToken = default)
+        public override async Task<SourceMetadata> GetMetadata(SourceSet sources, IList<Tag> availableTags, CancellationToken cancellationToken = default)
         {
             Debug.Assert(IsValidSource(sources), "Codex without pdf found in pdf source");
 
-            SourceMetaData metaData = new();
+            SourceMetadata metaData = new();
             try
             {
                 await Task.Run(() =>

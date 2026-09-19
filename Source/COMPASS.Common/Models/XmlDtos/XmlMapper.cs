@@ -216,7 +216,7 @@ namespace COMPASS.Common.Models.XmlDtos
             {
                 foreach (CodexPropertyDto propDto in propertyDtos)
                 {
-                    var foundProp = SourceMetaData.ImportableProperties.Select(CodexProperty.GetInstance).ToList().Find(p => p?.Label == propDto.Label);
+                    var foundProp = SourceMetadata.ImportableProperties.Select(CodexProperty.GetInstance).ToList().Find(p => p?.Label == propDto.Label);
                     if (foundProp != null)
                     {
                         propDto.Name = foundProp.Name;
@@ -227,7 +227,7 @@ namespace COMPASS.Common.Models.XmlDtos
 
             var props = new List<CodexProperty>();
 
-            foreach (var propName in SourceMetaData.ImportableProperties)
+            foreach (var propName in SourceMetadata.ImportableProperties)
             {
                 var defaultProp = CodexProperty.GetInstance(propName);
                 if(defaultProp == null) continue;

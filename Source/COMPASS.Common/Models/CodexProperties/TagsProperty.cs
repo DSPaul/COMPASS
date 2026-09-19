@@ -9,7 +9,7 @@ namespace COMPASS.Common.Models.CodexProperties
             base(propName, label)
         { }
         
-        public override void Apply(SourceMetaData source, Codex target)
+        public override void Apply(SourceMetadata source, Codex target)
         {
             //Tags received from a metadata source should add tags to the existing ones, rather than overwrite the existing list
             foreach (Tag tag in source.Tags)
@@ -18,7 +18,7 @@ namespace COMPASS.Common.Models.CodexProperties
             }
         }
 
-        public override bool HasNewValue(SourceMetaData toEvaluate, Codex reference) =>
+        public override bool HasNewValue(SourceMetadata toEvaluate, Codex reference) =>
             GetProp(toEvaluate)!.Except(GetProp(reference)!).Any();
     }
 }

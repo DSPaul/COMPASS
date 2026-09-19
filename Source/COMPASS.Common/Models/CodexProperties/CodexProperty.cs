@@ -25,18 +25,18 @@ namespace COMPASS.Common.Models.CodexProperties
 
         public string Label { get; }
 
-        private List<MetaDataSourceType> _sourcePriority = [];
+        private List<MetadataSourceType> _sourcePriority = [];
         /// <summary>
         /// Ordered List of sources that can set this prop, used for logic
         /// </summary>
-        public List<MetaDataSourceType> SourcePriority
+        public List<MetadataSourceType> SourcePriority
         {
             get => _sourcePriority;
             set => SetProperty(ref _sourcePriority, value);
         }
 
-        private MetaDataOverwriteMode _overwriteMode = MetaDataOverwriteMode.IfEmpty;
-        public MetaDataOverwriteMode OverwriteMode
+        private MetadataOverwriteMode _overwriteMode = MetadataOverwriteMode.IfEmpty;
+        public MetadataOverwriteMode OverwriteMode
         {
             get => _overwriteMode;
             set => SetProperty(ref _overwriteMode, value);
@@ -47,8 +47,8 @@ namespace COMPASS.Common.Models.CodexProperties
 
         public abstract bool IsEmpty(IHasCodexMetadata codex);
 
-        public abstract void Copy(SourceMetaData source, SourceMetaData target);
-        public abstract void Apply(SourceMetaData source, Codex target);
+        public abstract void Copy(SourceMetadata source, SourceMetadata target);
+        public abstract void Apply(SourceMetadata source, Codex target);
 
         /// <summary>
         /// Checks if the codex to evaluated has a newer value for the property than the reference
@@ -56,7 +56,7 @@ namespace COMPASS.Common.Models.CodexProperties
         /// <param name="toEvaluate"></param>
         /// <param name="reference"></param>
         /// <returns></returns>
-        public abstract bool HasNewValue(SourceMetaData toEvaluate, Codex reference);
+        public abstract bool HasNewValue(SourceMetadata toEvaluate, Codex reference);
 
         public override string ToString() => Label;
         #endregion
@@ -79,69 +79,69 @@ namespace COMPASS.Common.Models.CodexProperties
             _ => null //could occur when a new preference file with new props is loaded into an older version of compass
         };
 
-        public static List<MetaDataSourceType> GetDefaultSources(string propName) => propName switch
+        public static List<MetadataSourceType> GetDefaultSources(string propName) => propName switch
         {
-            nameof(SourceMetaData.Title) => new()
+            nameof(SourceMetadata.Title) => new()
                 {
-                    MetaDataSourceType.PDF,
-                    MetaDataSourceType.File,
-                    MetaDataSourceType.GmBinder,
-                    MetaDataSourceType.Homebrewery,
-                    MetaDataSourceType.GoogleDrive,
-                    MetaDataSourceType.ISBN,
-                    MetaDataSourceType.GenericURL
+                    MetadataSourceType.PDF,
+                    MetadataSourceType.File,
+                    MetadataSourceType.GmBinder,
+                    MetadataSourceType.Homebrewery,
+                    MetadataSourceType.GoogleDrive,
+                    MetadataSourceType.ISBN,
+                    MetadataSourceType.GenericURL
                 },
-            nameof(SourceMetaData.Authors) => new()
+            nameof(SourceMetadata.Authors) => new()
                 {
-                    MetaDataSourceType.PDF,
-                    MetaDataSourceType.GmBinder,
-                    MetaDataSourceType.Homebrewery,
-                    MetaDataSourceType.ISBN,
-                    MetaDataSourceType.GenericURL
+                    MetadataSourceType.PDF,
+                    MetadataSourceType.GmBinder,
+                    MetadataSourceType.Homebrewery,
+                    MetadataSourceType.ISBN,
+                    MetadataSourceType.GenericURL
                 },
-            nameof(SourceMetaData.Publisher) => new()
+            nameof(SourceMetadata.Publisher) => new()
                 {
-                    MetaDataSourceType.ISBN,
-                    MetaDataSourceType.GmBinder,
-                    MetaDataSourceType.Homebrewery,
-                    MetaDataSourceType.GoogleDrive,
+                    MetadataSourceType.ISBN,
+                    MetadataSourceType.GmBinder,
+                    MetadataSourceType.Homebrewery,
+                    MetadataSourceType.GoogleDrive,
                 },
-            nameof(SourceMetaData.Version) => new()
+            nameof(SourceMetadata.Version) => new()
                 {
-                    MetaDataSourceType.Homebrewery
+                    MetadataSourceType.Homebrewery
                 },
-            nameof(SourceMetaData.PageCount) => new()
+            nameof(SourceMetadata.PageCount) => new()
                 {
-                    MetaDataSourceType.PDF,
-                    MetaDataSourceType.Image,
-                    MetaDataSourceType.GmBinder,
-                    MetaDataSourceType.Homebrewery,
-                    MetaDataSourceType.ISBN,
+                    MetadataSourceType.PDF,
+                    MetadataSourceType.Image,
+                    MetadataSourceType.GmBinder,
+                    MetadataSourceType.Homebrewery,
+                    MetadataSourceType.ISBN,
                 },
-            nameof(SourceMetaData.Tags) => new()
+            nameof(SourceMetadata.Tags) => new()
                 {
-                    MetaDataSourceType.File,
-                    MetaDataSourceType.GenericURL,
+                    MetadataSourceType.File,
+                    MetadataSourceType.GenericURL,
                 },
-            nameof(SourceMetaData.Description) => new()
+            nameof(SourceMetadata.Description) => new()
                 {
-                    MetaDataSourceType.Homebrewery,
-                    MetaDataSourceType.ISBN,
-                    MetaDataSourceType.GenericURL,
+                    MetadataSourceType.Homebrewery,
+                    MetadataSourceType.ISBN,
+                    MetadataSourceType.GenericURL,
                 },
-            nameof(SourceMetaData.ReleaseDate) => new()
+            nameof(SourceMetadata.ReleaseDate) => new()
                 {
-                    MetaDataSourceType.Homebrewery,
-                    MetaDataSourceType.ISBN,
+                    MetadataSourceType.Homebrewery,
+                    MetadataSourceType.ISBN,
                 },
-            nameof(SourceMetaData.Cover) => new()
+            nameof(SourceMetadata.Cover) => new()
                 {
-                    MetaDataSourceType.Image,
-                    MetaDataSourceType.PDF,
-                    MetaDataSourceType.GmBinder,
-                    MetaDataSourceType.Homebrewery,
-                    MetaDataSourceType.GoogleDrive,
-                    MetaDataSourceType.ISBN,
+                    MetadataSourceType.Image,
+                    MetadataSourceType.PDF,
+                    MetadataSourceType.GmBinder,
+                    MetadataSourceType.Homebrewery,
+                    MetadataSourceType.GoogleDrive,
+                    MetadataSourceType.ISBN,
                 },
             _ => new(),
         };
@@ -162,15 +162,15 @@ namespace COMPASS.Common.Models.CodexProperties
             return value == null ? default : (T)value;
         }
 
-        public override void Copy(SourceMetaData source, SourceMetaData target)
+        public override void Copy(SourceMetadata source, SourceMetadata target)
             => target.SetProperty(Name, GetProp(source));
 
-        public override void Apply(SourceMetaData source, Codex target)
+        public override void Apply(SourceMetadata source, Codex target)
         {
             target.SetProperty(Name, GetProp(source));
         }
 
-        public override bool HasNewValue(SourceMetaData toEvaluate, Codex reference) =>
+        public override bool HasNewValue(SourceMetadata toEvaluate, Codex reference) =>
             !EqualityComparer<T>.Default.Equals(GetProp(toEvaluate), GetProp(reference));
     }
 }

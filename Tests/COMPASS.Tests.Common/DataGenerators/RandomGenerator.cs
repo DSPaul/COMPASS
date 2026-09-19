@@ -109,7 +109,7 @@ public static class RandomGenerator
     public static Preferences GetRandomPreferences() => new()
     {
         AutoLinkFolderTagSameName = true,
-        ImportableCodexProperties = SourceMetaData.ImportableProperties.Select(CodexProperty.GetInstance).RemoveNulls().ToList(),
+        ImportableCodexProperties = SourceMetadata.ImportableProperties.Select(CodexProperty.GetInstance).RemoveNulls().ToList(),
         CardLayoutPreferences = new CardLayoutPreferences()
         {
             ShowAuthor = GetRandomBool(),

@@ -18,7 +18,7 @@ namespace COMPASS.Common.Models.CodexProperties
             return !value.SafeAny();
         }
 
-        public override bool HasNewValue(SourceMetaData toEvaluate, Codex reference)
+        public override bool HasNewValue(SourceMetadata toEvaluate, Codex reference)
         {
             var newVal = GetProp(toEvaluate);
             if (!newVal.SafeAny())
@@ -37,12 +37,12 @@ namespace COMPASS.Common.Models.CodexProperties
             return !newVal.SequenceEqual(refVal);
         }
 
-        public override void Copy(SourceMetaData source, SourceMetaData target)
+        public override void Copy(SourceMetadata source, SourceMetadata target)
         {
             target.SetProperty(Name, GetProp(source)?.ToList() ?? []); //make a new list
         }
         
-        public override void Apply(SourceMetaData source, Codex codex)
+        public override void Apply(SourceMetadata source, Codex codex)
         {
             codex.SetProperty(Name, new ObservableCollection<T>(GetProp(source)?.ToList() ?? [])); //make a new list
         }

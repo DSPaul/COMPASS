@@ -10,24 +10,24 @@ using ImageMagick;
 
 namespace COMPASS.Common.Sources
 {
-    public class GenericOnlineMetaDataSource : OnlineMetaDataSource
+    public class GenericOnlineMetadataSource : OnlineMetadataSource
     {
-        public GenericOnlineMetaDataSource(ILogger logger, IPreferencesService preferencesService, IWebService webService, IWebDriverService webDriverService) :
+        public GenericOnlineMetadataSource(ILogger logger, IPreferencesService preferencesService, IWebService webService, IWebDriverService webDriverService) :
             base(logger, preferencesService, webService, webDriverService)
         { }
         
-        public override MetaDataSourceType Type => MetaDataSourceType.GenericURL;
+        public override MetadataSourceType Type => MetadataSourceType.GenericURL;
         
         public override string UrlPrefix => "https://";
         protected override IEnumerable<string> AcceptedUrlPrefixes => ["https://", "http://"];
 
         public override Task<IMagickImage<byte>?> FetchCover(SourceSet sources, CancellationToken cancellationToken = default) => throw new NotImplementedException();
 
-        public override async Task<SourceMetaData> GetMetaData(SourceSet sources, IList<Tag> availableTags, CancellationToken cancellationToken = default)
+        public override async Task<SourceMetadata> GetMetadata(SourceSet sources, IList<Tag> availableTags, CancellationToken cancellationToken = default)
         {
             Debug.Assert(IsValidSource(sources), "Codex without URL was used in Generic URL source");
             
-            SourceMetaData metaData = new();
+            SourceMetadata metaData = new();
 
             // Scrape metadata
             Logger.Info($"Extracting metadata from website header");

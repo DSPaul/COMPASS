@@ -384,7 +384,7 @@ public class CodexViewModel : ModelViewModelBase<Codex>
     private async Task BanishCodex() => await _codexOperations.BanishCodex(_model);
 
     //Get Metadata
-    public AsyncRelayCommand GetMetaDataCommand => field ??= new(GetMetadata);
+    public AsyncRelayCommand GetMetadataCommand => field ??= new(GetMetadata);
     private async Task GetMetadata() => await _codexOperations.FetchMetadata(_model);
     
     //Get Cover

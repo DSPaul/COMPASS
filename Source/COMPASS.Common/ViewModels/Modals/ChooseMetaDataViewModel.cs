@@ -4,31 +4,31 @@ using COMPASS.Infra.ExtensionMethods;
 
 namespace COMPASS.Common.ViewModels.Modals
 {
-    public class ChooseMetaDataViewModel : WizardViewModel
+    public class ChooseMetadataViewModel : WizardViewModel
     {
-        private readonly MetaDataProposalViewModelFactory _metaDataProposalViewModelFactory;
+        private readonly MetadataProposalViewModelFactory _metaDataProposalViewModelFactory;
 
-        public ChooseMetaDataViewModel(MetaDataProposalViewModelFactory metaDataProposalViewModelFactory)
+        public ChooseMetadataViewModel(MetadataProposalViewModelFactory metaDataProposalViewModelFactory)
         {
             _metaDataProposalViewModelFactory = metaDataProposalViewModelFactory;
         }
 
-        public List<MetaDataProposalViewModel> MetaDataProposals { get; } = [];
+        public List<MetadataProposalViewModel> MetadataProposals { get; } = [];
         
         public override string WindowTitle { get; } = "Choose which metadata to keep";
         
         private readonly Mutex _codicesListMutex = new();
-        public void AddMetaDataProposal(Codex codex, SourceMetaData proposedMetaData)
+        public void AddMetadataProposal(Codex codex, SourceMetadata proposedMetadata)
         {
             _codicesListMutex.WaitOne();
-            if (MetaDataProposals.AddIfMissing(_metaDataProposalViewModelFactory.Create(codex, proposedMetaData)))
+            if (MetadataProposals.AddIfMissing(_metaDataProposalViewModelFactory.Create(codex, proposedMetadata)))
             {
                 Steps.Add(new WizardStepViewModel(codex.Title));
             }
             _codicesListMutex.ReleaseMutex();
         }
 
-        public MetaDataProposalViewModel CurrentProposal => MetaDataProposals[StepCounter];
+        public MetadataProposalViewModel CurrentProposal => MetadataProposals[StepCounter];
 
         protected override void NextStep()
         {
@@ -50,19 +50,19 @@ namespace COMPASS.Common.ViewModels.Modals
 
         private async Task ApplyChoices()
         {
-            foreach (var proposal in MetaDataProposals)
+            foreach (var proposal in MetadataProposals)
             {
                 await proposal.ApplyChoice();
                 proposal.Dispose();
             }
             
-            MetaDataProposals.Clear();
+            MetadataProposals.Clear();
         }
     }
 
     [Factory]
-    public class ChooseMetaDataViewModelFactory(MetaDataProposalViewModelFactory metaDataProposalViewModelFactory)
+    public class ChooseMetadataViewModelFactory(MetadataProposalViewModelFactory metaDataProposalViewModelFactory)
     {
-        public ChooseMetaDataViewModel Create() => new(metaDataProposalViewModelFactory);
+        public ChooseMetadataViewModel Create() => new(metaDataProposalViewModelFactory);
     }
 }

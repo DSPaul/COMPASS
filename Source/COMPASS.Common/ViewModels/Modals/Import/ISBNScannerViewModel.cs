@@ -22,15 +22,15 @@ namespace COMPASS.Common.ViewModels.Modals.Import
         private readonly IBarcodeDecoderService _barcodeDecoderService;
         private readonly VideoCaptureViewModelFactory _videoCaptureVmFactory;
         private readonly CodexCollectionOperations _codexCollectionOperations;
-        private readonly MetaDataSource _isbnSource;
+        private readonly MetadataSource _isbnSource;
         private bool _scanning;
 
-        public ISBNScannerViewModel(IBarcodeDecoderService barcodeDecoderService, VideoCaptureViewModelFactory videoCaptureVmFactory, CodexCollectionOperations codexCollectionOperations, IIndex<string, MetaDataSource> metaDataSources)
+        public ISBNScannerViewModel(IBarcodeDecoderService barcodeDecoderService, VideoCaptureViewModelFactory videoCaptureVmFactory, CodexCollectionOperations codexCollectionOperations, IIndex<string, MetadataSource> metaDataSources)
         {
             _barcodeDecoderService = barcodeDecoderService;
             _videoCaptureVmFactory = videoCaptureVmFactory;
             _codexCollectionOperations = codexCollectionOperations;
-            _isbnSource = metaDataSources[MetaDataSourceType.ISBN.ToString()];
+            _isbnSource = metaDataSources[MetadataSourceType.ISBN.ToString()];
             _scanTimer = new(TimeSpan.FromMilliseconds(50), DispatcherPriority.Render, OnScanTick);
 
             ScannedCodes = [];
@@ -163,13 +163,13 @@ namespace COMPASS.Common.ViewModels.Modals.Import
 
         public class ScannedISBN : ObservableObject
         {
-            public ScannedISBN(MetaDataSource isbnSource, string isbn)
+            public ScannedISBN(MetadataSource isbnSource, string isbn)
             {
                 ISBN = isbn;
                 Title = "Searching...";
 
                 var activeCollection = TabsViewModel.GetInstance().ActiveTab!.CollectionVM.Collection;
-                isbnSource.GetMetaData(new SourceSet()
+                isbnSource.GetMetadata(new SourceSet()
                 {
                     ISBN = isbn
                 }, activeCollection.AllTags).ContinueWith(t =>
@@ -189,7 +189,7 @@ namespace COMPASS.Common.ViewModels.Modals.Import
         IBarcodeDecoderService barcodeDecoderService, 
         VideoCaptureViewModelFactory videoCaptureVmFactory, 
         CodexCollectionOperations codexCollectionOperations, 
-        IIndex<string, MetaDataSource> metaDataSources)
+        IIndex<string, MetadataSource> metaDataSources)
     {
         public ISBNScannerViewModel Create() => new(barcodeDecoderService, videoCaptureVmFactory, codexCollectionOperations, metaDataSources);
     }

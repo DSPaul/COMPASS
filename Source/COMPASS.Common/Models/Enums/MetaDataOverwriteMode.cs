@@ -1,6 +1,6 @@
 ﻿namespace COMPASS.Common.Models.Enums
 {
-    public enum MetaDataOverwriteMode
+    public enum MetadataOverwriteMode
     {
         Never,
         IfEmpty,

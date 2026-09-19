@@ -8,20 +8,20 @@ using ImageMagick;
 
 namespace COMPASS.Common.Sources
 {
-    public class GoogleDriveMetaDataSource : OnlineMetaDataSource
+    public class GoogleDriveMetadataSource : OnlineMetadataSource
     {
-        public GoogleDriveMetaDataSource(ILogger logger, IPreferencesService preferencesService, IWebService webService, IWebDriverService webDriverService) :
+        public GoogleDriveMetadataSource(ILogger logger, IPreferencesService preferencesService, IWebService webService, IWebDriverService webDriverService) :
             base(logger, preferencesService, webService, webDriverService)
         { }
         
-        public override MetaDataSourceType Type => MetaDataSourceType.GoogleDrive;
+        public override MetadataSourceType Type => MetadataSourceType.GoogleDrive;
         public override string UrlPrefix => "https://drive.google.com/file/";
 
-        public override Task<SourceMetaData> GetMetaData(SourceSet sources, IList<Tag> availableTags, CancellationToken cancellationToken = default)
+        public override Task<SourceMetadata> GetMetadata(SourceSet sources, IList<Tag> availableTags, CancellationToken cancellationToken = default)
         {
             Debug.Assert(IsValidSource(sources), "Invalid Codex was used in Google drive source");
             
-            SourceMetaData metaData = new()
+            SourceMetadata metaData = new()
             {
                 Publisher = "Google Drive"
             };

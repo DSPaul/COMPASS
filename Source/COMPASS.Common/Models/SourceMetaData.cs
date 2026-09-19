@@ -6,13 +6,13 @@ using ImageMagick;
 namespace COMPASS.Common.Models;
 
 /// <summary>
-/// MetaData that can be provided by a metadata source
+/// Metadata that can be provided by a metadata source
 /// </summary>
-public class SourceMetaData : IHasCodexMetadata, IDisposable
+public class SourceMetadata : IHasCodexMetadata, IDisposable
 {
-    public SourceMetaData() { }
+    public SourceMetadata() { }
     
-    public SourceMetaData(Codex codex)
+    public SourceMetadata(Codex codex)
     {
         Title = codex.Title;
         Authors = [ ..codex.Authors];

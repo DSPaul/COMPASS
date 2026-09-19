@@ -38,10 +38,10 @@ namespace COMPASS.Common.Operations
         ICoverService coverService,
         Lazy<CodexEditViewModelFactory> codexEditViewModelFactory,
         Lazy<FileNotFoundViewModelFactory> fileNotFoundViewModelFactory,
-        ChooseMetaDataViewModelFactory chooseMetaDataViewModelFactory,
+        ChooseMetadataViewModelFactory chooseMetadataViewModelFactory,
         Lazy<CollectionManager> collectionManager,
         ProgressTrackingManager progressTrackingManager,
-        IIndex<string, MetaDataSource> metaDataSources)
+        IIndex<string, MetadataSource> metaDataSources)
     {
         #region Open Codex
 
@@ -460,11 +460,11 @@ namespace COMPASS.Common.Operations
                     if (codicesGroupedByCollection.Count > 1)
                     {
                          await Task.WhenAll(codicesGroupedByCollection.Select(group =>
-                                FetchMetaData(group.ToList(), tracker, ct)));
+                                FetchMetadata(group.ToList(), tracker, ct)));
                         return;
                     }
 
-                    await FetchMetaData(codices, tracker, ct);
+                    await FetchMetadata(codices, tracker, ct);
                 });
             }
             catch (OperationCanceledException)
@@ -473,9 +473,9 @@ namespace COMPASS.Common.Operations
             }
         }
 
-        private async Task FetchMetaData(IList<Codex> codices, IProgress<IProgressReport> progressTracker, CancellationToken cancellationToken)
+        private async Task FetchMetadata(IList<Codex> codices, IProgress<IProgressReport> progressTracker, CancellationToken cancellationToken)
         {
-            Debug.Assert(codices.HasCommonValue(c => c.Collection, out CodexCollection? collection), "FetchMetaDataAsync called with empty codices list");
+            Debug.Assert(codices.HasCommonValue(c => c.Collection, out CodexCollection? collection), "FetchMetadataAsync called with empty codices list");
 
             using CollectionHandle? localCollectionHandle = collection?.Load();
             if (localCollectionHandle == null)
@@ -484,7 +484,7 @@ namespace COMPASS.Common.Operations
                 return;
             }
 
-            ChooseMetaDataViewModel chooseMetaDataVM = chooseMetaDataViewModelFactory.Create();
+            ChooseMetadataViewModel chooseMetadataVM = chooseMetadataViewModelFactory.Create();
 
             ParallelOptions parallelOptions = new()
             {
@@ -496,7 +496,7 @@ namespace COMPASS.Common.Operations
                 {
                     try
                     {
-                        await GetMetaData(codex, chooseMetaDataVM, ct);
+                        await GetMetadata(codex, chooseMetadataVM, ct);
                     }
                     finally
                     {
@@ -504,39 +504,39 @@ namespace COMPASS.Common.Operations
                     }
                 });
 
-            if (chooseMetaDataVM.MetaDataProposals.Any())
+            if (chooseMetadataVM.MetadataProposals.Any())
             {
-                await WindowManager.OpenModal(chooseMetaDataVM);
+                await WindowManager.OpenModal(chooseMetadataVM);
             }
 
             //Save at the end
             localCollectionHandle.SaveCodices();
         }
 
-        private async Task GetMetaData(Codex codex, ChooseMetaDataViewModel chooseMetaDataVM, CancellationToken ct)
+        private async Task GetMetadata(Codex codex, ChooseMetadataViewModel chooseMetadataVM, CancellationToken ct)
         {
             try
             {
                 ct.ThrowIfCancellationRequested();
-                SourceMetaData existingMetaData = new(codex);
+                SourceMetadata existingMetadata = new(codex);
 
                 // Lazy load metadata from all the sources, use dict to store
-                Dictionary<string, SourceMetaData> metaDataFromSource = new();
+                Dictionary<string, SourceMetadata> metaDataFromSource = new();
 
                 //First try to get sources from other sources
                 //Pdf can contain ISBN number
-                if (metaDataSources.TryGetValue(nameof(MetaDataSourceType.PDF), out MetaDataSource? pdfSource)
+                if (metaDataSources.TryGetValue(nameof(MetadataSourceType.PDF), out MetadataSource? pdfSource)
                     && pdfSource.IsValidSource(codex.Sources)
                     && string.IsNullOrEmpty(codex.Sources.ISBN))
                 {
-                    SourceMetaData pdfData = await pdfSource.GetMetaData(codex.Sources, codex.Collection.AllTags, ct);
+                    SourceMetadata pdfData = await pdfSource.GetMetadata(codex.Sources, codex.Collection.AllTags, ct);
 
                     //already store this so pdf doesn't need to be opened twice
-                    metaDataFromSource.Add(nameof(MetaDataSourceType.PDF), pdfData);
+                    metaDataFromSource.Add(nameof(MetadataSourceType.PDF), pdfData);
                 }
 
                 //metadata that will be shown to the user, and asked if they want to use it
-                SourceMetaData toAsk = new();
+                SourceMetadata toAsk = new();
                 bool shouldAsk = false;
 
                 //Iterate over all the properties and set them
@@ -544,11 +544,11 @@ namespace COMPASS.Common.Operations
                 {
                     ct.ThrowIfCancellationRequested();
 
-                    if (prop.OverwriteMode == MetaDataOverwriteMode.Never) continue;
+                    if (prop.OverwriteMode == MetadataOverwriteMode.Never) continue;
                     if (prop is CoverProperty) continue; //Covers are done separately
 
                     //preferredMetadata will hold the metadata from the top preferred source
-                    SourceMetaData preferredMetadata = new();
+                    SourceMetadata preferredMetadata = new();
 
                     //iterate over the sources in reverse because overwriting causes the last ones to remain
                     foreach (var sourceType in prop.SourcePriority.Select(s => s.ToString()).Reverse())
@@ -556,11 +556,11 @@ namespace COMPASS.Common.Operations
                         ct.ThrowIfCancellationRequested();
 
                         // Check if there is metadata from this source to use
-                        if (!metaDataFromSource.TryGetValue(sourceType, out SourceMetaData? metadata))
+                        if (!metaDataFromSource.TryGetValue(sourceType, out SourceMetadata? metadata))
                         {
-                            if (!metaDataSources.TryGetValue(sourceType, out MetaDataSource? source)) continue;
+                            if (!metaDataSources.TryGetValue(sourceType, out MetadataSource? source)) continue;
                             if (!source.IsValidSource(codex.Sources)) continue;
-                            metadata = await source.GetMetaData(codex.Sources, codex.Collection.AllTags, ct);
+                            metadata = await source.GetMetadata(codex.Sources, codex.Collection.AllTags, ct);
                             metaDataFromSource.Add(sourceType, metadata);
                         }
 
@@ -574,13 +574,13 @@ namespace COMPASS.Common.Operations
                     //if no (new) value was found for this prop, do nothing
                     if (prop.IsEmpty(preferredMetadata) || !prop.HasNewValue(preferredMetadata, codex)) continue;
                 
-                    if ((prop.OverwriteMode == MetaDataOverwriteMode.IfEmpty && prop.IsEmpty(existingMetaData)) ||
-                        prop.OverwriteMode == MetaDataOverwriteMode.Always)
+                    if ((prop.OverwriteMode == MetadataOverwriteMode.IfEmpty && prop.IsEmpty(existingMetadata)) ||
+                        prop.OverwriteMode == MetadataOverwriteMode.Always)
                     {
                         prop.Apply(preferredMetadata, codex);
                     }
-                    else if ((prop.OverwriteMode == MetaDataOverwriteMode.IfEmpty && !prop.IsEmpty(existingMetaData)) ||
-                             prop.OverwriteMode == MetaDataOverwriteMode.Ask )
+                    else if ((prop.OverwriteMode == MetadataOverwriteMode.IfEmpty && !prop.IsEmpty(existingMetadata)) ||
+                             prop.OverwriteMode == MetadataOverwriteMode.Ask )
                     {
                         prop.Copy(preferredMetadata, toAsk);
                         shouldAsk = true; //set shouldAsk to true when we found at least one non-empty prop that should be asked
@@ -589,7 +589,7 @@ namespace COMPASS.Common.Operations
 
                 if (shouldAsk)
                 {
-                    chooseMetaDataVM.AddMetaDataProposal(codex, toAsk);
+                    chooseMetadataVM.AddMetadataProposal(codex, toAsk);
                 }
 
                 logger.Info($"Got metadata for {codex.Title}");
@@ -606,9 +606,9 @@ namespace COMPASS.Common.Operations
             }
         }
 
-        public AsyncRelayCommand<IList> GetMetaDataBulkCommand => field ??= new(GetMetaDataBulk);
+        public AsyncRelayCommand<IList> GetMetadataBulkCommand => field ??= new(GetMetadataBulk);
 
-        private async Task GetMetaDataBulk(IList? items)
+        private async Task GetMetadataBulk(IList? items)
         {
             var codices = GatherCodices(items);
             if (!codices.SafeAny()) return;

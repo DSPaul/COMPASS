@@ -10,24 +10,24 @@ using COMPASS.Infra.Tools.Logging;
 
 namespace COMPASS.Common.Sources
 {
-    public class ISBNMetaDataSource : MetaDataSource
+    public class ISBNMetadataSource : MetadataSource
     {
         private readonly IWebService _webService;
 
-        public ISBNMetaDataSource(ILogger logger, IPreferencesService preferencesService, IWebService webService) :
+        public ISBNMetadataSource(ILogger logger, IPreferencesService preferencesService, IWebService webService) :
             base(logger, preferencesService)
         {
             _webService = webService;
         }
         
-        public override MetaDataSourceType Type => MetaDataSourceType.ISBN;
+        public override MetadataSourceType Type => MetadataSourceType.ISBN;
         public override bool IsValidSource(SourceSet sources) => !String.IsNullOrWhiteSpace(sources.ISBN);
 
-        public override async Task<SourceMetaData> GetMetaData(SourceSet sources, IList<Tag> availableTags, CancellationToken cancellationToken = default)
+        public override async Task<SourceMetadata> GetMetadata(SourceSet sources, IList<Tag> availableTags, CancellationToken cancellationToken = default)
         {
             Debug.Assert(IsValidSource(sources), "Codex without ISBN was used in ISBN Source");
             
-            SourceMetaData metaData = new();
+            SourceMetadata metaData = new();
             
             Logger.Info($"Downloading Metadata from openlibrary.org");
             string uri = $"https://openlibrary.org/api/books?bibkeys=ISBN:{sources.ISBN.Trim('-', ' ')}&format=json&jscmd=details";

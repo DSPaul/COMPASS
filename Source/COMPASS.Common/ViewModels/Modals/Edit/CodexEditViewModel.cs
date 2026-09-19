@@ -200,9 +200,9 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         {
             ShowLoading = true;
             //make it so cover always gets overwritten if this case, store old value first
-            CodexProperty coverProp = _preferencesService.Preferences.ImportableCodexProperties.First(prop => prop.Name == nameof(SourceMetaData.Cover));
-            MetaDataOverwriteMode curSetting = coverProp.OverwriteMode;
-            coverProp.OverwriteMode = MetaDataOverwriteMode.Always;
+            CodexProperty coverProp = _preferencesService.Preferences.ImportableCodexProperties.First(prop => prop.Name == nameof(SourceMetadata.Cover));
+            MetadataOverwriteMode curSetting = coverProp.OverwriteMode;
+            coverProp.OverwriteMode = MetadataOverwriteMode.Always;
             //get the cover
             try
             {

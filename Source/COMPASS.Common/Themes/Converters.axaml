@@ -10,5 +10,5 @@
   <conv:EnumForRadioBtnConverter x:Key="EnumForRadioBtnConverter" />
   <conv:CollectionUnionConverter x:Key="CollectionUnionConverter" />
   <commonConv:SeverityToColorConverter x:Key="SeverityToColorConverter"/>
-  <commonConv:IsMetaDataPropertyEmpty x:Key="IsMetaDataPropertyEmpty" />
+  <commonConv:IsMetadataPropertyEmpty x:Key="IsMetadataPropertyEmpty" />
 </ResourceDictionary>

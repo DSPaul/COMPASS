@@ -7,18 +7,18 @@ using ImageMagick;
 
 namespace COMPASS.Common.Sources
 {
-    public class DndBeyondMetaDataSource : OnlineMetaDataSource
+    public class DndBeyondMetadataSource : OnlineMetadataSource
     {
-        public DndBeyondMetaDataSource(ILogger logger, IPreferencesService preferencesService, IWebService webService, IWebDriverService webDriverService) :
+        public DndBeyondMetadataSource(ILogger logger, IPreferencesService preferencesService, IWebService webService, IWebDriverService webDriverService) :
             base(logger, preferencesService, webService, webDriverService)
         { }
         
-        public override MetaDataSourceType Type => MetaDataSourceType.DnDBeyond;
+        public override MetadataSourceType Type => MetadataSourceType.DnDBeyond;
         public override string UrlPrefix => "https://www.dndbeyond.com/";
 
-        public override async Task<SourceMetaData> GetMetaData(SourceSet sources, IList<Tag> availableTags, CancellationToken cancellationToken = default)
+        public override async Task<SourceMetadata> GetMetadata(SourceSet sources, IList<Tag> availableTags, CancellationToken cancellationToken = default)
         {
-            SourceMetaData metaData = new()
+            SourceMetadata metaData = new()
             {
                 Publisher = "D&D Beyond",
                 Authors = ["Wizards of the Coast"]

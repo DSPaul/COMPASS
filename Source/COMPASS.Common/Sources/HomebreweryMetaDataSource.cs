@@ -12,22 +12,22 @@ using System.Text.Json.Nodes;
 
 namespace COMPASS.Common.Sources
 {
-    public class HomebreweryMetaDataSource : OnlineMetaDataSource
+    public class HomebreweryMetadataSource : OnlineMetadataSource
     {
-        public HomebreweryMetaDataSource(ILogger logger, IPreferencesService preferencesService, IWebService webService, IWebDriverService webDriverService) :
+        public HomebreweryMetadataSource(ILogger logger, IPreferencesService preferencesService, IWebService webService, IWebDriverService webDriverService) :
             base(logger, preferencesService, webService, webDriverService)
         { }
         
-        public override MetaDataSourceType Type => MetaDataSourceType.Homebrewery;
+        public override MetadataSourceType Type => MetadataSourceType.Homebrewery;
         public override string UrlPrefix => "https://homebrewery.naturalcrit.com/share/";
 
-        public override async Task<SourceMetaData> GetMetaData(SourceSet sources, IList<Tag> availableTags, CancellationToken cancellationToken = default)
+        public override async Task<SourceMetadata> GetMetadata(SourceSet sources, IList<Tag> availableTags, CancellationToken cancellationToken = default)
         {
             Debug.Assert(IsValidSource(sources), "Invalid Codex was used in Homebrewery source");
 
             string uri = sources.SourceURL.Replace(@"/share/", @"/metadata/");
             
-            SourceMetaData metaData = new()
+            SourceMetadata metaData = new()
             {
                 Publisher = "Homebrewery",
             };

@@ -11,7 +11,7 @@ namespace COMPASS.Common.Models.Preferences
         public Preferences()
         {
             _openCodexPriority = new(OpenCodexFunctions);
-            ImportableCodexProperties = SourceMetaData.ImportableProperties.Select(CodexProperty.GetInstance).RemoveNulls().ToList();
+            ImportableCodexProperties = SourceMetadata.ImportableProperties.Select(CodexProperty.GetInstance).RemoveNulls().ToList();
             ListLayoutPreferences = new();
             CardLayoutPreferences = new();
             TileLayoutPreferences = new();

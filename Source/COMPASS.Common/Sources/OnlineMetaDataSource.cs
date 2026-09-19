@@ -8,11 +8,11 @@ namespace COMPASS.Common.Sources
     /// <summary>
     /// A baseclass for metadatasources that use the SourceURL to get metadata from a website
     /// </summary>
-    public abstract class OnlineMetaDataSource(
+    public abstract class OnlineMetadataSource(
         ILogger logger,
         IPreferencesService preferencesService,
         IWebService webService,
-        IWebDriverService webDriverService) : MetaDataSource(logger, preferencesService)
+        IWebDriverService webDriverService) : MetadataSource(logger, preferencesService)
     {
         protected IWebService WebService => webService;
         protected private async Task<WebDriver?> GetWebDriverAsync(CancellationToken cancellationToken = default) => await webDriverService.GetWebDriver(cancellationToken).ConfigureAwait(false);

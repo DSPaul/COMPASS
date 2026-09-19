@@ -21,9 +21,9 @@ namespace COMPASS.Common.Services
         ILogger logger,
         IPreferencesService preferencesService,
         IIOService ioService,
-        ChooseMetaDataViewModelFactory chooseMetaDataViewModelFactory,
+        ChooseMetadataViewModelFactory chooseMetadataViewModelFactory,
         ProgressTrackingManager progressTrackingManager,
-        IIndex<string, MetaDataSource> metaDataSources) : ICoverService
+        IIndex<string, MetadataSource> metaDataSources) : ICoverService
     {
 
         private const int ThumbnailWidth = 200;
@@ -33,34 +33,34 @@ namespace COMPASS.Common.Services
         /// Fetches a cover image for the given codex
         /// </summary>
         /// <param name="codex"></param>
-        /// <param name="chooseMetaDataViewModel"></param>
+        /// <param name="chooseMetadataViewModel"></param>
         /// <exception cref="System.OperationCanceledException"></exception>
-        public async Task GetAndApplyCover(Codex codex, ChooseMetaDataViewModel? chooseMetaDataViewModel = null, CancellationToken ct = default)
+        public async Task GetAndApplyCover(Codex codex, ChooseMetadataViewModel? chooseMetadataViewModel = null, CancellationToken ct = default)
         {
             //TODO add visual feedback while fetching, like a spinner on the thumbnail
             IMagickImage<byte>? coverFromSource = null;
             try
             {
-                CodexProperty coverProp = preferencesService.Preferences.ImportableCodexProperties.First(prop => prop.Name == nameof(SourceMetaData.Cover));
+                CodexProperty coverProp = preferencesService.Preferences.ImportableCodexProperties.First(prop => prop.Name == nameof(SourceMetadata.Cover));
 
                 switch (coverProp.OverwriteMode)
                 {
-                    case MetaDataOverwriteMode.Ask:
-                        Debug.Assert(chooseMetaDataViewModel is not null, "choose MetaData ViewModel cannot be null if overwrite mode is ask");
+                    case MetadataOverwriteMode.Ask:
+                        Debug.Assert(chooseMetadataViewModel is not null, "choose Metadata ViewModel cannot be null if overwrite mode is ask");
                         break;
-                    case MetaDataOverwriteMode.Never:
-                    case MetaDataOverwriteMode.IfEmpty when !coverProp.IsEmpty(codex):
+                    case MetadataOverwriteMode.Never:
+                    case MetadataOverwriteMode.IfEmpty when !coverProp.IsEmpty(codex):
                         return;
                 }
 
-                bool shouldAsk = coverProp.OverwriteMode == MetaDataOverwriteMode.Ask && !coverProp.IsEmpty(codex);
+                bool shouldAsk = coverProp.OverwriteMode == MetadataOverwriteMode.Ask && !coverProp.IsEmpty(codex);
 
 
                 foreach (var sourceType in coverProp.SourcePriority)
                 {
                     ct.ThrowIfCancellationRequested();
 
-                    if (!metaDataSources.TryGetValue(sourceType.ToString(), out MetaDataSource? source)) continue;
+                    if (!metaDataSources.TryGetValue(sourceType.ToString(), out MetadataSource? source)) continue;
                     if (!source.IsValidSource(codex.Sources)) continue;
                     coverFromSource = await source.FetchCover(codex.Sources);
                     if (coverFromSource != null) break;
@@ -71,17 +71,17 @@ namespace COMPASS.Common.Services
 
                 if (shouldAsk)
                 {
-                    SourceMetaData newMetaData = new()
+                    SourceMetadata newMetadata = new()
                     {
                         Cover = coverFromSource,
                     };
 
                     //check if the image is different from the existing one
-                    if (!coverProp.HasNewValue(newMetaData, codex)) return;
+                    if (!coverProp.HasNewValue(newMetadata, codex)) return;
 
                     //make a copy of cover because originals lifetime is limited to this method
-                    newMetaData.Cover = new MagickImage(coverFromSource);
-                    chooseMetaDataViewModel!.AddMetaDataProposal(codex, newMetaData);
+                    newMetadata.Cover = new MagickImage(coverFromSource);
+                    chooseMetadataViewModel!.AddMetadataProposal(codex, newMetadata);
                 }
                 else
                 {
@@ -104,7 +104,7 @@ namespace COMPASS.Common.Services
                 Total = codices.Count
             };
 
-            ChooseMetaDataViewModel chooseMetaDataVM = chooseMetaDataViewModelFactory.Create();
+            ChooseMetadataViewModel chooseMetadataVM = chooseMetadataViewModelFactory.Create();
 
             try
             {
@@ -120,7 +120,7 @@ namespace COMPASS.Common.Services
                         {
                             try
                             {
-                                await GetAndApplyCover(codex, chooseMetaDataVM, ct);
+                                await GetAndApplyCover(codex, chooseMetadataVM, ct);
                             }
                             catch (OperationCanceledException)
                             {
@@ -147,9 +147,9 @@ namespace COMPASS.Common.Services
                 logger.Error("Failed to fetch covers", ex);
             }
 
-            if (chooseMetaDataVM.MetaDataProposals.Any())
+            if (chooseMetadataVM.MetadataProposals.Any())
             {
-                await WindowManager.OpenModal(chooseMetaDataVM);
+                await WindowManager.OpenModal(chooseMetadataVM);
             }
         }
 

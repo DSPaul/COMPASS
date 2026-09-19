@@ -7,23 +7,23 @@ using ImageMagick;
 
 namespace COMPASS.Common.Sources
 {
-    public class ImageMetaDataSource : MetaDataSource
+    public class ImageMetadataSource : MetadataSource
     {
         private readonly ICoverService _coverService;
 
-        public ImageMetaDataSource(ILogger logger, IPreferencesService preferencesService, ICoverService coverService) :  
+        public ImageMetadataSource(ILogger logger, IPreferencesService preferencesService, ICoverService coverService) :  
             base(logger, preferencesService) 
         {
             _coverService = coverService;
         }
         
-        public override MetaDataSourceType Type => MetaDataSourceType.Image;
+        public override MetadataSourceType Type => MetadataSourceType.Image;
 
         public override bool IsValidSource(SourceSet sources) => File.Exists(sources.Path) && FileFormatUtils.IsImageFile(sources.Path);
 
-        public override Task<SourceMetaData> GetMetaData(SourceSet sources, IList<Tag> availableTags, CancellationToken cancellationToken = default)
+        public override Task<SourceMetadata> GetMetadata(SourceSet sources, IList<Tag> availableTags, CancellationToken cancellationToken = default)
         {
-            SourceMetaData metaData = new()
+            SourceMetadata metaData = new()
             {
                 PageCount = 1
             };

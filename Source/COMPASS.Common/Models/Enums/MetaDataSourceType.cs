@@ -3,7 +3,7 @@ using System;
 namespace COMPASS.Common.Models.Enums;
 
 [Flags]
-public enum MetaDataSourceType
+public enum MetadataSourceType
 {
     None = 0,
     File = 1,
@@ -18,18 +18,18 @@ public enum MetaDataSourceType
     GenericURL = 512,
 }
 
-public static class MetaDataSources
+public static class MetadataSources
 {
-    public static readonly MetaDataSourceType OnlineSources =
-        MetaDataSourceType.GmBinder |
-        MetaDataSourceType.Homebrewery |
-        MetaDataSourceType.DnDBeyond |
-        MetaDataSourceType.GoogleDrive |
-        MetaDataSourceType.Dropbox |
-        MetaDataSourceType.GenericURL;
+    public static readonly MetadataSourceType OnlineSources =
+        MetadataSourceType.GmBinder |
+        MetadataSourceType.Homebrewery |
+        MetadataSourceType.DnDBeyond |
+        MetadataSourceType.GoogleDrive |
+        MetadataSourceType.Dropbox |
+        MetadataSourceType.GenericURL;
 
-    public static readonly MetaDataSourceType OfflineSources =
-        MetaDataSourceType.File |
-        MetaDataSourceType.PDF |
-        MetaDataSourceType.Image;
+    public static readonly MetadataSourceType OfflineSources =
+        MetadataSourceType.File |
+        MetadataSourceType.PDF |
+        MetadataSourceType.Image;
 }

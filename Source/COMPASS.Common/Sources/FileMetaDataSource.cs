@@ -7,18 +7,18 @@ using ImageMagick;
 
 namespace COMPASS.Common.Sources
 {
-    public class FileMetaDataSource : MetaDataSource
+    public class FileMetadataSource : MetadataSource
     {
-        public FileMetaDataSource(ILogger logger, IPreferencesService preferencesService) :
+        public FileMetadataSource(ILogger logger, IPreferencesService preferencesService) :
             base(logger, preferencesService) { }
-        public override MetaDataSourceType Type => MetaDataSourceType.File;
+        public override MetadataSourceType Type => MetadataSourceType.File;
 
         public override Task<IMagickImage<byte>?> FetchCover(SourceSet sources, CancellationToken cancellationToken = default) => throw new System.NotImplementedException();
         public override bool IsValidSource(SourceSet sources) => sources.HasOfflineSource();
 
-        public override Task<SourceMetaData> GetMetaData(SourceSet sources, IList<Tag> availableTags, CancellationToken cancellationToken = default)
+        public override Task<SourceMetadata> GetMetadata(SourceSet sources, IList<Tag> availableTags, CancellationToken cancellationToken = default)
         {
-            SourceMetaData metaData = new()
+            SourceMetadata metaData = new()
             {
                 Title = Path.GetFileNameWithoutExtension(sources.Path)
             };

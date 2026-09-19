@@ -67,8 +67,8 @@
       <views:ChangeDataLocationView/>
     </DataTemplate>
 
-    <DataTemplate DataType="vm:ChooseMetaDataViewModel">
-      <views:ChooseMetaDataView/>
+    <DataTemplate DataType="vm:ChooseMetadataViewModel">
+      <views:ChooseMetadataView/>
     </DataTemplate>
 
     <!-- Wizards -->
