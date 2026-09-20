@@ -1,6 +1,8 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
+using COMPASS.Common.Interfaces.Services;
+using COMPASS.Infra.Tools;
 namespace COMPASS.Common.Controls
 {
     public class RoundedImage : Image
@@ -22,7 +24,17 @@ namespace COMPASS.Common.Controls
 
             if (source != null)
             {
-                bounds = Stretch.CalculateSize(availableSize, source.Size, StretchDirection);
+                Size sourceSize;
+                try
+                {
+                    sourceSize = source.Size;
+                    bounds = Stretch.CalculateSize(availableSize, sourceSize, StretchDirection);
+                }
+                catch (ObjectDisposedException ex)
+                {
+                    // The bound bitmap was released while still set as Source
+                    ServiceResolver.Resolve<ILogger>().Error("Source image was disposed while still bound to a roundedimage control.", ex);
+                }
             }
 
             if(CornerRadius == default)
