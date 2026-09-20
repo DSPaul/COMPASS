@@ -103,7 +103,7 @@
 							   Fill="{StaticResource DarkUIElementBackground}" Height="1"/>
 					<TextBlock TextWrapping="Wrap" Foreground="{StaticResource TextMutedColor}" 
 							   Grid.Row="2" Grid.Column="0"
-							   Text="COMPASS is built and maintained by a single developer in their spare time. If you enjoy using it, consider buying me a drink — it goes a long way!"/>
+							   Text="COMPASS is built and maintained by a single developer in their spare time. If you enjoy using it, consider buying me a drink!"/>
 					<HyperlinkButton Grid.Column="1" Grid.Row="2"
 									 NavigateUri="https://ko-fi.com/pauldesmul"
 									 
