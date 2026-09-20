@@ -10,6 +10,7 @@ using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.ViewModels;
 using COMPASS.Common.Models;
 using COMPASS.Common.ViewModels.Main;
+using COMPASS.Infra.Avalonia.ExtensionMethods;
 using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.ViewModels
@@ -64,9 +65,9 @@ namespace COMPASS.Common.ViewModels
         {
             if (_touchedProperties.Add(propertyName))
             {
-                // Fire ErrorsChanged so the UI immediately shows any existing error for this property.
                 OnErrorsChanged(propertyName);
-                OnPropertyChanged(nameof(HasErrors));
+                Dispatcher.UIThread.PostIfNeeded(() =>
+                    OnPropertyChanged(nameof(HasErrors)));
             }
         }
     
@@ -81,7 +82,8 @@ namespace COMPASS.Common.ViewModels
             {
                 _errors[propertyName].Add(error);
                 OnErrorsChanged(propertyName);
-                OnPropertyChanged(nameof(HasErrors));
+                Dispatcher.UIThread.PostIfNeeded(() =>
+                    OnPropertyChanged(nameof(HasErrors)));
             }
         }
     
@@ -101,13 +103,15 @@ namespace COMPASS.Common.ViewModels
             {
                 OnErrorsChanged(propertyName);
             }
-        
-            OnPropertyChanged(nameof(HasErrors));
+
+            Dispatcher.UIThread.PostIfNeeded(() =>
+                OnPropertyChanged(nameof(HasErrors)));
         }
     
         private void OnErrorsChanged(string propertyName)
         {
-            ErrorsChanged?.Invoke(this, new(propertyName));
+            Dispatcher.UIThread.PostIfNeeded(() => 
+                ErrorsChanged?.Invoke(this, new(propertyName)));
         }
         
         public void Validate(string? propertyName = null)
@@ -129,7 +133,7 @@ namespace COMPASS.Common.ViewModels
             
             if (this is IConfirmable confirmable)
             {
-                Dispatcher.UIThread.Post(confirmable.ConfirmCommand.NotifyCanExecuteChanged);
+                Dispatcher.UIThread.PostIfNeeded(confirmable.ConfirmCommand.NotifyCanExecuteChanged);
             }
 
             OnValidated(propertyName);

@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using COMPASS.Common.Attributes;
 using COMPASS.Common.Interfaces.Storage;
+using COMPASS.Infra.Avalonia.ExtensionMethods;
 using COMPASS.Infra.ExtensionMethods;
 using COMPASS.Infra.Models;
 using COMPASS.Infra.Models.Interfaces;
@@ -226,9 +227,13 @@ namespace COMPASS.Common.Models
                 prop.SetValue(this, default);
             }
         }
-        
-        public void NotifyCoverChanged() => CoverChanged?.Invoke(this, EventArgs.Empty);
-        
+
+        public void NotifyCoverChanged()
+        {
+            Avalonia.Threading.Dispatcher.UIThread.InvokeIfNeeded(()
+                => CoverChanged?.Invoke(this, EventArgs.Empty));
+        }
+
         #endregion
 
         #region Events

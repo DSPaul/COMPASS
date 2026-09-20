@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
+using COMPASS.Infra.Avalonia.ExtensionMethods;
 
 namespace COMPASS.Common.ViewModels.ModelVMs;
 
@@ -31,14 +32,14 @@ public abstract class ModelViewModelBase<TModel> : ViewModelBase, IDisposable
     protected void HandlePropertyChanged(string propertyName)
     {
         //Notify property changed on prop itself
-        Dispatcher.UIThread.Post(() => OnPropertyChanged(propertyName));
+        Dispatcher.UIThread.PostIfNeeded(() => OnPropertyChanged(propertyName));
         
         //Notify all derived Properties
         if (_derivedProperties.TryGetValue(propertyName, out var derivedPropertiesList))
         {
             foreach (var derivedProperty in derivedPropertiesList)
             {
-                Dispatcher.UIThread.Post(() => OnPropertyChanged(derivedProperty));
+                Dispatcher.UIThread.PostIfNeeded(() => OnPropertyChanged(derivedProperty));
             }
         }
 

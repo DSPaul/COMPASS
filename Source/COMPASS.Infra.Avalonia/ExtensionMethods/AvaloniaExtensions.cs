@@ -64,6 +64,18 @@ namespace COMPASS.Infra.Avalonia.ExtensionMethods
             }
         }
 
+        public static void InvokeIfNeeded(this Dispatcher dispatcher, Action action)
+        {
+            if (dispatcher.CheckAccess())
+            {
+                action();
+            }
+            else
+            {
+                dispatcher.Invoke(action);
+            }
+        }
+
         #region Json Serialization for DataTransfer
 
         private static readonly JsonSerializerOptions _jsonOptions = new()
