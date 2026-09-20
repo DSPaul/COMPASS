@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="Avalonia.Desktop" Version="12.1.2" />
-    <PackageReference Include="HotAvalonia" Version="3.1.4" PrivateAssets="All" />
+    <PackageReference Include="HotAvalonia" Version="3.1.5" PrivateAssets="All" />
     <PackageReference Include="OpenCvSharp5.official.runtime.linux-x64.slim" Version="5.0.0.20260905" />
   </ItemGroup>
 

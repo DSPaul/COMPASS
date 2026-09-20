@@ -18,14 +18,14 @@
       },
       "HotAvalonia": {
         "type": "Direct",
-        "requested": "[3.1.4, )",
-        "resolved": "3.1.4",
-        "contentHash": "NHTHpNgKIUlxwxVLjKgv85FbKYV8UzKptCvGojoInGbLK6SB0SWuFjCUydT3r9Ie70o8gvHfxUcmmr/YcRwpPw==",
+        "requested": "[3.1.5, )",
+        "resolved": "3.1.5",
+        "contentHash": "UGLwx15WGsPMjNXsPoJzN0+1m9lQ12+Vh4N3DIuJB4A0Fq0KTl+6yPjzU2OaAhYGfEc+TEuHPIuQ6Hd+ZxbLQQ==",
         "dependencies": {
           "Avalonia.Markup.Xaml.Loader": "11.0.0",
-          "HotAvalonia.Core": "3.1.4",
-          "HotAvalonia.Extensions": "3.1.4",
-          "HotAvalonia.Fody": "3.1.4"
+          "HotAvalonia.Core": "3.1.5",
+          "HotAvalonia.Extensions": "3.1.5",
+          "HotAvalonia.Fody": "3.1.5"
         }
       },
       "OpenCvSharp5.official.runtime.linux-x64.slim": {
@@ -36,8 +36,8 @@
       },
       "Autofac": {
         "type": "Transitive",
-        "resolved": "9.3.2",
-        "contentHash": "an3dLpmXWvb2aBP5qyA7GVEcXhoG+W/EtFRa3sBYzJdXSNDnB0aoeo4MgOQru0G5sjNDGYM3D3CnBzNFXEVOOA=="
+        "resolved": "9.3.4",
+        "contentHash": "sKldkrIDjhic/BtE6KBl50VjwnuVVOXMnJgh9CsG5uHa8IsGR1BkvjyF6UifPfXPfnkauPqJrAF0QF+JhhRTsw=="
       },
       "Autofac.Extensions.DependencyInjection": {
         "type": "Transitive",
@@ -276,18 +276,18 @@
       },
       "HotAvalonia.Core": {
         "type": "Transitive",
-        "resolved": "3.1.4",
-        "contentHash": "sc42lDe+eUPxRvzi1wFL5/Cujo8lQ9iFnblH0jvZMqU5nKnNFdiuHyTpe6dewz65B0SQOuxpXHpIMc4yxoRgiQ=="
+        "resolved": "3.1.5",
+        "contentHash": "AUpPx9CixH7iuqkZtNBAdtgXyXRozIe1SPSZtpZ6Q7uaTupW6PF88YolR4s+hlUQCUtWLxwIAuhMlonKNV0K3g=="
       },
       "HotAvalonia.Extensions": {
         "type": "Transitive",
-        "resolved": "3.1.4",
-        "contentHash": "82mtkBZI+6BVxl/diR3szgZVDWI9NEqH1qWgz8Td0m7y/LfqbxDHqMzr5L4IR/2lCnZ1yHi5jDfp6e2WR7dHeg=="
+        "resolved": "3.1.5",
+        "contentHash": "WRbykqoI3XUpZrhEtzxsbisex925BPYPxKHoO4PH9q9KdgqEwDHzeLMaqX2Xe90zmOf81k8osKwdgHjrQZreSw=="
       },
       "HotAvalonia.Fody": {
         "type": "Transitive",
-        "resolved": "3.1.4",
-        "contentHash": "Xtp9G/VHSFJDACi9JLD3e0CywTKTP+pdlchLD19enXIC3uxsagOEf5wGhfzHIbv0JL8FTZ5WbmVIjYfCLlLQIA==",
+        "resolved": "3.1.5",
+        "contentHash": "tJDz5jRgNE738BwyT2T0WhsORtouNF54bqw0GSnFby84b48VARipvscCGUVDJSqfX8Q5Wyhrb2IqQiw5Rb+g5A==",
         "dependencies": {
           "Fody": "6.9.2"
         }
@@ -678,7 +678,7 @@
       "compass.apiclients": {
         "type": "Project",
         "dependencies": {
-          "Autofac": "[9.3.2, )",
+          "Autofac": "[9.3.4, )",
           "Autofac.Extensions.DependencyInjection": "[11.0.2, )",
           "Microsoft.Extensions.Http": "[10.0.12, )"
         }
@@ -709,7 +709,6 @@
           "Selenium.WebDriver": "[4.49.0, )",
           "Serilog": "[4.4.0, )",
           "Serilog.Sinks.File": "[7.0.0, )",
-          "SharpCompress": "[0.50.4, )",
           "SkiaImageView.Avalonia11": "[1.5.0, )",
           "Svg.Controls.Skia.Avalonia": "[12.0.0.13, )"
         }
@@ -717,7 +716,7 @@
       "compass.infra": {
         "type": "Project",
         "dependencies": {
-          "Autofac": "[9.3.2, )",
+          "Autofac": "[9.3.4, )",
           "CommunityToolkit.Mvvm": "[8.4.2, )",
           "FuzzySharp": "[2.0.2, )",
           "Microsoft.Extensions.FileSystemGlobbing": "[10.0.12, )",
