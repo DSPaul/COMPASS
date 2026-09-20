@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using COMPASS.Infra.Models.Enums;
 using COMPASS.Infra.Models.Measuring;
+using COMPASS.Infra.Tools;
 using COMPASS.Infra.Tools.Logging;
 using SharpCompress.Common;
 using System.Collections.ObjectModel;
@@ -21,8 +22,9 @@ namespace COMPASS.Infra.Models.Progress
             Quantity = quantity;
             _total = double.MaxValue;
 
-            //Should capture the UI thread of this was constructed on it. 
-            _notificationContext = SynchronizationContext.Current;
+            //The UI context registered at startup, so reporting works no matter
+            //which thread constructs the tracker or reports to it.
+            _notificationContext = UiSynchronizationContext.Current;
         }
 
         /// <summary>

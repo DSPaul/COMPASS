@@ -2,6 +2,7 @@ using COMPASS.Infra.Models;
 using COMPASS.Infra.Models.Enums;
 using COMPASS.Infra.Models.Measuring;
 using COMPASS.Infra.Models.Progress;
+using COMPASS.Infra.Tools;
 using COMPASS.Infra.Tools.Logging;
 
 namespace COMPASS.UnitTests.Infra.Models;
@@ -110,5 +111,37 @@ public class ProgressTrackerTests
         Assert.That(progressTracker.MessageLog, Has.Count.EqualTo(3));
         Assert.That(progressTracker.MessageLog[0].Msg, Is.EqualTo("Message 2"));
         Assert.That(progressTracker.MessageLog[2].Msg, Is.EqualTo("Message 4"));
+    }
+
+    [Test]
+    public void Constructor_RegisteredUiContext_MarshalsNotificationsToIt()
+    {
+        //Like the real UI context, the stub lives on a different thread than the reporter,
+        //so any Post proves the tracker marshals instead of notifying inline.
+        //Registration is process-wide and one-way; the stub executes inline, which is
+        //observably identical to the unregistered fallback, so other tests are unaffected.
+        var uiContext = new InlineSynchronizationContext();
+        UiSynchronizationContext.Initialize(uiContext);
+
+        ProgressTracker progressTracker = new(Quantities.Items())
+        {
+            Total = 10
+        };
+
+        progressTracker.Report(ProgressReports.Increment);
+
+        Assert.That(uiContext.PostCount, Is.GreaterThan(0));
+        Assert.That(progressTracker.Progress, Is.EqualTo(1));
+    }
+
+    private sealed class InlineSynchronizationContext : SynchronizationContext
+    {
+        public int PostCount;
+
+        public override void Post(SendOrPostCallback callback, object? state)
+        {
+            PostCount++;
+            callback(state);
+        }
     }
 }

@@ -10,8 +10,8 @@ using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.Views.Windows;
-using COMPASS.Infra.Tools.Logging;
 using COMPASS.Infra.Tools;
+using COMPASS.Infra.Tools.Logging;
 using NuGet.Versioning;
 
 namespace COMPASS.Common;
@@ -30,6 +30,11 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
+        //Capture the UI thread's context so background
+        //can marshal notifications back to it from any thread.
+        UiSynchronizationContext.Initialize(SynchronizationContext.Current
+            ?? throw new InvalidOperationException("No SynchronizationContext on UI thread"));
+
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             //Dispose the container on shutdown, which flushes disposable singletons
