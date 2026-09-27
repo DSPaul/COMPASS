@@ -5,8 +5,9 @@
              xmlns:vm="using:COMPASS.Common.ViewModels.Layouts"
              xmlns:modelVm="using:COMPASS.Common.ViewModels.ModelVMs"
              xmlns:behav="using:COMPASS.Infra.Avalonia.Behaviors"
+             xmlns:dragdrop="using:COMPASS.Infra.Avalonia.DragDrop"
              xmlns:conv="using:COMPASS.Infra.Avalonia.Converters"
-             xmlns:controls="using:COMPASS.Common.Controls"
+             xmlns:controls="using:COMPASS.Infra.Avalonia.Controls"
              xmlns:materialDesign="using:Material.Icons.Avalonia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:DataType="vm:CardLayoutViewModel"
@@ -45,8 +46,8 @@
                         BorderBrush="{Binding BorderBrush, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" 
                         DoubleTapped="Codex_DoubleTapped"
                         Classes="SmallZoomOnHover"
-                        behav:DropBehavior.IsDropTarget="True"
-                        behav:DropBehavior.DropManager="{Binding DropManager}">
+                        dragdrop:DropBehavior.IsDropTarget="True"
+                        dragdrop:DropBehavior.DropManager="{Binding DropManager}">
                     <Border.Effect>
                         <DropShadowDirectionEffect BlurRadius="15" />
                     </Border.Effect>

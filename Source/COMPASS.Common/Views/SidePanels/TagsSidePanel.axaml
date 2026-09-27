@@ -4,13 +4,14 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:vm="using:COMPASS.Common.ViewModels.SidePanels"
-             xmlns:interface="using:COMPASS.Infra.Models.Interfaces"
+             xmlns:interface="using:COMPASS.Infra.Collections"
              xmlns:dataTemplates="using:COMPASS.Common.DataTemplates"
-             xmlns:controls="using:COMPASS.Common.Controls"
+             xmlns:controls="using:COMPASS.Infra.Avalonia.Controls"
+             xmlns:customControls="using:COMPASS.Common.Controls"
              xmlns:converters="using:COMPASS.Infra.Avalonia.Converters"
              xmlns:views="using:COMPASS.Common.Views"
              xmlns:hierarchy="using:COMPASS.Common.Models.Hierarchy"
-             xmlns:behaviors="using:COMPASS.Infra.Avalonia.Behaviors"
+             xmlns:dragdrop="using:COMPASS.Infra.Avalonia.DragDrop"
              mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="450"
              x:Class="COMPASS.Common.Views.SidePanels.TagsSidePanel"
              x:DataType="vm:TagsPanelVM">
@@ -146,7 +147,7 @@
                     HorizontalAlignment="Stretch" VerticalAlignment="Top"
                     Margin="20 0"
                     ColumnSpacing="10">
-            <controls:FilterModeSelector Grid.Column="0"
+            <customControls:FilterModeSelector Grid.Column="0"
                                          Include="{Binding ModeIsInclude}" 
                                          HorizontalAlignment="Stretch" />
 
@@ -166,7 +167,7 @@
         <TreeView x:Name="TagTree" BorderBrush="{x:Null}" Background="Transparent"
                   Grid.Row="3" Margin="5 0" Classes="NoSelection"
                   ItemsSource="{Binding Path=TagsAsTreeNodes, Mode=TwoWay}"
-                  behaviors:DropBehavior.IsDropTarget="True"
+                  dragdrop:DropBehavior.IsDropTarget="True"
                   ContextMenu="{StaticResource AllTagsContextMenu}">
             <TreeView.ItemTemplate>
                 <dataTemplates:TagTreeDataTemplateSelector>
@@ -176,7 +177,7 @@
                                        Background="{Binding Item.BackgroundColor, Converter={x:Static converters:ColorConverters.ColorToBrush}}"
                                        ContextMenu="{StaticResource TagContextMenu}"
                                        Cursor="Hand"
-                                       behaviors:DragBehavior.IsDragSource="True"
+                                       dragdrop:DragBehavior.IsDragSource="True"
                                        PointerPressed="Tag_PointerPressed"
                                        PointerReleased="Tag_PointerReleased"/>
                     </TreeDataTemplate>
@@ -186,7 +187,7 @@
                                        Text="{Binding Item.Name}" HorizontalAlignment="Stretch"
                                        Background="{Binding Item.BackgroundColor, Converter={x:Static converters:ColorConverters.ColorToBrush}}"
                                        ContextMenu="{StaticResource TagContextMenu}"
-                                       behaviors:DragBehavior.IsDragSource="True"/>
+                                       dragdrop:DragBehavior.IsDragSource="True"/>
                     </TreeDataTemplate>
                 </dataTemplates:TagTreeDataTemplateSelector>
             </TreeView.ItemTemplate>

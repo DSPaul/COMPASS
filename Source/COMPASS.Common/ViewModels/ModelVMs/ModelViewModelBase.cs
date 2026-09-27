@@ -1,9 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
-using COMPASS.Infra.Avalonia.ExtensionMethods;
+using COMPASS.Infra.Avalonia.Threading;
+using System.ComponentModel;
 
 namespace COMPASS.Common.ViewModels.ModelVMs;
 

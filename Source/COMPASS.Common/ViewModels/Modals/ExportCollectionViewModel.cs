@@ -1,12 +1,12 @@
-﻿using Avalonia.Platform.Storage;
+using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.Input;
-using COMPASS.Common.DependencyInjection;
-using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.Selection;
-
+using COMPASS.Infra.Avalonia.Files;
+using COMPASS.Infra.Avalonia.Wizard;
+using COMPASS.Infra.DependencyInjection;
 namespace COMPASS.Common.ViewModels.Modals
 {
     public class ExportCollectionViewModel : WizardViewModel
@@ -106,7 +106,7 @@ namespace COMPASS.Common.ViewModels.Modals
 
         private async Task<IStorageFile?> ChooseDestination() => await _filesService.SaveFileAsync(new()
         {
-            FileTypeChoices = [_filesService.SatchelExtensionFilter],
+            FileTypeChoices = [_importExportService.SatchelExtensionFilter],
             SuggestedFileName = CollectionToExport.Name,
             DefaultExtension = Constants.SatchelExtension
         });

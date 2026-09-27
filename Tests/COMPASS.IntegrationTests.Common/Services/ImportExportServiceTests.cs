@@ -1,4 +1,4 @@
-﻿using Autofac;
+using Autofac;
 using Avalonia.Controls;
 using Avalonia.Headless.NUnit;
 using Avalonia.Platform.Storage;
@@ -8,10 +8,8 @@ using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Services.Storage;
-using COMPASS.Common.ViewModels;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.Modals.Import;
-using COMPASS.Infra.Tools;
 using COMPASS.Tests.Common.DataGenerators;
 using COMPASS.Tests.Common.Mocks;
 using SharpCompress.Archives;
@@ -33,7 +31,7 @@ namespace COMPASS.IntegrationTests.Common.Services
         public async Task OpenSatchel()
         {
             //Create info with a version higher than the current one
-            SatchelInfo info = new()
+            SatchelInfo info = new("1.0.0")
             {
                 MinCodexInfoVersion = "20.15.0",
                 MinTagsVersion = "1.0.0",

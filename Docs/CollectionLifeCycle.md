@@ -19,7 +19,7 @@ The handle system uses a **reference-counted ownership** pattern. Nobody interac
 | `CodexCollection` | `Models/CodexCollection.cs` | The data model. Holds `AllTags`, `AllCodices`, `Info`. Also has `LoadedTags`/`LoadedCodices`/`LoadedInfo` guard flags used by the repository layer to prevent saving unloaded sections. |
 | `CodexCollectionVM` | `ViewModels/Main/CodexCollectionVM.cs` | The manager for a single collection. Owns the `Owners` list (active handles), the repository reference, and the Load/Unload/Save methods. |
 | `CollectionHandle` | `ViewModels/Main/CollectionHandle.cs` | A disposable token representing one consumer's claim on a loaded collection. Calling `Dispose()` releases the claim. |
-| `CollectionManager` | `Services/StateManagers/CollectionManager.cs` | Static registry of all known `CodexCollectionVM` instances. Entry point for discovering, creating, and loading collections. |
+| `CollectionManager` | `Services/StateManagers/CollectionManager.cs` | Singleton registry of all known `CodexCollectionVM` instances. Entry point for discovering, creating, and loading collections. |
 
 ## Lifecycle
 

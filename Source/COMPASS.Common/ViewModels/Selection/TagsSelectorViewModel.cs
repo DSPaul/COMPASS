@@ -1,9 +1,7 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using COMPASS.Common.DependencyInjection;
-using COMPASS.Common.Models.Hierarchy;
+using CommunityToolkit.Mvvm.ComponentModel;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.ModelVMs;
-using COMPASS.Infra.ExtensionMethods;
+using COMPASS.Infra.Collections;
 
 namespace COMPASS.Common.ViewModels.Selection
 {

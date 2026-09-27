@@ -1,10 +1,8 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using COMPASS.Common.DependencyInjection;
-using COMPASS.Common.Interfaces.Services;
-using COMPASS.Infra.Models;
-using COMPASS.Infra.Models.Interfaces;
-using COMPASS.Infra.Tools;
-using COMPASS.Infra.Tools.Logging;
+using CommunityToolkit.Mvvm.ComponentModel;
+using COMPASS.Infra.Collections;
+using COMPASS.Infra.DependencyInjection;
+using COMPASS.Infra.IO;
+using COMPASS.Infra.Logging;
 
 namespace COMPASS.Common.Models
 {

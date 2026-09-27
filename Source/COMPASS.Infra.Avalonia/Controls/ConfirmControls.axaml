@@ -1,0 +1,36 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             
+             xmlns:controls="using:COMPASS.Infra.Avalonia.Controls"
+             xmlns:viewModels="using:COMPASS.Infra.Avalonia.Mvvm"
+             mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="30"
+             x:Class="COMPASS.Infra.Avalonia.Controls.ConfirmControls"
+             x:DataType="viewModels:IConfirmable">
+    <Grid ColumnDefinitions="* 15 *" VerticalAlignment="Bottom">
+        <controls:IconButton Command="{Binding ConfirmCommand}" 
+                             Grid.Column="0" IsDefault="True" 
+                             Icon="{Binding $parent[controls:ConfirmControls].ConfirmIcon}" 
+                             Content="{Binding $parent[controls:ConfirmControls].ConfirmLabel}"
+                             HorizontalContentAlignment="Center"
+                             HorizontalAlignment="Stretch">
+            <controls:IconButton.Styles>
+                <Style Selector="controls|IconButton">
+                    <Setter Property="Background" Value="{StaticResource AcceptFill}"/>
+                    <Style Selector="^[IsEffectivelyEnabled=false]">
+                        <Setter Property="Background" Value="{StaticResource Layer5}"/>
+                    </Style>
+                </Style>
+            </controls:IconButton.Styles>
+        </controls:IconButton>
+        <controls:IconButton Command="{Binding CancelCommand}"
+                             Grid.Column="2" Classes="Outline"
+                             Content="{Binding $parent[controls:ConfirmControls].CancelLabel}"
+                             Icon="{Binding $parent[controls:ConfirmControls].CancelIcon}" 
+                             HorizontalContentAlignment="Center"
+                             HorizontalAlignment="Stretch"
+                             BorderBrush="{StaticResource CancelFill}"/>
+        
+    </Grid>
+</UserControl>

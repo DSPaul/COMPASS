@@ -1,21 +1,24 @@
-﻿using System.Collections.ObjectModel;
-using System.Diagnostics;
 using Avalonia.Input;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Exceptions;
-using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Common.Models.Enums;
-using COMPASS.Common.Models.Hierarchy;
+using COMPASS.Common.Models.Preferences;
 using COMPASS.Common.Operations;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.ModelVMs;
-using COMPASS.Infra.ExtensionMethods;
-using COMPASS.Infra.Tools;
+using COMPASS.Infra.Avalonia.Files;
+using COMPASS.Infra.Avalonia.Modal;
+using COMPASS.Infra.Collections;
+using COMPASS.Infra.DependencyInjection;
+using COMPASS.Infra.IO;
+using COMPASS.Infra.Preferences;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 
 namespace COMPASS.Common.ViewModels.Modals.Edit
 {
@@ -200,7 +203,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         {
             ShowLoading = true;
             //make it so cover always gets overwritten if this case, store old value first
-            CodexProperty coverProp = _preferencesService.Preferences.ImportableCodexProperties.First(prop => prop.Name == nameof(SourceMetadata.Cover));
+            CodexProperty coverProp = _preferencesService.GetPreferences<Preferences>().ImportableCodexProperties.First(prop => prop.Name == nameof(SourceMetadata.Cover));
             MetadataOverwriteMode curSetting = coverProp.OverwriteMode;
             coverProp.OverwriteMode = MetadataOverwriteMode.Always;
             //get the cover

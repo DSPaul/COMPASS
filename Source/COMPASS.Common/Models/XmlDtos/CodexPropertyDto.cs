@@ -1,6 +1,5 @@
-﻿using System;
-using System.Xml.Serialization;
 using COMPASS.Common.Models.Enums;
+using System.Xml.Serialization;
 
 namespace COMPASS.Common.Models.XmlDtos
 {

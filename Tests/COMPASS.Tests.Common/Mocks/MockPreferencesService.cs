@@ -1,13 +1,10 @@
-using COMPASS.Common.Interfaces.Services;
-using COMPASS.Common.Models.Preferences;
+using COMPASS.Infra.Preferences;
 
 namespace COMPASS.Tests.Common.Mocks;
 
 public class MockPreferencesService : IPreferencesService
 {
-    public Preferences Preferences { get; private set; } = new();
+    public T GetPreferences<T>() where T : IPreferences, new() => new T();
 
     public void SavePreferences() { }
-
-    public Preferences? LoadPreferences() => Preferences;
 }

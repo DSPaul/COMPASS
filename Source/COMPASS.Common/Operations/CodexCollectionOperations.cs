@@ -1,11 +1,11 @@
-﻿using COMPASS.Common.Exceptions;
+using COMPASS.Common.Exceptions;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels.Main;
-using COMPASS.Infra.Tools.Logging;
-using COMPASS.Infra.Tools;
+using COMPASS.Infra.Collections;
+using COMPASS.Infra.Logging;
 
 namespace COMPASS.Common.Operations;
 
@@ -92,7 +92,7 @@ public class CodexCollectionOperations(
             }
 
             //Give it a new id that is unique to this collection
-            copyCodex.Id = Utils.GetAvailableId(target.AllCodices);
+            copyCodex.Id = IdGenerator.GetAvailableId(target.AllCodices);
             copyCodex.GlobalId = Guid.NewGuid();
 
             //Copy thumbnail and cover
@@ -118,7 +118,7 @@ public class CodexCollectionOperations(
     public Codex CreateNewCodex(CodexCollection collection)
     {
         var codex = new Codex(collection);
-        codex.Id = Utils.GetAvailableId(collection.AllCodices);
+        codex.Id = IdGenerator.GetAvailableId(collection.AllCodices);
         coverStorageService.InitCodexImagePaths(codex);
         return codex;
     }

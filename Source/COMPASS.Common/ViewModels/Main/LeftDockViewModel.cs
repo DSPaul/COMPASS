@@ -1,7 +1,7 @@
-﻿using COMPASS.Common.DependencyInjection;
-using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models.Preferences;
 using COMPASS.Common.ViewModels.SidePanels;
+using COMPASS.Infra.DependencyInjection;
+using COMPASS.Infra.Preferences;
 
 namespace COMPASS.Common.ViewModels.Main;
 
@@ -60,5 +60,5 @@ public class LeftDockViewModelFactory(
     AddCodexPanelVMFactory addCodexPanelVMFactory)
 {
     public LeftDockViewModel Create(TabsViewModel tabsViewModel) 
-        => new(tabsViewModel, preferencesService.Preferences.UIState, addCodexPanelVMFactory);
+        => new(tabsViewModel, preferencesService.GetPreferences<UIState>(), addCodexPanelVMFactory);
 }

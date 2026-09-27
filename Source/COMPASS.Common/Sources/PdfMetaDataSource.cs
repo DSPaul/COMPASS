@@ -1,11 +1,12 @@
-﻿using System.Diagnostics;
-using COMPASS.Common.Interfaces.Services;
+using COMPASS.Common.Features.ISBN;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
-using COMPASS.Infra.Tools.Logging;
-using COMPASS.Infra.Models;
-using COMPASS.Infra.Tools;
+using COMPASS.Infra.IO;
+using COMPASS.Infra.Logging;
+using COMPASS.Infra.Preferences;
+using COMPASS.Infra.Text;
 using ImageMagick;
+using System.Diagnostics;
 using UglyToad.PdfPig;
 using UglyToad.PdfPig.Content;
 using UglyToad.PdfPig.DocumentLayoutAnalysis.TextExtractor;
@@ -57,7 +58,7 @@ namespace COMPASS.Common.Sources
                         //strip text of spaces
                         string pageContent = RegexConstants.Whitespace().Replace(ContentOrderTextExtractor.GetText(page), "");
                         //search ISBN
-                        string isbn = RegexConstants.ISBN().Match(pageContent).Value;
+                        string isbn = Patterns.ISBN().Match(pageContent).Value;
                         if (!string.IsNullOrEmpty(isbn))
                         {
                             sources.ISBN = isbn;

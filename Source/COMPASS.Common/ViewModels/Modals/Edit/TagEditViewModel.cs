@@ -1,17 +1,14 @@
-﻿using CommunityToolkit.Mvvm.Input;
-using COMPASS.Common.DependencyInjection;
+using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Models;
-using COMPASS.Common.Models.Hierarchy;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.ModelVMs;
-using COMPASS.Infra.ExtensionMethods;
-using COMPASS.Infra.Interfaces.Services;
-using COMPASS.Infra.Models.Enums;
-using COMPASS.Infra.Tools;
+using COMPASS.Infra.Collections;
+using COMPASS.Infra.DependencyInjection;
+using COMPASS.Infra.IO;
+using COMPASS.Infra.Notifications;
 using System.Collections.ObjectModel;
-using Notification = COMPASS.Infra.Models.Notification;
-
+using Notification = COMPASS.Infra.Notifications.Notification;
 namespace COMPASS.Common.ViewModels.Modals.Edit
 {
     public class TagEditViewModel : EditViewModelBase<TagViewModel, Tag>
@@ -73,7 +70,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
 
         protected override void HandleCreateNew(Tag newTag)
         {
-            newTag.Id = Utils.GetAvailableId(_codexCollectionVm.Collection.AllTags);
+            newTag.Id = IdGenerator.GetAvailableId(_codexCollectionVm.Collection.AllTags);
             _codexCollectionVm.Collection.AllTags.Add(newTag);
                 
             if (newTag.Parent == null)

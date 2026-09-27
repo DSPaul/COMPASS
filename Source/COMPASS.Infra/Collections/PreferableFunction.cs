@@ -1,0 +1,111 @@
+namespace COMPASS.Infra.Collections
+{
+    /// <summary>
+    /// Wrapper for functions that should be tried in a set order until one succeeds,
+    /// supporting both synchronous and asynchronous operations.
+    /// </summary>
+    /// <typeparam name="T">Type of argument of the function</typeparam>
+    public class PreferableFunction<T> : IHasId
+    {
+        // For synchronous functions
+        public PreferableFunction(string name, Func<T, bool> func, int id = -1)
+        {
+            Name = name;
+            SyncFunction = func;
+            Id = id;
+            IsAsync = false;
+        }
+
+        // For asynchronous functions
+        public PreferableFunction(string name, Func<T, Task<bool>> asyncFunc, int id = -1)
+        {
+            Name = name;
+            AsyncFunction = asyncFunc;
+            Id = id;
+            IsAsync = true;
+        }
+
+        // Metadata only (no function bound) — execution binds instance methods by Id at runtime
+        public PreferableFunction(string name, int id = -1)
+        {
+            Name = name;
+            Id = id;
+        }
+        
+        public string Name { get; }
+        
+        // Implement IHasID
+        public int Id { get; set; }
+
+        // Description properties
+        public Func<T, bool>? SyncFunction { get; }
+        public Func<T, Task<bool>>? AsyncFunction { get; }
+        public bool IsAsync { get; }
+
+        // Execute the function (either sync or async)
+        public async Task<bool> ExecuteAsync(T arg)
+        {
+            if (IsAsync && AsyncFunction != null)
+            {
+                return await AsyncFunction(arg).ConfigureAwait(false);
+            }
+            else if (!IsAsync && SyncFunction != null)
+            {
+                return SyncFunction(arg);
+            }
+            
+            return false; // Default if no function is set
+        }
+        
+        public bool Execute(T arg)
+        {
+            if (IsAsync)
+            {
+                throw new InvalidOperationException("Cannot execute an async function synchronously. Use ExecuteAsync instead.");
+            }
+            
+            return SyncFunction?.Invoke(arg) ?? false;
+        }
+
+        // Try functions in order determined by list of preferable functions until one succeeds
+        public static bool TryFunctions<A>(IEnumerable<PreferableFunction<A>> toTry, A arg, bool throwOnAsync)
+        {
+            bool success = false;
+            
+            foreach (var func in toTry)
+            {
+                if (!func.IsAsync)
+                {
+                    success = func.Execute(arg);
+                }
+                else
+                {
+                    if (throwOnAsync)
+                    {
+                        throw new InvalidOperationException("Cannot execute async functions with TryFunctions. Use TryFunctionsAsync instead.");
+                    }
+                    else
+                    {
+                        success = func.ExecuteAsync(arg).Result;
+                    }
+                }
+
+                if (success) break;
+            }
+            
+            return success;
+        }
+
+        // Async version of TryFunctions
+        public static async Task<bool> TryFunctionsAsync<A>(IEnumerable<PreferableFunction<A>> toTry, A arg)
+        {
+            bool success = false;
+            foreach (var func in toTry)
+            {
+                success = await func.ExecuteAsync(arg).ConfigureAwait(false);
+                if (success) break;
+            }
+            return success;
+        }
+    }
+}

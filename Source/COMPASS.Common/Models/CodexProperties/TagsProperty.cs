@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using COMPASS.Infra.ExtensionMethods;
+using COMPASS.Infra.Collections;
 
 namespace COMPASS.Common.Models.CodexProperties
 {

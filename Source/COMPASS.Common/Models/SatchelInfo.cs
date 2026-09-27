@@ -1,14 +1,16 @@
-﻿using System;
-using COMPASS.Common.Services;
-
 namespace COMPASS.Common.Models
 {
     public class SatchelInfo
     {
+        public SatchelInfo(string creationVersion)
+        {
+            CreationVersion = creationVersion;
+        }
+
         /// <summary>
         /// Version of Compass used to create the satchel
         /// </summary>
-        public string CreationVersion { get; init; } = ApplicationService.Version;
+        public string CreationVersion { get; }
 
         /// <summary>
         /// Date when the satchel was created

@@ -1,15 +1,18 @@
-﻿using Avalonia.Controls;
+using Avalonia.Controls;
 using CommunityToolkit.Mvvm.Input;
-using COMPASS.Common.ViewModels.Modals;
-using COMPASS.Common.Views.Windows;
-using System.Diagnostics;
-using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
-using COMPASS.Common.Services;
 using COMPASS.Common.Services.StateManagers;
-using COMPASS.Infra.Tools.Logging;
+using COMPASS.Common.ViewModels.Modals;
+using COMPASS.Infra.Application;
+using COMPASS.Infra.Avalonia.Application;
+using COMPASS.Infra.Avalonia.Modal;
+using COMPASS.Infra.Logging;
+using COMPASS.Infra.Progress;
+using COMPASS.Infra.Updates;
+using COMPASS.Infra.Web;
 using Material.Icons;
+using System.Diagnostics;
 
 namespace COMPASS.Common.ViewModels.Main
 {
@@ -19,22 +22,26 @@ namespace COMPASS.Common.ViewModels.Main
         private readonly IUIService _uiService;
         private readonly UpdateManager _updateManager;
         private readonly CollectionManager _collectionManager;
-        private readonly ConnectivityManager _connectivityManager;
         private readonly SettingsViewModelFactory _settingsViewModelFactory;
 
-        public MainViewModel(ILogger logger, IUIService uiService, UpdateManager updateManager, CollectionManager collectionManager, ConnectivityManager connectivityManager, TabsViewModel tabsVm,
+        public MainViewModel(IApplicationService applicationService,
+            ILogger logger, IUIService uiService, 
+            UpdateManager updateManager, 
+            CollectionManager collectionManager, 
+            ConnectivityManager connectivityManager, 
+            ProgressTrackingManager progressTrackingManager,
+            TabsViewModel tabsVm,
             LeftDockViewModelFactory leftDockViewModelFactory,
-            SettingsViewModelFactory settingsViewModelFactory,
-            ProgressViewModel tasksVM)
+            SettingsViewModelFactory settingsViewModelFactory)
         {
             _logger = logger;
             _uiService = uiService;
             _updateManager = updateManager;
             _collectionManager = collectionManager;
-            _connectivityManager = connectivityManager;
             _settingsViewModelFactory = settingsViewModelFactory;
 
-            _logger.Info($"Launching COMPASS v{ApplicationService.Version}");
+            VersionName = $"v{applicationService.Version}";
+            _logger.Info($"Launching COMPASS {VersionName}");
 
             InitLayouts();
             _collectionManager.DiscoverCollections();
@@ -43,13 +50,13 @@ namespace COMPASS.Common.ViewModels.Main
             TabsVM.TabCreated += TabsVM_TabCreated;
             TabsVM.CreateTab();
 
-            TasksVM = tasksVM;
+            TasksVM = new ProgressViewModel(progressTrackingManager);
 
             LeftDockVM = leftDockViewModelFactory.Create(TabsVM);
 
             InitCheckForUpdates();
 
-            InitConnectionTimer();
+            InitConnectionTimer(connectivityManager);
         }
 
         private void TabsVM_TabCreated(object? sender, CollectionTabVM e)
@@ -62,10 +69,10 @@ namespace COMPASS.Common.ViewModels.Main
         /// <summary>
         /// Start timer that periodically checks if there is an internet connection
         /// </summary>
-        private void InitConnectionTimer()
+        private void InitConnectionTimer(ConnectivityManager connectivityManager)
         {
-            _connectivityManager.IsOnlineChanged += online => IsOnline = online;
-            _connectivityManager.Start();
+            connectivityManager.IsOnlineChanged += online => IsOnline = online;
+            connectivityManager.Start();
         }
 
         /// <summary>
@@ -99,7 +106,7 @@ namespace COMPASS.Common.ViewModels.Main
             private set => SetProperty(ref field, value);
         } = true;
 
-        public string VersionName => $"v{ApplicationService.Version}";
+        public string VersionName { get; }
         public bool UpdateAvailable { get; set => SetProperty(ref field, value); }
 
         /// <summary>

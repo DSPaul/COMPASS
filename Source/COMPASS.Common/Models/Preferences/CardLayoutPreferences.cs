@@ -1,8 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using COMPASS.Infra.Preferences;
 
 namespace COMPASS.Common.Models.Preferences
 {
-    public class CardLayoutPreferences : ObservableObject
+    public class CardLayoutPreferences : ObservableObject, IPreferences
     {
         private bool _showTitle = true;
         public bool ShowTitle

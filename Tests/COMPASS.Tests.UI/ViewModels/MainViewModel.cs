@@ -1,12 +1,11 @@
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Services;
-using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Views.Windows;
-using COMPASS.Infra.Models;
-using COMPASS.Infra.Models.Enums;
-using COMPASS.Infra.Models.Measuring;
-using COMPASS.Infra.Models.Progress;
+using COMPASS.Infra.Logging;
+using COMPASS.Infra.Measuring;
+using COMPASS.Infra.Notifications;
+using COMPASS.Infra.Progress;
 
 namespace COMPASS.Tests.UI.ViewModels;
 

@@ -1,7 +1,5 @@
 using COMPASS.Common.Models;
-using COMPASS.Infra.Interfaces.Services;
-using COMPASS.Infra.Models;
-using COMPASS.Infra.Models.Enums;
+using COMPASS.Infra.Notifications;
 
 namespace COMPASS.Common.Operations;
 

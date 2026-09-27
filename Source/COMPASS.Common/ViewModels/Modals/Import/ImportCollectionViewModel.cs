@@ -1,15 +1,14 @@
-﻿using COMPASS.Common.Exceptions;
-using COMPASS.Common.DependencyInjection;
+using COMPASS.Common.Exceptions;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Operations;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.Selection;
-using COMPASS.Infra.Interfaces.Services;
-using COMPASS.Infra.Models;
-using COMPASS.Infra.Models.Enums;
-
+using COMPASS.Infra.Avalonia.Wizard;
+using COMPASS.Infra.DependencyInjection;
+using COMPASS.Infra.Logging;
+using COMPASS.Infra.Notifications;
 namespace COMPASS.Common.ViewModels.Modals.Import
 {
     public class ImportCollectionViewModel : WizardViewModel, IDisposable

@@ -28,21 +28,31 @@ This document is a high-level map of every major feature and system in COMPASS.
 
 | Project | Purpose |
 |---|---|
-| `COMPASS.Infra` | Code infrastructure you could find in any dotnet application such as extension methods on dotnet primitives, logging, notification, progress reporting, etc. No UI or domain logic. |
-| `COMPASS.Infra.Avalonia` | Avalonia-specific infrastructure: drag-drop helpers, extension methods. |
+| `COMPASS.Infra` | Platform-agnostic code infrastructure with no UI or domain logic, grouped by feature: `Collections`, `Resilience`, `Logging`, `Measuring`, `Notifications`, `Progress`, `Updates`, `Objects`, `Text`, `IO`, `Xml`, `Web`, `DependencyInjection`. The generic MVVM selection view-models live in `Selection/`. |
+| `COMPASS.Infra.Avalonia` | Avalonia-specific UI kit, grouped by feature: `Controls`, `Behaviors`, `Converters`, `DragDrop`, `VisualTree`, `Threading`, `Collections`, `Markdown`, `Mvvm`, `Selection`, `Wizard`, `Camera`, `Barcode`, `Application`, `Files`. App-specific skin (themes) and domain views stay in `COMPASS.Common`. |
 | `COMPASS.ApiClients` | Typed HTTP API clients for all external services (GitHub, COMPASS backend). Each API lives in its own sub-folder with owned request/response models and an interface for mocking. HTTP client lifetimes and DI registrations are managed by `ApiClientsModule`. |
-| `COMPASS.Common` | All application logic: models, view-models, services, sources, repositories. Platform-agnostic. |
+| `COMPASS.Common` | All domain/application logic: models, view-models, views, services, sources, repositories, themes. Platform-agnostic. Still organised mostly by type (`Models/`, `ViewModels/`, `Views/`, `Services/`, …); self-contained domain features go under `Features/<Name>/` (currently `Features/ISBN`). |
 | `COMPASS.Windows` | Windows entry point & platform service implementations (update service, IO, shell open). |
 | `COMPASS.Linux` | Linux entry point & platform service implementations. |
 | `COMPASS.Tests.*` | Test projects (unit, integration, UI). |
 
-Dependency injection is handled through `ServiceResolver` (a thin static wrapper around whatever DI container each platform registers). Platform-specific bindings are registered in each platform's `DependencyInjection` module; cross-platform bindings live in `COMPASS.Common/DependencyInjection/CommonModule.cs`. View-model creation, lifetimes, and the `ServiceResolver` boundaries are documented in [MVVM.md](MVVM.md).
+Dependency injection is handled through `ServiceResolver` (`COMPASS.Infra/DependencyInjection/`, a thin static wrapper around whatever DI container each platform registers). Each project owns its registrations in an Autofac module:
+
+| Module | Location | Registers |
+|---|---|---|
+| `InfraModule` | `COMPASS.Infra/DependencyInjection/` | `ScopedForwardingLogger` decorator, `ProgressTrackingManager`, `UpdateManager`, `ConnectivityManager`/`ConnectivityHandler`, `WebService`, `WebDriverService`, named HTTP clients |
+| `AvaloniaModule` | `COMPASS.Infra.Avalonia/DependencyInjection/` | `ApplicationService`, `FilesService`, `CameraService`, `BarcodeDecoderService` |
+| `ApiClientsModule` | `COMPASS.ApiClients/` | Typed API clients |
+| `CommonModule` | `COMPASS.Common/DependencyInjection/` | Domain services; loads the three modules above and runs `RegisterFactories` for the Common, Infra and Infra.Avalonia assemblies |
+| `WindowsModule` / `LinuxModule` | `COMPASS.Windows/DependencyInjection/`, `COMPASS.Linux/DependencyInjection/` | Platform implementations (`IOService`, `IUIService`, `IUpdateService`, …) |
+
+The platform entry points (`Program.cs`) only register `CommonModule` and their own platform module. View-model creation, lifetimes, and the `ServiceResolver` boundaries are documented in [MVVM.md](MVVM.md).
 
 ```mermaid
 graph TD;
-    Infra-->Common;
+    ApiClients-->Infra;
+    Infra-->Infra.Avalonia;
     Infra.Avalonia-->Common;
-    ApiClients-->Common;
     Common-->Windows; 
     Common-->Linux;
     Common-->Tests.Common;
@@ -162,7 +172,7 @@ The Add Codex side panel (`AddCodexPanelVM`) is the main entry point for adding 
 - Individual files / drag-drop
 - A folder (via `ImportFolderWizardVm` - walks the directory, filters by `CollectionInfo.FiletypePreferences`, respects `BanishedPaths`)
 - A URL
-- A barcode scan (`BarcodeScanWindow`)
+- A barcode scan (`ISBNScannerViewModel` / `ISBNScannerView`, using `ICameraService` and `IBarcodeDecoderService` from `COMPASS.Infra.Avalonia`; ISBN-specific validation lives in `Features/ISBN/`)
 - A Satchel file (delegates to `ImportExportService`)
 
 After creating a bare `Codex`, the pipeline calls `CoverService.GetAndApplyCover` and then runs each enabled `MetaDataSource` in priority order to fill in as many fields as possible.
@@ -216,18 +226,19 @@ Closed tabs are pushed onto a `Stack<TabState>`, allowing re-open ("undo close t
 
 ## 11. Storage & Persistence
 
-**Key files:** `Source/COMPASS.Common/Services/FileSystem/`, `Services/Storage/`, `Repositories/`, `Interfaces/Storage/`
+**Key files:** `Source/COMPASS.Common/Services/FileSystem/`, `Services/Storage/`, `Repositories/`, `Interfaces/Storage/`, `COMPASS.Infra/IO/`, `COMPASS.Infra/Xml/`, `COMPASS.Infra.Avalonia/Files/`
 
 | Service / Interface | Responsibility |
 |---|---|
-| `IApplicationDataService` / `ApplicationDataService` | Resolves the root user-data path. Supports a redirect file (`data_location.redirect`) so users can point COMPASS at a cloud-synced folder. |
+| `IApplicationDataService` (`Infra/IO`) / `ApplicationDataService` (Common) | Resolves the root user-data path. Supports a redirect file (`data_location.redirect`) so users can point COMPASS at a cloud-synced folder. |
 | `IUserFilesStorageService` / `UserFilesStorageService` | CRUD for collection folders (create, rename, delete, enumerate). |
 | `ICoverStorageService` / `CoverStorageService` | Save, load, and delete cover art and thumbnails on disk. |
 | `IImportExportService` / `ImportExportService` | Read and write `.satchel` archives. |
-| `XmlService` | Thin wrapper around `System.Xml.Serialization` used by the XML repository. |
-| `IIOService` / `IOService` | Platform-agnostic file copy/move/delete operations. |
+| `XmlService` (`Infra/Xml`) | Thin wrapper around `System.Xml.Serialization` used by the XML repository. |
+| `IIOService` (`Infra/IO`) / `IOServiceBase` (`Infra.Avalonia/Files/IOService.cs`) | File copy/move/delete operations. Platform subclasses `IOService` live in `COMPASS.Windows/Services` and `COMPASS.Linux/Services`. |
+| `IFilesService` / `FilesService` (`Infra.Avalonia/Files`) | Open/save file & folder pickers. |
 
-The `StorageStrategy` enum (`Xml` or `Memory`) determines which `ICodexCollectionRepository` implementation is used when constructing a `CodexCollectionVM`.
+The `StorageStrategy` enum (`Common/Models/Enums`) (`Xml` or `Memory`) determines which `ICodexCollectionRepository` implementation is used when constructing a `CodexCollectionVM`.
 
 ## 12. Preferences & Settings
 
@@ -243,7 +254,7 @@ The `StorageStrategy` enum (`Xml` or `Memory`) determines which `ICodexCollectio
 | `UIState` | Transient UI state that should survive a restart (e.g. last active layout). |
 | `AutoLinkFolderTagSameName` | Whether folders with the same name as a tag are automatically linked. |
 
-`PreferencesService` is a singleton that loads/saves `Preferences` to disk (JSON) and exposes it application-wide.
+`PreferencesService` (Common) implements the generic `IPreferencesService` from `COMPASS.Infra/Preferences/`. It is a singleton that lazily loads `Preferences` from disk (XML, via `PreferencesDto`) and exposes typed sections through `GetPreferences<T>()`, where `T : IPreferences`. This lets Infra code (e.g. `UpdateManager` reading `UpdatePreferences`) use preferences without depending on the domain `Preferences` class.
 
 ## 13. Tools
 
@@ -258,9 +269,9 @@ Tools are surfaced from the main menu. Each tool implements `IToolViewModel` and
 
 ## 14. Update System
 
-**Key files:** `Source/COMPASS.Common/Services/StateManagers/UpdateManager.cs`, `Services/UpdateServiceBase.cs`, `Infra/Interfaces/Services/IUpdateService.cs`, `Docs/Updates.md`
+**Key files:** `Source/COMPASS.Infra/Updates/` (`UpdateManager.cs`, `UpdateServiceBase.cs`, `IUpdateService.cs`, `UpdatePreferences.cs`), `COMPASS.Windows/Services/UpdateService.cs`, `COMPASS.Linux/Services/UpdateService.cs`, `Docs/Updates.md`
 
-COMPASS checks the `DSPAUL/COMPASS` GitHub releases for versions newer than the running one. `UpdateManager` runs the check on startup and then on a 6-hour timer. It calls `IUpdateService.CheckForUpdates(includePrerelease)` and hands the results to `IUpdateService.OnUpdatesFound()`, which downloads the installer in the background (verifying its SHA256), shows a modal "Update Available" dialog with the changelog, and on confirmation calls `IUpdateService.HandleUpdate()`.
+COMPASS checks the `DSPAUL/COMPASS` GitHub releases (`Constants.GITHUB_REPO_NAME` in Common, supplied to the Infra base class through the abstract `UpdateServiceBase.RepoName`) for versions newer than the running one. `UpdateManager` runs the check on startup and then on a 6-hour timer. It calls `IUpdateService.CheckForUpdates(includePrerelease)` and hands the results to `IUpdateService.OnUpdatesFound()`, which downloads the installer in the background (verifying its SHA256), shows a modal "Update Available" dialog with the changelog, and on confirmation calls `IUpdateService.HandleUpdate()`.
 
 The shared logic lives in `UpdateServiceBase`; the concrete install behaviour is platform-specific and registered per platform: Windows launches the Inno Setup installer (`COMPASS_Setup_{version}.exe`) with `/SILENT` and shuts down the app, while Linux just opens the release page in the browser. Checking is governed by `UpdatePreferences` (`CheckForUpdates`, `IncludePrerelease`, `NotifiedUpdates`), and a title-bar Update button appears while an update is available. See [`Updates.md`](Updates.md) for the full description.
 
@@ -283,18 +294,21 @@ HTTP client lifetimes are managed via `IHttpClientFactory`. Named clients and th
 
 ## 16. UI Infrastructure
 
-**Key files:** `Source/COMPASS.Common/Services/StateManagers/WindowManager.cs`, `Services/NotificationService.cs`, `Tools/Logging/`, `Tools/CrashHandler.cs`
+**Key files:** `Source/COMPASS.Infra.Avalonia/Modal/` (`WindowManager.cs`, `ModalWindow.axaml`), `COMPASS.Common/Views/Windows/ModalDialogs.cs`, `Services/NotificationService.cs`, `Tools/Logging/`, `Tools/CrashHandler.cs`, `COMPASS.Infra/Web/`
 
 | Component | Description |
 |---|---|
-| `WindowManager` | Tracks the currently active top-level `Window` so services can show dialogs without a direct reference. |
-| `NotificationService` | Shows toast notifications and modal dialogs using `NotificationWindow` and `ModalWindow`. |
-| `CompositeLogger` | Combines `FileLogger` (writes to a rolling log file) and `UILogger` (feeds the in-app Logs side panel) behind the `ILogger` interface. |
+| `WindowManager` (`Infra.Avalonia/Modal`) | Tracks the main top-level `Window` so services can show dialogs without a direct reference. Also pauses/resumes `ConnectivityManager` on window focus changes. |
+| `ModalWindow` (`Infra.Avalonia/Modal`) | Generic modal host for any `IModalViewModel`. It contains no domain templates; the view-model → view mappings for COMPASS dialogs are registered at startup by `ModalDialogs.Register()` (called from `App.Initialize`). Any host app that shows modals must call it. |
+| `NotificationService` | Shows toast notifications and modal dialogs using `NotificationWindow` and `ModalWindow`. Implements `INotificationService` from `Infra/Notifications`. |
+| `SerilogLogger` + `LogsPanelSink` | `SerilogLogger` is the Serilog pipeline behind the Infra `ILogger` interface (rolling log file); `LogsPanelSink` feeds the in-app Logs side panel. |
 | `CrashHandler` | Hooks `AppDomain.UnhandledException` and `TaskScheduler.UnobservedTaskException`, logs the crash, and sends an opt-in crash report via `ICompassApiClient`. |
-| `WebDriverService` | Creates Selenium `WebDrivers` used by online metadata sources that require JavaScript rendering. |
+| `WebDriverService` (`Infra/Web`) | Creates Selenium `WebDrivers` used by online metadata sources that require JavaScript rendering. |
+| `ConnectivityManager` / `ConnectivityHandler` (`Infra/Web`) | Tracks online/offline state; the handler is attached to named HTTP clients and updates the state from request outcomes. |
+| Reusable UI kit (`COMPASS.Infra.Avalonia`) | Generic controls (`Controls/`), converters, drag & drop (`DragDrop/`), `Wizard` (`Wizard/`, incl. `ValidatableViewModelBase`), camera capture (`Camera/`), item selectors (`Selection/`). Their control themes and resource keys are still defined in `COMPASS.Common/Themes`. |
 ## 17. Progress Reporting & Background Tasks
 
-**Key files:** `COMPASS.Infra/Models/Progress/` (`ProgressTracker.cs`, `IProgressReport.cs`), `COMPASS.Infra/Models/Measuring/` (`Quantity.cs`, `Quantities.cs`, `Unit.cs`), `COMPASS.Infra/Tools/` (`UiSynchronizationContext.cs`), `COMPASS.Infra/Tools/Logging/` (`LoggerScope.cs`, `ScopedForwardingLogger.cs`), `Source/COMPASS.Common/Services/StateManagers/ProgressTrackingManager.cs`, `ViewModels/ProgressViewModel.cs`, `App.axaml.cs` (registers the UI context), `Views/Main/MainView.axaml` (bottom bar), `Views/Windows/ProgressWindow.axaml(.cs)`
+**Key files:** `COMPASS.Infra/Progress/` (`ProgressTracker.cs`, `IProgressReport.cs`, `UiSynchronizationContext.cs`, `ProgressTrackingManager.cs`), `COMPASS.Infra/Measuring/` (`Quantity.cs`, `Quantities.cs`, `Unit.cs`), `COMPASS.Infra/Logging/` (`LoggerScope.cs`, `ScopedForwardingLogger.cs`), `ViewModels/ProgressViewModel.cs`, `App.axaml.cs` (registers the UI context), `Views/Main/MainView.axaml` (bottom bar), `Views/Windows/ProgressWindow.axaml(.cs)`
 
 Long-running work (metadata fetch, cover fetch, auto-import, satchel import/export, backup/restore, data-folder copy) runs as plain `async`/`await` at the call site and reports through a `ProgressTracker`. 
 
@@ -306,9 +320,9 @@ Long-running work (metadata fetch, cover fetch, auto-import, satchel import/expo
 | `UiSynchronizationContext` | Static holder for the app-wide UI `SynchronizationContext`, registered once in `App.OnFrameworkInitializationCompleted` (which runs on the UI thread on every platform). `ProgressTracker` resolves its marshal target through here, falling back to the ambient context when nothing is registered (keeps unit tests synchronous). This is what frees call sites from any thread affinity: trackers may be constructed on pool threads (e.g. the import pipeline after `ConfigureAwait(false)`) and still notify safely. |
 | `IProgressReport` / `ProgressReports` | The vocabulary for reporting: `XOutOfY(value, total)`, `Percentage(fraction)` (0–1), `Status(message)`, `Log(entry)`, `Increment` (shared singleton, safe for `Parallel.ForEachAsync`), `Completed`. Inner services accept `IProgress<IProgressReport>?` so callers can pass a tracker without coupling to it. |
 | `Quantity` / `Quantities` / `Unit` | The unit of what is being counted, used for display formatting. `Quantities.Items(name)` for counted work (metadata, covers) — also used without a total for indeterminate work (backup compression, auto-import scan); `Quantities.FileSize` for byte-based work (satchel import/export via SharpCompress); `Quantities.Items("Files")` for the data-folder copy. |
-| `ProgressTrackingManager` | Singleton registry (registered in `CommonModule`). `RunAsync(tracker, title, work)` tracks the operation, installs the tracker as the ambient logger (see below), invokes `work(tracker, ct)`, and untracks in a `finally`. `Track`/`Untrack`/`GetSnapshot` manage `TrackedOperation`s; `TrackingChanged` notifies the UI. Each operation owns a `CancellationTokenSource` linked to a global one, so `TrackedOperation.Cancel()` stops one task while `CancelAll()` stops everything. |
+| `ProgressTrackingManager` | Singleton registry (registered in `InfraModule`). `RunAsync(tracker, title, work)` tracks the operation, installs the tracker as the ambient logger (see below), invokes `work(tracker, ct)`, and untracks in a `finally`. `Track`/`Untrack`/`GetSnapshot` manage `TrackedOperation`s; `TrackingChanged` notifies the UI. Each operation owns a `CancellationTokenSource` linked to a global one, so `TrackedOperation.Cancel()` stops one task while `CancelAll()` stops everything. |
 | `TrackedOperation` | One entry in the registry: `Tracker` + `Title` + `CancellationToken` + `Cancel()`. `ProgressWindow` binds to a single instance of this. |
-| `LoggerScope` + `ScopedForwardingLogger` | `LoggerScope` is an `AsyncLocal<ILogger?>` ambient slot — it flows across `await`, `Task.Run`, and `Parallel.ForEachAsync` bodies. `RunAsync` installs the tracker via `LoggerScope.Use(tracker)`. The injected `ILogger` is decorated with `ScopedForwardingLogger` (see `CommonModule`), which forwards every log to the permanent Serilog pipeline **and**, when a scope is active, into the tracker's `MessageLog` (`Info` stays scope-local; `Debug`/`Warn`/`Error`/`Fatal` go to both). Service code therefore needs no progress plumbing: plain `logger.Info(...)` calls inside a tracked operation automatically appear in the progress UI. Always pair `Use` with `using`/`Dispose` so the scope never leaks into unrelated work. |
+| `LoggerScope` + `ScopedForwardingLogger` | `LoggerScope` is an `AsyncLocal<ILogger?>` ambient slot — it flows across `await`, `Task.Run`, and `Parallel.ForEachAsync` bodies. `RunAsync` installs the tracker via `LoggerScope.Use(tracker)`. The injected `ILogger` is decorated with `ScopedForwardingLogger` (see `InfraModule`), which forwards every log to the permanent Serilog pipeline **and**, when a scope is active, into the tracker's `MessageLog` (`Info` stays scope-local; `Debug`/`Warn`/`Error`/`Fatal` go to both). Service code therefore needs no progress plumbing: plain `logger.Info(...)` calls inside a tracked operation automatically appear in the progress UI. Always pair `Use` with `using`/`Dispose` so the scope never leaks into unrelated work. |
 
 ### Call-site pattern
 
@@ -343,6 +357,6 @@ Notes:
 
 | Component | Description |
 |---|---|
-| `ProgressViewModel` | Singleton UI mirror of the manager. Maintains `TrackedOperations`, derives `PrimaryOperation` (the most recent), and exposes `HasActivity`, `DisplayText` (`Title` plus `StatusMessage` when set), `Percentage`, `IsIndeterminate`, `CancelPrimaryCommand`, and `CancelAllCommand`. Subscribes to `TrackingChanged` and each tracker's `PropertyChanged`, marshalling refreshes via `Dispatcher.UIThread`. |
+| `ProgressViewModel` | UI mirror of the manager, owned by `MainViewModel` (exposed as `TasksVM`). Maintains `TrackedOperations`, derives `PrimaryOperation` (the most recent), and exposes `HasActivity`, `DisplayText` (`Title` plus `StatusMessage` when set), `Percentage`, `IsIndeterminate`, `CancelPrimaryCommand`, and `CancelAllCommand`. Subscribes to `TrackingChanged` and each tracker's `PropertyChanged`, marshalling refreshes via `Dispatcher.UIThread`. |
 | Bottom bar (`MainView.axaml`) | Binds to `MainViewModel.TasksVM`: visible while `HasActivity`, shows `DisplayText`, a progress bar (`Percentage` / `IsIndeterminate`), and a cancel button (`CancelPrimaryCommand`). |
 | `ProgressWindow` | Detail view bound to one `TrackedOperation`: `Title`, `Tracker.StatusMessage`, `Tracker.Percentage`, `Tracker.IsIndeterminate`, and the severity-coloured `Tracker.MessageLog` (auto-scrolls on new entries). Close only hides the window; the dedicated cancel button calls `TrackedOperation.Cancel()`. |

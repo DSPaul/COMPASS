@@ -1,9 +1,6 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using COMPASS.Infra.ExtensionMethods;
-using COMPASS.Infra.Interfaces.Services;
-using COMPASS.Infra.Models;
-using COMPASS.Infra.Models.Enums;
-using COMPASS.Infra.Tools;
+using CommunityToolkit.Mvvm.ComponentModel;
+using COMPASS.Infra.Collections;
+using COMPASS.Infra.Notifications;
 using System.Collections.ObjectModel;
 
 namespace COMPASS.Common.Models
@@ -65,7 +62,7 @@ namespace COMPASS.Common.Models
             var tagsToImport = tagsList.Flatten();
             foreach (Tag tag in tagsToImport)
             {
-                tag.Id = Utils.GetAvailableId(AllTags);
+                tag.Id = IdGenerator.GetAvailableId(AllTags);
                 AllTags.Add(tag);
             }
             RootTags.AddRange(tagsList);

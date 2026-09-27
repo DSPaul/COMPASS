@@ -1,5 +1,4 @@
 using CommunityToolkit.Mvvm.Input;
-using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.ViewModels;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
@@ -7,6 +6,7 @@ using COMPASS.Common.Models.Filters;
 using COMPASS.Common.Operations;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels.Main;
+using COMPASS.Infra.DependencyInjection;
 
 namespace COMPASS.Common.ViewModels.Tools;
 

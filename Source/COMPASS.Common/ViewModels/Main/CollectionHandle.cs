@@ -1,5 +1,3 @@
-using System;
-
 namespace COMPASS.Common.ViewModels.Main;
 
 public class CollectionHandle: IDisposable

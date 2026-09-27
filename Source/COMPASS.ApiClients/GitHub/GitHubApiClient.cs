@@ -1,5 +1,5 @@
-using System.Text.Json;
 using COMPASS.ApiClients.GitHub.Models;
+using System.Text.Json;
 
 namespace COMPASS.ApiClients.GitHub
 {

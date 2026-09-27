@@ -1,10 +1,9 @@
-using System;
-using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using COMPASS.Common.Interfaces.ViewModels;
 using COMPASS.Common.ViewModels.ModelVMs;
-using COMPASS.Infra.Models.Interfaces;
+using COMPASS.Infra.Avalonia.Mvvm;
+using COMPASS.Infra.Objects;
+using System.ComponentModel;
 
 namespace COMPASS.Common.ViewModels.Modals.Edit;
 

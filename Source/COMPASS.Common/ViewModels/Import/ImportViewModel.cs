@@ -1,10 +1,10 @@
-using COMPASS.Common.DependencyInjection;
-using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Operations;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels.Modals.Edit;
 using COMPASS.Common.ViewModels.Modals.Import;
-
+using COMPASS.Infra.Avalonia.Files;
+using COMPASS.Infra.Avalonia.Modal;
+using COMPASS.Infra.DependencyInjection;
 namespace COMPASS.Common.ViewModels.Import
 {
     public class ImportViewModel : ViewModelBase

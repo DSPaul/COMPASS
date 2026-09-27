@@ -1,8 +1,8 @@
-using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Models;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.ModelVMs;
+using COMPASS.Infra.DependencyInjection;
 
 namespace COMPASS.Common.ViewModels.Modals.Edit;
 

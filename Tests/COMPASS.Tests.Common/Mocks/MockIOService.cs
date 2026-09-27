@@ -1,6 +1,5 @@
-﻿using COMPASS.Common.Interfaces.Services;
-using COMPASS.Common.Services.FileSystem;
-using COMPASS.Infra.Tools.Logging;
+using COMPASS.Infra.Avalonia.Files;
+using COMPASS.Infra.Logging;
 
 namespace COMPASS.Tests.Common.Mocks
 {

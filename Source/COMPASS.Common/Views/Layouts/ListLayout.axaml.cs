@@ -4,7 +4,6 @@ using Avalonia.Data;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml.MarkupExtensions;
 using Avalonia.VisualTree;
-using COMPASS.Common.Operations;
 using COMPASS.Common.ViewModels.Layouts;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.ModelVMs;

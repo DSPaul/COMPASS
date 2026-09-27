@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Data;
 
 namespace COMPASS.Common.Controls;
 
@@ -10,7 +11,7 @@ public class FilterModeSelector : UserControl
             nameof(Include),
             o => o.Include,
             (o,v) => o.Include = v,
-            defaultBindingMode: Avalonia.Data.BindingMode.TwoWay);
+            defaultBindingMode: BindingMode.TwoWay);
     
     private bool _include = true;
 

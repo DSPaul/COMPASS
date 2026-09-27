@@ -1,13 +1,12 @@
-﻿using CommunityToolkit.Mvvm.Input;
-using COMPASS.Common.DependencyInjection;
-using COMPASS.Common.Interfaces.Services;
-using COMPASS.Common.Interfaces.ViewModels;
+using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Models;
 using COMPASS.Common.Operations;
 using COMPASS.Common.Services.StateManagers;
-using COMPASS.Infra.Tools.Logging;
-using COMPASS.Infra.Tools;
-
+using COMPASS.Infra.Avalonia.Files;
+using COMPASS.Infra.Avalonia.Mvvm;
+using COMPASS.Infra.DependencyInjection;
+using COMPASS.Infra.IO;
+using COMPASS.Infra.Logging;
 namespace COMPASS.Common.ViewModels.Modals
 {
     public class FileNotFoundViewModel : ViewModelBase, IModalViewModel

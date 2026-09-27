@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using Avalonia.Media.Imaging;
 using COMPASS.Common.Models;
 using ImageMagick;

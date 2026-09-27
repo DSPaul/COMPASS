@@ -1,5 +1,3 @@
-﻿using System;
-
 namespace COMPASS.Common.Models.CodexProperties
 {
     public class DateTimeProperty : CodexProperty<DateTime?>

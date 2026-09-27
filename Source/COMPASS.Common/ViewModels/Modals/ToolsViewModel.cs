@@ -1,8 +1,7 @@
-using System;
-using System.Collections.ObjectModel;
-using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.ViewModels;
 using COMPASS.Common.ViewModels.Tools;
+using COMPASS.Infra.DependencyInjection;
+using System.Collections.ObjectModel;
 
 namespace COMPASS.Common.ViewModels.Modals;
 

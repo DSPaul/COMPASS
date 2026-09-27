@@ -1,6 +1,5 @@
-using COMPASS.Common.Services.StateManagers;
-using COMPASS.Infra.Models.Measuring;
-using COMPASS.Infra.Models.Progress;
+using COMPASS.Infra.Measuring;
+using COMPASS.Infra.Progress;
 
 namespace COMPASS.UnitTests.Common.StateManagers;
 

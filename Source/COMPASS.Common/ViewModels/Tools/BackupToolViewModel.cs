@@ -1,16 +1,17 @@
 using CommunityToolkit.Mvvm.Input;
-using COMPASS.Common.DependencyInjection;
-using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Interfaces.ViewModels;
-using COMPASS.Common.Services;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Views.Windows;
-using COMPASS.Infra.Interfaces.Services;
-using COMPASS.Infra.Models;
-using COMPASS.Infra.Models.Measuring;
-using COMPASS.Infra.Models.Progress;
-using COMPASS.Infra.Tools.Logging;
+using COMPASS.Infra.Application;
+using COMPASS.Infra.Avalonia.Files;
+using COMPASS.Infra.Avalonia.Modal;
+using COMPASS.Infra.DependencyInjection;
+using COMPASS.Infra.IO;
+using COMPASS.Infra.Logging;
+using COMPASS.Infra.Measuring;
+using COMPASS.Infra.Notifications;
+using COMPASS.Infra.Progress;
 using SharpCompress.Archives;
 using SharpCompress.Archives.Zip;
 using SharpCompress.Readers;
@@ -19,6 +20,7 @@ namespace COMPASS.Common.ViewModels.Tools;
 
 public class BackupToolViewModel : ViewModelBase, IToolViewModel
 {
+    private readonly IApplicationService _applicationService;
     private readonly IApplicationDataService _applicationDataService;
     private readonly IFilesService _filesService;
     private readonly IImportExportService _importExportService;
@@ -28,6 +30,7 @@ public class BackupToolViewModel : ViewModelBase, IToolViewModel
     private readonly ILogger _logger;
 
     public BackupToolViewModel(
+        IApplicationService applicationService,
         IApplicationDataService applicationDataService,
         IFilesService filesService,
         IImportExportService importExportService,
@@ -36,6 +39,7 @@ public class BackupToolViewModel : ViewModelBase, IToolViewModel
         ProgressTrackingManager progressTrackingManager,
         ILogger logger)
     {
+        _applicationService = applicationService;
         _applicationDataService = applicationDataService;
         _filesService = filesService;
         _importExportService = importExportService;
@@ -102,7 +106,7 @@ public class BackupToolViewModel : ViewModelBase, IToolViewModel
             //Restart the app with the new data
             var notfication = new Notification("Backup restored", "The backup has been restored. COMPASS will now restart.");
             await _notificationService.ShowDialog(notfication);
-            ApplicationService.Restart(false);
+            _applicationService.Restart(false);
         }
     }
 
@@ -131,6 +135,7 @@ public class BackupToolViewModel : ViewModelBase, IToolViewModel
 
 [Factory]
 public class BackupToolViewModelFactory(
+    IApplicationService applicationService,
     IApplicationDataService applicationDataService,
     IFilesService filesService,
     IImportExportService importExportService,
@@ -140,5 +145,5 @@ public class BackupToolViewModelFactory(
     ILogger logger)
 {
     public BackupToolViewModel Create()
-        => new(applicationDataService, filesService, importExportService, notificationService, collectionManager, progressTrackingManager, logger);
+        => new(applicationService, applicationDataService, filesService, importExportService, notificationService, collectionManager, progressTrackingManager, logger);
 }

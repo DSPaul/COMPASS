@@ -2,7 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:controls="using:COMPASS.Common.Controls"
+             xmlns:controls="using:COMPASS.Infra.Avalonia.Controls"
              xmlns:vm="using:COMPASS.Common.ViewModels.Modals"
              mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="400"
              x:Class="COMPASS.Common.Views.Modals.ChangeDataLocationView"

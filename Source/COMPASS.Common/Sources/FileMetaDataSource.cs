@@ -1,8 +1,8 @@
-﻿using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
-using COMPASS.Infra.ExtensionMethods;
-using COMPASS.Infra.Tools.Logging;
+using COMPASS.Infra.Collections;
+using COMPASS.Infra.Logging;
+using COMPASS.Infra.Preferences;
 using ImageMagick;
 
 namespace COMPASS.Common.Sources

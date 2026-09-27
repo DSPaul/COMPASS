@@ -1,8 +1,4 @@
-using NUnit.Framework;
 using COMPASS.Common.Models;
-using System;
-using COMPASS.Common.Attributes;
-using System.Reflection;
 
 namespace COMPASS.UnitTests.Models
 {

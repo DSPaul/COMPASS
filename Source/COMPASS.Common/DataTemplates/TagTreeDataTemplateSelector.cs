@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
-using Avalonia.Data;
 using Avalonia.Metadata;
 using COMPASS.Common.Models;
-using COMPASS.Common.Models.Hierarchy;
 using COMPASS.Common.ViewModels.ModelVMs;
 
+using COMPASS.Infra.Collections;
 namespace COMPASS.Common.DataTemplates
 {
 

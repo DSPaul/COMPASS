@@ -1,16 +1,16 @@
-using Avalonia.Platform.Storage;
 using Autofac.Features.Indexed;
+using Avalonia.Platform.Storage;
 using COMPASS.Common.Interfaces.Repos;
-using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
-using COMPASS.Common.Services.StateManagers;
-using COMPASS.Infra.Interfaces.Services;
-using COMPASS.Infra.Models.Enums;
-using COMPASS.Infra.Models.Measuring;
-using COMPASS.Infra.Models.Progress;
-using COMPASS.Infra.Tools;
+using COMPASS.Infra.Application;
+using COMPASS.Infra.Avalonia.Files;
+using COMPASS.Infra.IO;
+using COMPASS.Infra.Logging;
+using COMPASS.Infra.Measuring;
+using COMPASS.Infra.Notifications;
+using COMPASS.Infra.Progress;
 using NuGet.Versioning;
 using SharpCompress.Archives;
 using SharpCompress.Archives.Zip;
@@ -18,12 +18,11 @@ using SharpCompress.Common;
 using SharpCompress.Writers.Zip;
 using System.Text.Json;
 using Constants = COMPASS.Common.Models.Constants;
-using Notification = COMPASS.Infra.Models.Notification;
-using COMPASS.Infra.Tools.Logging;
-
+using Notification = COMPASS.Infra.Notifications.Notification;
 namespace COMPASS.Common.Services.Storage;
 
 public class ImportExportService(
+    IApplicationService applicationService,
     IApplicationDataService applicationDataService,
     ICoverStorageService coverStorageService,
     IFilesService filesService,
@@ -38,13 +37,19 @@ public class ImportExportService(
     private const string TagsFileName = "Tags.xml";
     private const string CollectionInfoFileName = "CollectionInfo.xml";
 
+    public FilePickerFileType SatchelExtensionFilter => field ??=
+        new("COMPASS Satchel File")
+        {
+            Patterns = [$"*{Constants.SatchelExtension}"]
+        };
+
     #region Import
 
     public async Task<CodexCollection?> OpenSatchel(string? satchelPath = null)
     {
         FilePickerOpenOptions options = new()
         {
-            FileTypeFilter = [filesService.SatchelExtensionFilter],
+            FileTypeFilter = [SatchelExtensionFilter],
             AllowMultiple = false,
             Title = "Choose a COMPASS Satchel file to import",
         };
@@ -60,6 +65,7 @@ public class ImportExportService(
         }
 
         string satchelName = Path.GetFileName(satchelPath);
+        string version = applicationService.Version;
 
         //Check compatibility
         await using (var archive = await ZipArchive.OpenAsyncArchive(satchelPath))
@@ -69,7 +75,7 @@ public class ImportExportService(
             {
                 //No version information means we cannot ensure compatibility, so abort
                 string message =
-                    $"Cannot import {satchelName} because it does not contain version info, and might therefor not be compatible with your version v{ApplicationService.Version}.";
+                    $"Cannot import {satchelName} because it does not contain version info, and might therefor not be compatible with your version v{version}.";
                 logger.Warn(message);
                 Notification warnNotification = new($"Could not import {satchelName}", message, Severity.Warning);
                 await windowedNotificationService.ShowDialog(warnNotification);
@@ -91,14 +97,14 @@ public class ImportExportService(
             {
                 //No version information means we cannot ensure compatibility, so abort
                 string message =
-                    $"Cannot import {satchelName} because it does not contain version info, and might therefor not be compatible with your version v{ApplicationService.Version}.";
+                    $"Cannot import {satchelName} because it does not contain version info, and might therefor not be compatible with your version v{version}.";
                 logger.Warn(message);
                 Notification warnNotification = new($"Could not import {satchelName}", message, Severity.Warning);
                 await windowedNotificationService.ShowDialog(warnNotification);
                 return null;
             }
 
-            SemanticVersion currentVersion = SemanticVersion.Parse(ApplicationService.Version);
+            SemanticVersion currentVersion = SemanticVersion.Parse(version);
             var minVersions = new List<SemanticVersion> { currentVersion }; //keep a list of min requirements
 
             var filesInZip = await archive.EntriesAsync.Select(entry => entry.Key).ToListAsync();
@@ -129,7 +135,7 @@ public class ImportExportService(
             {
                 string message =
                     $"Cannot import {Path.GetFileName(satchelPath)} because it was created in a newer version of COMPASS (v{satchelInfo.CreationVersion}), " +
-                    $"and has indicated to be incompatible with your version v{ApplicationService.Version}. Please update and try again.";
+                    $"and has indicated to be incompatible with your version v{version}. Please update and try again.";
                 logger.Warn(message);
                 Notification warnNotification = new($"Could not import {Path.GetFileName(satchelPath)}", message,
                     Severity.Warning);
@@ -215,7 +221,7 @@ public class ImportExportService(
             {
                 file = await filesService.SaveFileAsync(new()
                 {
-                    FileTypeChoices = [filesService.SatchelExtensionFilter],
+                    FileTypeChoices = [SatchelExtensionFilter],
                     SuggestedFileName = $"{collection.Name}",
                     DefaultExtension = Constants.SatchelExtension,
                 });
@@ -247,7 +253,7 @@ public class ImportExportService(
             await AddCollectionToArchive(archive, collection);
 
             //Add the version so we can check compatibility when importing
-            SatchelInfo info = new();
+            SatchelInfo info = new(applicationService.Version);
             using var infoStream = new MemoryStream(JsonSerializer.SerializeToUtf8Bytes(info));
             await archive.AddEntryAsync(Constants.SatchelInfoFileName, infoStream);
 
@@ -294,7 +300,7 @@ public class ImportExportService(
 
         using var selectedFile = await filesService.SaveFileAsync(new()
         {
-            FileTypeChoices = [filesService.SatchelExtensionFilter],
+            FileTypeChoices = [SatchelExtensionFilter],
             SuggestedFileName = $"{collection.Name}_Tags",
             DefaultExtension = Constants.SatchelExtension,
         });

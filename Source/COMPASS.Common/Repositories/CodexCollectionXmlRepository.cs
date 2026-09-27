@@ -1,19 +1,16 @@
-﻿using COMPASS.Common.Interfaces.Repos;
-using COMPASS.Common.Interfaces.Storage;
+using COMPASS.Common.Interfaces.Repos;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.XmlDtos;
-using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Services.StateManagers;
-using COMPASS.Infra.ExtensionMethods;
-using COMPASS.Infra.Interfaces.Services;
-using COMPASS.Infra.Models;
-using COMPASS.Infra.Models.Enums;
-using COMPASS.Infra.Tools;
-using COMPASS.Infra.Tools.Logging;
+using COMPASS.Infra.IO;
+using COMPASS.Infra.Logging;
+using COMPASS.Infra.Notifications;
+using COMPASS.Infra.Objects;
+using COMPASS.Infra.Resilience;
+using COMPASS.Infra.Xml;
 using System.Diagnostics;
 using System.Xml;
 using System.Xml.Serialization;
-
 namespace COMPASS.Common.Repositories
 {
     internal class CodexCollectionXmlRepository(
@@ -409,7 +406,7 @@ namespace COMPASS.Common.Repositories
             try
             {
                 //sometimes completing delete fails because a files are locked, retry could help with that
-                Utils.Retry<IOException>(3, () => Directory.Delete(CollectionDataPath(collectionId), true),
+                ResilienceUtils.Retry<IOException>(3, () => Directory.Delete(CollectionDataPath(collectionId), true),
                     onFailedAttempt: (ex) => logger.Warn($"Failed to delete collection {collectionId}, retrying...", ex)
                 );
             }

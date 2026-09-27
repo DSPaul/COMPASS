@@ -1,4 +1,4 @@
-﻿using COMPASS.Common.Models.Filters;
+using COMPASS.Common.Models.Filters;
 using COMPASS.Common.ViewModels.ModelVMs;
 using System.ComponentModel;
 

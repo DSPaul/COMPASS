@@ -1,12 +1,11 @@
-using System.Collections.ObjectModel;
 using Avalonia.Media;
-using COMPASS.Common.DependencyInjection;
-using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
+using COMPASS.Common.Models.Preferences;
 using COMPASS.Common.ViewModels.Main;
-using COMPASS.Infra.Models;
-using COMPASS.Infra.Models.Interfaces;
-using COMPASS.Infra.Tools;
+using COMPASS.Infra.Collections;
+using COMPASS.Infra.DependencyInjection;
+using COMPASS.Infra.Preferences;
+using System.Collections.ObjectModel;
 
 namespace COMPASS.Common.ViewModels.ModelVMs;
 
@@ -65,7 +64,7 @@ public class TagViewModel : ModelViewModelBase<Tag>, IHasChildren<TagViewModel>
     
     
     public ObservableCollection<string> LinkedGlobs => _model.LinkedGlobs;
-    public List<string> CalculatedLinkedGlobs => _preferencesService.Preferences.AutoLinkFolderTagSameName ? [$"**/{Name}/**"] : [];
+    public List<string> CalculatedLinkedGlobs => _preferencesService.GetPreferences<Preferences>().AutoLinkFolderTagSameName ? [$"**/{Name}/**"] : [];
     
     #endregion Properties
     

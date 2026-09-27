@@ -1,6 +1,6 @@
-using System.Globalization;
 using Avalonia.Data;
 using COMPASS.Infra.Avalonia.Converters;
+using System.Globalization;
 
 namespace COMPASS.UnitTests.Infra.Avalonia.Converters;
 

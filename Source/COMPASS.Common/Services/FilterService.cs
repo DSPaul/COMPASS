@@ -1,11 +1,11 @@
-﻿using Avalonia.Collections;
+using Avalonia.Collections;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Filters;
 using COMPASS.Common.ViewModels.ModelVMs;
-using COMPASS.Infra.Avalonia.ExtensionMethods;
-using COMPASS.Infra.ExtensionMethods;
-using COMPASS.Infra.Models;
+using COMPASS.Infra.Avalonia.Collections;
+using COMPASS.Infra.Collections;
+using COMPASS.Infra.Objects;
 using System.ComponentModel;
 
 namespace COMPASS.Common.Services

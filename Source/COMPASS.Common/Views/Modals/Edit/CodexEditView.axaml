@@ -4,8 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:COMPASS.Common.ViewModels.Modals.Edit"
              xmlns:modelVm="using:COMPASS.Common.ViewModels.ModelVMs"
-             xmlns:interface="using:COMPASS.Infra.Models.Interfaces"
-             xmlns:controls="using:COMPASS.Common.Controls"
+             xmlns:interface="using:COMPASS.Infra.Collections"
+             xmlns:controls="using:COMPASS.Infra.Avalonia.Controls"
              xmlns:dataTemplates="using:COMPASS.Common.DataTemplates"
              xmlns:converters="using:COMPASS.Infra.Avalonia.Converters"
              xmlns:gif="using:Avalonia.Labs.Gif"
@@ -40,7 +40,7 @@
                    IsVisible="{Binding !ShowLoading}" Source="{Binding WorkingCopy.Cover, Mode=OneWay}" />
             <gif:GifImage Width="150" Height="150"
                           IsVisible="{Binding ShowLoading}"
-                          Source="{commonConverters:GifSource 'avares://COMPASS.Common/Assets/LoadingAnimation.gif'}"/>
+                          Source="{converters:GifSource 'avares://COMPASS.Common/Assets/LoadingAnimation.gif'}"/>
         </Panel>
 
         <UniformGrid Grid.Column="0" Grid.Row="2"

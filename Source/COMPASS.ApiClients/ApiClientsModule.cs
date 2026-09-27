@@ -14,14 +14,14 @@ namespace COMPASS.ApiClients
 
             //Add http clients
             services.AddHttpClient();
-            services.AddHttpClient(ICompassApiClient.HttpClientName, client =>
-            {
-                client.DefaultRequestHeaders.Add("Api-Key", CompassApiClient.ApiKey);
-            });
-            services.AddHttpClient(IGitHubApiClient.HttpClientName, client =>
-            {
-                client.DefaultRequestHeaders.UserAgent.ParseAdd("COMPASS");
-            });
+            services.AddHttpClient(ICompassApiClient.HttpClientName, static client =>
+                {
+                    client.DefaultRequestHeaders.Add("Api-Key", CompassApiClient.ApiKey);
+                });
+            services.AddHttpClient(IGitHubApiClient.HttpClientName, static client =>
+                {
+                    client.DefaultRequestHeaders.UserAgent.ParseAdd("COMPASS");
+                });
             builder.Populate(services);
 
             //Add api clients

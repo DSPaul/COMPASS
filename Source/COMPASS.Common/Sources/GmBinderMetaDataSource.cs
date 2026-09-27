@@ -1,12 +1,13 @@
-﻿using System.Diagnostics;
-using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services;
-using COMPASS.Infra.Tools.Logging;
+using COMPASS.Infra.Logging;
+using COMPASS.Infra.Preferences;
+using COMPASS.Infra.Web;
 using HtmlAgilityPack;
 using ImageMagick;
 using OpenQA.Selenium;
+using System.Diagnostics;
 
 namespace COMPASS.Common.Sources
 {

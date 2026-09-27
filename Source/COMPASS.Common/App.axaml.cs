@@ -1,17 +1,20 @@
-﻿using Avalonia;
+using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
-using COMPASS.Common.EventHandlers;
-using COMPASS.Common.Interfaces.Services;
-using COMPASS.Common.Interfaces.Storage;
+using COMPASS.Common.Models.Preferences;
 using COMPASS.Common.Services;
-using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.Views.Windows;
-using COMPASS.Infra.Tools;
-using COMPASS.Infra.Tools.Logging;
+using COMPASS.Infra.Application;
+using COMPASS.Infra.Avalonia.Markdown;
+using COMPASS.Infra.Avalonia.Modal;
+using COMPASS.Infra.DependencyInjection;
+using COMPASS.Infra.IO;
+using COMPASS.Infra.Logging;
+using COMPASS.Infra.Preferences;
+using COMPASS.Infra.Progress;
 using NuGet.Versioning;
 
 namespace COMPASS.Common;
@@ -22,6 +25,7 @@ public partial class App : Application
     {
         AvaloniaXamlLoader.Load(this);
         MarkdownViewerLinkHandler.EnsureRegistered();
+        ModalDialogs.Register();
         
 #if DEBUG
         this.AttachDeveloperTools();
@@ -39,7 +43,7 @@ public partial class App : Application
         {
             //Dispose the container on shutdown, which flushes disposable singletons
             //like the log pipeline; without this the last log events may never reach the file
-            desktop.Exit += (_, _) =>
+            desktop.Exit += static (_, _) =>
             {
                 try
                 {
@@ -93,7 +97,6 @@ public partial class App : Application
             //must be done after window is shown, as notification service will use it as parent
             //and showing a notification on a non visible window causes a crash
             WindowManager.MainWindow = mainWindow;
-            ServiceResolver.Resolve<ConnectivityManager>().SubscribeToWindowFocus(mainWindow);
 
             // Finally, close the splash screen
             _splashScreenWindow?.Close();
@@ -106,10 +109,11 @@ public partial class App : Application
     private static void HandleVersionChanges()
     {
         var preferencesService = ServiceResolver.Resolve<IPreferencesService>();
+        var applicationService = ServiceResolver.Resolve<IApplicationService>();
         var logger = ServiceResolver.Resolve<ILogger>();
 
-        SemanticVersion? lastRanVersion = preferencesService.Preferences.LastRanVersion;
-        SemanticVersion? currentVersion = SemanticVersion.Parse(ApplicationService.Version);
+        SemanticVersion? lastRanVersion = preferencesService.GetPreferences<Preferences>().LastRanVersion;
+        SemanticVersion? currentVersion = SemanticVersion.Parse(applicationService.Version);
 
         //Check if migration from v1 is needed
         if (lastRanVersion == null || lastRanVersion.Major == 1)
@@ -120,14 +124,14 @@ public partial class App : Application
         //Check if current verion is newer or older than last ran version
         if (lastRanVersion == null || lastRanVersion < currentVersion)
         {
-            ApplicationService.FirstRunSinceUpdate = true;
+            applicationService.FirstRunSinceUpdate = true;
         }
         else if(lastRanVersion > currentVersion)
         {
             logger.Debug($"Downgrade detected, {lastRanVersion} -> {currentVersion}");
         }
 
-        preferencesService.Preferences.LastRanVersion = currentVersion;
+        preferencesService.GetPreferences<Preferences>().LastRanVersion = currentVersion;
         preferencesService.SavePreferences();
     }
 }

@@ -1,6 +1,5 @@
-﻿using System.Text.Json;
 using COMPASS.Common.Models;
-using COMPASS.Common.Services;
+using System.Text.Json;
 
 namespace COMPASS.UnitTests
 {
@@ -10,7 +9,7 @@ namespace COMPASS.UnitTests
         [Test]
         public void SerializeSatchelInfo()
         {
-            var satchelInfo = new SatchelInfo();
+            var satchelInfo = new SatchelInfo("0.1");
             string json = JsonSerializer.Serialize(satchelInfo);
 
             Assert.That(string.IsNullOrEmpty(json), Is.False);
@@ -19,7 +18,7 @@ namespace COMPASS.UnitTests
             Assert.That(newSatchelInfo, Is.Not.Null);
             Assert.Multiple(() =>
             {
-                Assert.That(newSatchelInfo!.CreationVersion, Is.EqualTo(ApplicationService.Version));
+                Assert.That(newSatchelInfo!.CreationVersion, Is.EqualTo("0.1"));
                 Assert.That(newSatchelInfo!.CreationDate.Date, Is.EqualTo(DateTime.Now.Date));
             });
         }
@@ -53,7 +52,7 @@ namespace COMPASS.UnitTests
 
             var satchelInfo = JsonSerializer.Deserialize<SatchelInfo>(json);
             Assert.That(satchelInfo, Is.Not.Null);
-            Assert.That(satchelInfo!.MinTagsVersion, Is.EqualTo(new SatchelInfo().MinTagsVersion));
+            Assert.That(satchelInfo!.MinTagsVersion, Is.EqualTo(new SatchelInfo("").MinTagsVersion));
         }
     }
 }

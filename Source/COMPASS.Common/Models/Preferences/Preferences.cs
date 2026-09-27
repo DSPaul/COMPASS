@@ -1,12 +1,14 @@
-﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using COMPASS.Common.Models.CodexProperties;
-using COMPASS.Infra.ExtensionMethods;
+using COMPASS.Infra.Collections;
+using COMPASS.Infra.Preferences;
+using COMPASS.Infra.Updates;
 using NuGet.Versioning;
+using System.Collections.ObjectModel;
 
 namespace COMPASS.Common.Models.Preferences
 {
-    public class Preferences : ObservableObject
+    public class Preferences : ObservableObject, IPreferences
     {
         public Preferences()
         {
@@ -27,7 +29,7 @@ namespace COMPASS.Common.Models.Preferences
         public const int ONLINE_SOURCE_PRIORITY_ID = 0;
         public const int LOCAL_SOURCE_PRIORITY_ID = 1;
 
-        //list with possible functions to open a file (metadata only — CodexOperations binds instance methods by Id at execution time)
+        //list with possible functions to open a file (metadata only � CodexOperations binds instance methods by Id at execution time)
         public static readonly ReadOnlyCollection<PreferableFunction<Codex>> OpenCodexFunctions =
             new List<PreferableFunction<Codex>>()
             {

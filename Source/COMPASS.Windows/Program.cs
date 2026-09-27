@@ -1,13 +1,13 @@
-﻿using Autofac;
+using Autofac;
 using Avalonia;
 using Avalonia.Svg.Skia;
 using COMPASS.Common;
 using COMPASS.Common.DependencyInjection;
-using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
-using COMPASS.Infra.Tools;
-using COMPASS.Infra.Tools.Logging;
-using COMPASS.Windows.DepencyInjection;
+using COMPASS.Infra.Application;
+using COMPASS.Infra.DependencyInjection;
+using COMPASS.Infra.Logging;
+using COMPASS.Windows.DependencyInjection;
 
 namespace COMPASS.Windows;
 

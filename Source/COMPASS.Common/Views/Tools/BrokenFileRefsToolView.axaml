@@ -3,7 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:COMPASS.Common.ViewModels.Tools"
-             xmlns:controls="clr-namespace:COMPASS.Common.Controls"
+             xmlns:controls="using:COMPASS.Infra.Avalonia.Controls"
              xmlns:converters="using:COMPASS.Infra.Avalonia.Converters"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="COMPASS.Common.Views.Tools.BrokenFileRefsToolView"

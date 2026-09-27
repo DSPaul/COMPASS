@@ -7,12 +7,13 @@
              xmlns:vm="using:COMPASS.Common.ViewModels.Main"
              xmlns:views="using:COMPASS.Common.Views"
              xmlns:components="using:COMPASS.Common.Views.Components"
-             xmlns:controls="using:COMPASS.Common.Controls"
+             xmlns:controls="using:COMPASS.Infra.Avalonia.Controls"
              xmlns:converters="using:COMPASS.Infra.Avalonia.Converters"
              xmlns:materialIcons="using:Material.Icons.Avalonia"
              xmlns:modelVms="clr-namespace:COMPASS.Common.ViewModels.ModelVMs"
              xmlns:main="clr-namespace:COMPASS.Common.Views.Main"
              xmlns:behaviors="using:COMPASS.Infra.Avalonia.Behaviors"
+             xmlns:dragdrop="using:COMPASS.Infra.Avalonia.DragDrop"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="800"
              x:Class="COMPASS.Common.Views.Main.MainView" FontSize="16"
              x:DataType="vm:MainViewModel"
@@ -229,8 +230,8 @@
                 <Grid.DataTemplates>
                     <DataTemplate DataType="{x:Type modelVms:FilterViewModel}">
                         <controls:Chip Theme="{StaticResource Removable}"
-                                       behaviors:DragBehavior.IsDragSource="True"
-                                       behaviors:DragBehavior.DragManager="{Binding $parent[main:MainView].FilterDragManager}"
+                                       dragdrop:DragBehavior.IsDragSource="True"
+                                       dragdrop:DragBehavior.DragManager="{Binding $parent[main:MainView].FilterDragManager}"
                                        Background="{Binding BackgroundColor, Converter={x:Static converters:ColorConverters.ColorToBrush}}"
                                        Name="{Binding Content}"/>
                     </DataTemplate>
@@ -241,8 +242,8 @@
                         VerticalAlignment="Center"
                         MinHeight="40" Margin="10,0" Background="{StaticResource FiltersBackground}"
                         DataContext="{Binding FiltersVM}"
-                        behaviors:DropBehavior.IsDropTarget="True"
-                        behaviors:DropBehavior.DropManager="{Binding IncludedDropManager}">
+                        dragdrop:DropBehavior.IsDropTarget="True"
+                        dragdrop:DropBehavior.DropManager="{Binding IncludedDropManager}">
                     <Panel>
                         <TextBlock Text="INCLUDED FILTERS" VerticalAlignment="Center" HorizontalAlignment="Center"
                                    Margin="5, 2" Foreground="Gray" FontSize="20"
@@ -262,8 +263,8 @@
                         VerticalAlignment="Center"
                         MinHeight="40" Margin="10,0,5,0" Background="{StaticResource FiltersBackground}"
                         DataContext="{Binding FiltersVM}"
-                        behaviors:DropBehavior.IsDropTarget="True"
-                        behaviors:DropBehavior.DropManager="{Binding ExcludedDropManager}">
+                        dragdrop:DropBehavior.IsDropTarget="True"
+                        dragdrop:DropBehavior.DropManager="{Binding ExcludedDropManager}">
                     <Panel>
                         <TextBlock Text="EXCLUDED FILTERS" VerticalAlignment="Center" HorizontalAlignment="Center"
                                    Margin="5 2" Foreground="Gray" FontSize="20"
@@ -354,8 +355,8 @@
 
             </Grid>
             
-            <Panel behaviors:DropBehavior.IsDropTarget="True"
-                   behaviors:DropBehavior.DropManager="{Binding CurrentLayout.FileDropManager}">
+            <Panel dragdrop:DropBehavior.IsDropTarget="True"
+                   dragdrop:DropBehavior.DropManager="{Binding CurrentLayout.FileDropManager}">
                 <!--Layout-->
                 <ContentControl Content="{Binding CurrentLayout}"
                                 IsVisible="{Binding !!CollectionVM.Collection.AllCodices.Count}"/>

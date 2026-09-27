@@ -1,5 +1,5 @@
 using Avalonia.Controls;
-using COMPASS.Common.Interfaces.Services;
+using COMPASS.Infra.Avalonia.Application;
 
 namespace COMPASS.Linux.Services;
 

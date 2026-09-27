@@ -1,15 +1,13 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.VisualTree;
-using COMPASS.Common.Models.DragDrop;
-using COMPASS.Common.Models.Hierarchy;
 using COMPASS.Common.Models;
+using COMPASS.Common.Models.DragDrop;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.ModelVMs;
 using COMPASS.Common.ViewModels.SidePanels;
-using COMPASS.Infra.Avalonia.Behaviors;
 using COMPASS.Infra.Avalonia.DragDrop;
-
+using COMPASS.Infra.Collections;
 namespace COMPASS.Common.Views.SidePanels;
 
 public partial class TagsSidePanel : SidePanel

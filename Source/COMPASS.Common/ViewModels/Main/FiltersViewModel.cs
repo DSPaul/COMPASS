@@ -1,23 +1,22 @@
-﻿using Avalonia.Input;
+using Avalonia.Input;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Adorners;
-using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Common.Models.DragDrop;
 using COMPASS.Common.Models.Filters;
+using COMPASS.Common.Models.Preferences;
 using COMPASS.Common.ViewModels.ModelVMs;
-using COMPASS.Infra.ExtensionMethods;
-using COMPASS.Infra.Models;
 using COMPASS.Infra.Avalonia.DragDrop;
-using COMPASS.Infra.Avalonia.ExtensionMethods;
-using COMPASS.Infra.Tools;
+using COMPASS.Infra.Avalonia.Threading;
+using COMPASS.Infra.Collections;
+using COMPASS.Infra.DependencyInjection;
+using COMPASS.Infra.Logging;
+using COMPASS.Infra.Preferences;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using COMPASS.Common.Models.Preferences;
-using COMPASS.Infra.Tools.Logging;
 
 namespace COMPASS.Common.ViewModels.Main
 {
@@ -539,6 +538,6 @@ namespace COMPASS.Common.ViewModels.Main
         IPreferencesService preferencesService)
     {
         public FiltersViewModel Create(CodexCollectionVM collectionVm, FiltersState? filtersState = null)
-            => new(logger, filterService, preferencesService.Preferences.UIState, collectionVm, filtersState);
+            => new(logger, filterService, preferencesService.GetPreferences<UIState>(), collectionVm, filtersState);
     }
 }

@@ -1,9 +1,10 @@
-﻿using Autofac;
-using COMPASS.Common.Interfaces.Services;
-using COMPASS.Infra.Interfaces.Services;
+using Autofac;
+using COMPASS.Infra.Avalonia.Application;
+using COMPASS.Infra.IO;
+using COMPASS.Infra.Updates;
 using COMPASS.Linux.Services;
 
-namespace COMPASS.Linux.DepencyInjection
+namespace COMPASS.Linux.DependencyInjection
 {
     public class LinuxModule : Module
     {

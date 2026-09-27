@@ -1,4 +1,4 @@
-﻿namespace COMPASS.Common.Models
+namespace COMPASS.Common.Models
 {
     public interface IHasCodexMetadata { }
 }

@@ -1,4 +1,4 @@
-﻿using Autofac.Features.Indexed;
+using Autofac.Features.Indexed;
 using Avalonia.Input;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Input;
@@ -14,17 +14,16 @@ using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.Modals;
 using COMPASS.Common.ViewModels.Modals.Edit;
 using COMPASS.Common.ViewModels.ModelVMs;
-using COMPASS.Infra.ExtensionMethods;
-using COMPASS.Infra.Interfaces.Services;
-using COMPASS.Infra.Models;
-using COMPASS.Infra.Models.Enums;
-using COMPASS.Infra.Models.Measuring;
-using COMPASS.Infra.Models.Progress;
-using COMPASS.Infra.Tools.Logging;
-using COMPASS.Infra.Tools;
+using COMPASS.Infra.Avalonia.Modal;
+using COMPASS.Infra.Collections;
+using COMPASS.Infra.IO;
+using COMPASS.Infra.Logging;
+using COMPASS.Infra.Measuring;
+using COMPASS.Infra.Notifications;
+using COMPASS.Infra.Preferences;
+using COMPASS.Infra.Progress;
 using System.Collections;
 using System.Diagnostics;
-
 namespace COMPASS.Common.Operations
 {
     /// Domain operations for <see cref="Codex"/>
@@ -54,7 +53,7 @@ namespace COMPASS.Common.Operations
                 [Preferences.ONLINE_SOURCE_PRIORITY_ID] = new("Online source", OpenCodexOnline, Preferences.ONLINE_SOURCE_PRIORITY_ID),
                 [Preferences.LOCAL_SOURCE_PRIORITY_ID] = new("Local File", OpenCodexLocally, Preferences.LOCAL_SOURCE_PRIORITY_ID),
             };
-            var orderedFunctions = preferencesService.Preferences.OpenCodexPriority
+            var orderedFunctions = preferencesService.GetPreferences<Preferences>().OpenCodexPriority
                 .Select(pf => pf.Id)
                 .Where(openFunctionsById.ContainsKey)
                 .Select(id => openFunctionsById[id]);
@@ -322,7 +321,7 @@ namespace COMPASS.Common.Operations
                     movedCodex.CopyFrom(toMove);
 
                     movedCodex.Tags.Clear();
-                    movedCodex.Id = Utils.GetAvailableId(targetCollection.AllCodices);
+                    movedCodex.Id = IdGenerator.GetAvailableId(targetCollection.AllCodices);
                     movedCodex.GlobalId = Guid.NewGuid();
 
                     //Add Codex to target CodexCollection
@@ -539,7 +538,8 @@ namespace COMPASS.Common.Operations
                 bool shouldAsk = false;
 
                 //Iterate over all the properties and set them
-                foreach (var prop in preferencesService.Preferences.ImportableCodexProperties)
+                var importableProperties = preferencesService.GetPreferences<Preferences>().ImportableCodexProperties;
+                foreach (var prop in importableProperties)
                 {
                     ct.ThrowIfCancellationRequested();
 

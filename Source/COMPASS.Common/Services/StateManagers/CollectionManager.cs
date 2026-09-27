@@ -1,14 +1,15 @@
-﻿using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using Autofac.Features.Indexed;
 using COMPASS.Common.Interfaces.Repos;
-using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
+using COMPASS.Common.Models.Preferences;
 using COMPASS.Common.ViewModels.Main;
-using COMPASS.Infra.Tools.Logging;
-using COMPASS.Infra.Tools;
+using COMPASS.Infra.DependencyInjection;
+using COMPASS.Infra.Logging;
+using COMPASS.Infra.Preferences;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace COMPASS.Common.Services.StateManagers
 {
@@ -151,7 +152,7 @@ namespace COMPASS.Common.Services.StateManagers
         {
             CollectionHandle? collectionHandle = null;
         
-            string startupCollectionId = preferencesService.Preferences.UIState.StartupCollection;
+            string startupCollectionId = preferencesService.GetPreferences<UIState>().StartupCollection;
         
             while (collectionHandle  == null)
             {

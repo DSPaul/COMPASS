@@ -1,6 +1,6 @@
-﻿using Autofac;
+using Autofac;
 using COMPASS.Common.DependencyInjection;
-using COMPASS.Infra.Tools;
+using COMPASS.Infra.DependencyInjection;
 using COMPASS.Tests.Common;
 
 namespace COMPASS.IntegrationTests.Common

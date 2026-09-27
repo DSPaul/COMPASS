@@ -1,4 +1,4 @@
-﻿using COMPASS.Infra.ExtensionMethods;
+using COMPASS.Infra.Text;
 
 namespace COMPASS.Common.Models.Filters
 {

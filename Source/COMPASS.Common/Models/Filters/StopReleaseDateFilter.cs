@@ -1,4 +1,3 @@
-﻿using System;
 namespace COMPASS.Common.Models.Filters
 {
     internal class StopReleaseDateFilter : Filter

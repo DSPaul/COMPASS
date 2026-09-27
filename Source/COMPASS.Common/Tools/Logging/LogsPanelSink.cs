@@ -1,5 +1,5 @@
 using COMPASS.Common.ViewModels.SidePanels;
-using COMPASS.Infra.Models.Enums;
+using COMPASS.Infra.Logging;
 using Serilog.Core;
 using Serilog.Events;
 

@@ -1,8 +1,5 @@
-﻿using System.Collections.ObjectModel;
 using COMPASS.Common.Models;
-using COMPASS.Common.Models.Hierarchy;
-using COMPASS.Infra.ExtensionMethods;
-using COMPASS.Infra.Models;
+using COMPASS.Infra.Collections;
 
 namespace COMPASS.UnitTests.Models
 {

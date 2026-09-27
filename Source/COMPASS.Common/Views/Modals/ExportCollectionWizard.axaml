@@ -3,16 +3,18 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:views="using:COMPASS.Common.Views"
-             xmlns:controls="using:COMPASS.Common.Controls"
+              xmlns:wizardViews="using:COMPASS.Infra.Avalonia.Wizard"
+              xmlns:selectionViews="using:COMPASS.Infra.Avalonia.Selection"
+             xmlns:controls="using:COMPASS.Infra.Avalonia.Controls"
              xmlns:vm="using:COMPASS.Common.ViewModels.Modals"
              xmlns:selectionVm="using:COMPASS.Common.ViewModels.Selection"
-             xmlns:conv="using:COMPASS.Common.Converters"
+             xmlns:conv="using:COMPASS.Infra.Avalonia.Wizard"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="COMPASS.Common.Views.Modals.ExportCollectionWizard"
              MinHeight="650" MinWidth="1200"
              x:DataType="vm:ExportCollectionViewModel">
-  <views:Wizard>
-    <views:Wizard.Resources>
+  <wizardViews:Wizard>
+    <wizardViews:Wizard.Resources>
       <conv:WizardStepTemplateSelector x:Key="WizardStepTemplateSelector">
         <DataTemplate x:Key="Overview" x:DataType="vm:ExportCollectionViewModel">
           <Grid ColumnDefinitions="*,*" ColumnSpacing="20" RowSpacing="20" Margin="20">
@@ -75,20 +77,20 @@
         </DataTemplate>
         <DataTemplate x:Key="SelectItems" x:DataType="vm:ExportCollectionViewModel">
           <Grid RowDefinitions="auto,auto,auto,auto,*" RowSpacing="10">
-            <views:ItemsSelectorView DataContext="{Binding ContentSelectorVM.PersonalDataSelector}" Margin="15,0">
-              <views:ItemsSelectorView.Title>
+            <selectionViews:ItemsSelectorView DataContext="{Binding ContentSelectorVM.PersonalDataSelector}" Margin="15,0">
+              <selectionViews:ItemsSelectorView.Title>
                 <StackPanel Orientation="Horizontal" Spacing="10">
                   <TextBlock Text="Personal Data to Reset" VerticalAlignment="Center"/>
                   <controls:Explainer VerticalAlignment="Center"
                                       Content="Selected fields will be reset to their default values (e.g. Rating -> 0, DateAdded -> Now). &#x0a;Unselected fields will be exported as-is."/>
                 </StackPanel>
-              </views:ItemsSelectorView.Title>
-              <views:ItemsSelectorView.ItemsPanel>
+              </selectionViews:ItemsSelectorView.Title>
+              <selectionViews:ItemsSelectorView.ItemsPanel>
                 <ItemsPanelTemplate>
                   <WrapPanel/>
                 </ItemsPanelTemplate>
-              </views:ItemsSelectorView.ItemsPanel>
-            </views:ItemsSelectorView>
+              </selectionViews:ItemsSelectorView.ItemsPanel>
+            </selectionViews:ItemsSelectorView>
             <Grid Grid.Row="1" ColumnDefinitions="auto,auto,*" Margin="20,0" RowDefinitions="auto,auto">
               <StackPanel Orientation="Horizontal" Spacing="5" Grid.Row="0" Grid.Column="0">
                 <CheckBox Content="Include files that are referenced by these items" IsChecked="{Binding IncludeFiles}"/>
@@ -178,43 +180,43 @@
                 </DataTemplate>
               </StackPanel.Resources>
 
-              <views:ItemsSelectorView DataContext="{Binding AutoImportFoldersSelector}"
+              <selectionViews:ItemsSelectorView DataContext="{Binding AutoImportFoldersSelector}"
                                        Title="Directories to Auto Import from"
                                        ItemTemplate="{StaticResource PathTemplate}"
                                        IsVisible="{Binding SelectableItems.Count}"
                                        Margin="20,0"/>
 
-              <views:ItemsSelectorView DataContext="{Binding BanishedPathsSelector}"
+              <selectionViews:ItemsSelectorView DataContext="{Binding BanishedPathsSelector}"
                                        Title="Banished files (Files to Exclude from future imports)"
                                        ItemTemplate="{StaticResource PathTemplate}"
                                        IsVisible="{Binding SelectableItems.Count}"
                                        Margin="20,0"/>
 
-              <views:ItemsSelectorView DataContext="{Binding FileTypePrefsSelector}"
+              <selectionViews:ItemsSelectorView DataContext="{Binding FileTypePrefsSelector}"
                                        Title="File types to include in imports"
                                        IsVisible="{Binding SelectableItems.Count}"
                                        Margin="20,0">
-                <views:ItemsSelectorView.ItemsPanel>
+                <selectionViews:ItemsSelectorView.ItemsPanel>
                   <ItemsPanelTemplate>
                     <WrapPanel/>
                   </ItemsPanelTemplate>
-                </views:ItemsSelectorView.ItemsPanel>
-                <views:ItemsSelectorView.ItemTemplate>
+                </selectionViews:ItemsSelectorView.ItemsPanel>
+                <selectionViews:ItemsSelectorView.ItemTemplate>
                   <DataTemplate x:CompileBindings="False">
                     <CheckBox Content="{Binding DisplayName}"
                               IsChecked="{Binding Item.Value}"
                               IsHitTestVisible="False"
                               Margin="15"/>
                   </DataTemplate>
-                </views:ItemsSelectorView.ItemTemplate>
-              </views:ItemsSelectorView>
+                </selectionViews:ItemsSelectorView.ItemTemplate>
+              </selectionViews:ItemsSelectorView>
             </StackPanel>
           </ScrollViewer>
         </DataTemplate>
       </conv:WizardStepTemplateSelector>
-    </views:Wizard.Resources>
+    </wizardViews:Wizard.Resources>
     <ContentControl Content="{Binding}"
                     ContentTemplate="{Binding CurrentStep, Converter={StaticResource WizardStepTemplateSelector}}"/>
 
-  </views:Wizard>
+  </wizardViews:Wizard>
 </UserControl>

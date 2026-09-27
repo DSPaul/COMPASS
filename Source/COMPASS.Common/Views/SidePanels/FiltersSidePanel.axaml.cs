@@ -3,7 +3,6 @@ using Avalonia.Input;
 using COMPASS.Common.Models.DragDrop;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.ModelVMs;
-using COMPASS.Infra.Avalonia.Behaviors;
 using COMPASS.Infra.Avalonia.DragDrop;
 
 namespace COMPASS.Common.Views.SidePanels;

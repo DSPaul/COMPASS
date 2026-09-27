@@ -1,9 +1,8 @@
-﻿using System.Collections.ObjectModel;
 using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
-using COMPASS.Infra.Models;
-using COMPASS.Infra.Models.Interfaces;
-using COMPASS.Infra.Tools;
+using COMPASS.Infra.Collections;
+using COMPASS.Infra.Objects;
+using System.Collections.ObjectModel;
 
 namespace COMPASS.Common.Models
 {
@@ -13,7 +12,7 @@ namespace COMPASS.Common.Models
 
         public Tag(IEnumerable<Tag> allTags)
         {
-            Id = Utils.GetAvailableId(allTags.Cast<IHasId>());
+            Id = IdGenerator.GetAvailableId(allTags.Cast<IHasId>());
         }
 
         //Implement IHasChildren

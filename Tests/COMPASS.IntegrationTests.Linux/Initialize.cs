@@ -1,11 +1,10 @@
-﻿using COMPASS.Common.DependencyInjection;
-using COMPASS.Common.Interfaces.Services;
-using COMPASS.Common.Interfaces.Storage;
-using COMPASS.Tests.Common.Mocks;
 using Autofac;
-using COMPASS.Infra.Tools;
-using COMPASS.Linux.DepencyInjection;
-using COMPASS.Infra.Interfaces.Services;
+using COMPASS.Common.DependencyInjection;
+using COMPASS.Infra.DependencyInjection;
+using COMPASS.Infra.IO;
+using COMPASS.Infra.Notifications;
+using COMPASS.Linux.DependencyInjection;
+using COMPASS.Tests.Common.Mocks;
 
 namespace COMPASS.IntegrationTests.Linux
 {

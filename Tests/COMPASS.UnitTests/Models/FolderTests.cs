@@ -1,7 +1,6 @@
-using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
-using COMPASS.Infra.Models.Progress;
-using COMPASS.Infra.Tools;
+using COMPASS.Infra.IO;
+using COMPASS.Infra.Progress;
 using COMPASS.Tests.Common.Mocks;
 
 namespace COMPASS.UnitTests.Models

@@ -1,11 +1,11 @@
-﻿using System.Text.Json;
-using System.Xml.Serialization;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Models.Preferences;
 using COMPASS.Common.Models.XmlDtos;
 using COMPASS.Tests.Common.DataGenerators;
+using System.Text.Json;
+using System.Xml.Serialization;
 
 namespace COMPASS.UnitTests.Models
 {

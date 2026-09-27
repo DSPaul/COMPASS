@@ -26,4 +26,6 @@ public interface IImportExportService
     void CompressUserDataToZip(string zipPath);
 
     #endregion
+
+    FilePickerFileType SatchelExtensionFilter { get; }
 }

@@ -1,10 +1,7 @@
-﻿using Avalonia.Threading;
-using COMPASS.Common.Interfaces.Services;
-using COMPASS.Common.Models;
-using COMPASS.Common.Services.StateManagers;
+using Avalonia.Threading;
 using COMPASS.Common.Views.Windows;
-using COMPASS.Infra.Interfaces.Services;
-using COMPASS.Infra.Models;
+using COMPASS.Infra.Avalonia.Modal;
+using COMPASS.Infra.Notifications;
 
 namespace COMPASS.Common.Services
 {

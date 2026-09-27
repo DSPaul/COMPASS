@@ -1,9 +1,9 @@
-﻿using CommunityToolkit.Mvvm.Input;
-using COMPASS.Common.Interfaces.Services;
+using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Models.Filters;
-using COMPASS.Common.ViewModels.ModelVMs;
-using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Models.Preferences;
+using COMPASS.Common.ViewModels.ModelVMs;
+using COMPASS.Infra.DependencyInjection;
+using COMPASS.Infra.Preferences;
 
 namespace COMPASS.Common.ViewModels.Main
 {
@@ -81,6 +81,6 @@ namespace COMPASS.Common.ViewModels.Main
     [Factory]
     public class CodexInfoViewModelFactory(IPreferencesService preferencesService)
     {
-        public CodexInfoViewModel Create() => new(preferencesService.Preferences.UIState);
+        public CodexInfoViewModel Create() => new(preferencesService.GetPreferences<UIState>());
     }
 }

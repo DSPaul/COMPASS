@@ -1,11 +1,8 @@
 using Autofac;
-using Autofac.Core;
-using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Services.Storage;
-using COMPASS.Infra.Tools;
-using COMPASS.Tests.Common.Mocks;
+using COMPASS.Infra.IO;
 
 namespace COMPASS.IntegrationTests.Common.Services;
 

@@ -1,15 +1,14 @@
-﻿using CommunityToolkit.Mvvm.Input;
-using COMPASS.Common.DependencyInjection;
+using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Exceptions;
-using COMPASS.Common.Interfaces.ViewModels;
 using COMPASS.Common.Models;
-using COMPASS.Common.Models.Hierarchy;
 using COMPASS.Common.Operations;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.ModelVMs;
 using COMPASS.Common.ViewModels.Selection;
-
+using COMPASS.Infra.Avalonia.Mvvm;
+using COMPASS.Infra.Collections;
+using COMPASS.Infra.DependencyInjection;
 namespace COMPASS.Common.ViewModels.Modals.Import
 {
     public class ImportTagsViewModel : ViewModelBase, IDisposable, IModalViewModel, IConfirmable
@@ -67,7 +66,7 @@ namespace COMPASS.Common.ViewModels.Modals.Import
         {
             foreach (var template in TagsSelectorVM.TagCollections)
             {
-                var selectedTags = CheckableTreeNode.GetCheckedModels<TagViewModel, Tag>(template.TagsRoot.Children).ToList();
+                var selectedTags = CheckableTreeNode.GetCheckedModels(template.TagsRoot.Children, static tagVm => tagVm.GetModel()).ToList();
 
                 if (selectedTags.Any())
                 {

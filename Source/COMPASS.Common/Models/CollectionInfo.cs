@@ -1,6 +1,6 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using COMPASS.Infra.Models;
-using COMPASS.Infra.Models.Interfaces;
+using CommunityToolkit.Mvvm.ComponentModel;
+using COMPASS.Infra.Collections;
+using COMPASS.Infra.Objects;
 
 namespace COMPASS.Common.Models
 {

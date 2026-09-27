@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:COMPASS.Common.ViewModels.Main"
              xmlns:sidePanels="using:COMPASS.Common.ViewModels.SidePanels"
-             xmlns:controls="using:COMPASS.Common.Controls"
+             xmlns:controls="using:COMPASS.Infra.Avalonia.Controls"
              xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:panels="using:COMPASS.Common.Views.SidePanels"
              xmlns:main="using:COMPASS.Common.Views.Main"

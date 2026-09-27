@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
 using CommunityToolkit.Mvvm.ComponentModel;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.ViewModels.ModelVMs;
-using COMPASS.Infra.ExtensionMethods;
+using COMPASS.Infra.Objects;
 
 namespace COMPASS.Common.Models.CodexProperties
 {

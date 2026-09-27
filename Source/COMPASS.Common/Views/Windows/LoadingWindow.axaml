@@ -5,7 +5,7 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="COMPASS.Common.Views.Windows.LoadingWindow"
         xmlns:gif="using:Avalonia.Labs.Gif"
-        xmlns:converters="using:COMPASS.Common.Converters"
+        xmlns:converters="using:COMPASS.Infra.Avalonia.Converters"
         Height="200" Width="300" WindowDecorations="None"
         WindowStartupLocation="CenterOwner">
     <Border Background="{StaticResource WindowBackground}" CornerRadius="5" 

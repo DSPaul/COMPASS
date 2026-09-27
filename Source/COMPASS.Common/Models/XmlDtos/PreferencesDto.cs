@@ -1,5 +1,6 @@
-﻿using System.Xml.Serialization;
 using COMPASS.Common.Models.Preferences;
+using COMPASS.Infra.Updates;
+using System.Xml.Serialization;
 
 namespace COMPASS.Common.Models.XmlDtos
 {

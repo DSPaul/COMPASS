@@ -1,7 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Input;
 using Avalonia.Controls.Primitives;
+using Avalonia.Input;
 
 namespace COMPASS.Infra.Avalonia.Behaviors
 {

@@ -1,20 +1,22 @@
-using COMPASS.Common.Interfaces.Services;
-using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
+using COMPASS.Common.Models.Preferences;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.Modals;
-using COMPASS.Infra.Interfaces.Services;
-using COMPASS.Infra.Models;
-using COMPASS.Infra.Models.Enums;
-using COMPASS.Infra.Models.Measuring;
-using COMPASS.Infra.Models.Progress;
-using COMPASS.Infra.Tools.Logging;
+using COMPASS.Infra.Application;
+using COMPASS.Infra.Avalonia.Modal;
+using COMPASS.Infra.IO;
+using COMPASS.Infra.Logging;
+using COMPASS.Infra.Measuring;
+using COMPASS.Infra.Notifications;
+using COMPASS.Infra.Preferences;
+using COMPASS.Infra.Progress;
 
 namespace COMPASS.Common.Services.FileSystem;
 
 public class ApplicationDataService(
+    IApplicationService applicationService,
     IIOService ioService,
     INotificationService notificationService,
     ILogger logger,
@@ -31,7 +33,7 @@ public class ApplicationDataService(
     /// </summary>
     /// 
     public static readonly string DefaultUserDataPath =
-        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Constants.DIR_ROOT);
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Directories.ROOT);
 
     private string RedirectFilePath => Path.Combine(IApplicationDataService.ApplicationDataPath, RedirectFileName);
 
@@ -122,7 +124,7 @@ public class ApplicationDataService(
         }
 
         //Hidden tab at index 0 is gone, -1 is now no selection 
-        preferencesService.Value.Preferences.UIState.StartupTab -= 1;
+        preferencesService.Value.GetPreferences<UIState>().StartupTab -= 1;
     }
 
     public async Task<bool> UpdateUserDataPath(string newPath)
@@ -131,16 +133,16 @@ public class ApplicationDataService(
 
         //make sure the new folder ends on /COMPASS
         string folderName = new DirectoryInfo(newPath).Name;
-        if (folderName != Constants.DIR_ROOT)
+        if (folderName != Directories.ROOT)
         {
-            newPath = Path.Combine(newPath, Constants.DIR_ROOT);
+            newPath = Path.Combine(newPath, Directories.ROOT);
             try
             {
                 Directory.CreateDirectory(newPath);
             }
             catch (Exception ex)
             {
-                logger.Error($"Failed to create the {Constants.DIR_ROOT} folder at new data path location {newPath}", ex);
+                logger.Error($"Failed to create the {Directories.ROOT} folder at new data path location {newPath}", ex);
                 return false;
             }
         }
@@ -244,9 +246,8 @@ public class ApplicationDataService(
         //and if we bring the old data along, it has already been copied so redundant
         MainViewModel.SaveOnClose = false;
 
-        //Singleton services (repos, preferences) capture data paths at construction,
-        //so the restart below is load-bearing: removing it strands them on the old location.
-        ApplicationService.Restart(false);
+        //Restart to make sure no references to the old filepaths remain in use
+        applicationService.Restart(false);
 
         return true;
     }

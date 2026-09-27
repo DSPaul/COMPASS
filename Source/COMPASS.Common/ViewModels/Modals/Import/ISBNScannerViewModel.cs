@@ -1,19 +1,18 @@
-﻿using Avalonia.Threading;
 using Autofac.Features.Indexed;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using COMPASS.Common.DependencyInjection;
-using COMPASS.Common.Interfaces.Services;
-using COMPASS.Common.Interfaces.ViewModels;
+using COMPASS.Common.Features.ISBN;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Operations;
-using COMPASS.Common.Services;
 using COMPASS.Common.Sources;
-using COMPASS.Common.ViewModels.Components;
 using COMPASS.Common.ViewModels.Main;
+using COMPASS.Infra.Avalonia.Barcode;
+using COMPASS.Infra.Avalonia.Camera;
+using COMPASS.Infra.Avalonia.Mvvm;
+using COMPASS.Infra.DependencyInjection;
 using System.Collections.ObjectModel;
-
 namespace COMPASS.Common.ViewModels.Modals.Import
 {
     public class ISBNScannerViewModel : ViewModelBase, IModalViewModel, IConfirmable, IAsyncDisposable
@@ -59,7 +58,7 @@ namespace COMPASS.Common.ViewModels.Modals.Import
                 return;
             }
             string digits = Input.Replace("-", "").Replace(" ", "");
-            if (!ValidationService.IsValidISBN(digits))
+            if (!ISBNValidator.IsValidISBN(digits))
                 AddError(nameof(Input), "Invalid ISBN.");
         }
 
@@ -68,14 +67,14 @@ namespace COMPASS.Common.ViewModels.Modals.Import
         {
             string? digits = isbn?.Replace("-", "").Replace(" ", "");
             if (ScannedCodes.Any(code => code.ISBN == digits)) return;
-            if (!ValidationService.IsValidISBN(digits)) return;
+            if (!ISBNValidator.IsValidISBN(digits)) return;
             var scannedISBN = new ScannedISBN(_isbnSource, digits);
             ScannedCodes.Add(scannedISBN);
         }
         private bool CanAddISBN(string? isbn)
         {
             string? digits = isbn?.Replace("-", "").Replace(" ", "");
-            return ValidationService.IsValidISBN(digits);
+            return ISBNValidator.IsValidISBN(digits);
         }
 
         public RelayCommand<ScannedISBN> RemoveCommand => field ??= new(RemoveScannedCode);
@@ -129,10 +128,10 @@ namespace COMPASS.Common.ViewModels.Modals.Import
                     var frame = VideoCaptureViewModel?.CurrentFrame;
                     if (frame == null) return;
 
-                    using var frameCopy = frame.Copy(); // safe snapshot — decouples decode from CurrentFrame's lifecycle
+                    using var frameCopy = frame.Copy(); // safe snapshot � decouples decode from CurrentFrame's lifecycle
                     if (frameCopy == null) return;
 
-                    var decoded = await Task.Run(() => _barcodeDecoderService.DecodeIsbn(frameCopy));
+                    var decoded = await Task.Run(() => _barcodeDecoderService.DecodeISBN(frameCopy));
                     if (!string.IsNullOrEmpty(decoded))
                     {
                         AddISBN(decoded);

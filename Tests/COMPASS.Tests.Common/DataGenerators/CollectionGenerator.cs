@@ -1,4 +1,3 @@
-﻿using System.Collections.ObjectModel;
 using COMPASS.Common.Models;
 
 namespace COMPASS.Tests.Common.DataGenerators;

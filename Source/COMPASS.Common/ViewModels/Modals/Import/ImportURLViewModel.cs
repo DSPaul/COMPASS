@@ -1,15 +1,16 @@
-﻿using CommunityToolkit.Mvvm.Input;
 using Autofac.Features.Indexed;
-using COMPASS.Common.DependencyInjection;
-using COMPASS.Common.Interfaces.ViewModels;
-using COMPASS.Common.Operations;
+using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
-using COMPASS.Common.Services.StateManagers;
+using COMPASS.Common.Operations;
 using COMPASS.Common.Sources;
 using COMPASS.Common.ViewModels.Import;
 using COMPASS.Common.ViewModels.Modals.Edit;
-using COMPASS.Infra.Tools.Logging;
+using COMPASS.Infra.Avalonia.Modal;
+using COMPASS.Infra.Avalonia.Mvvm;
+using COMPASS.Infra.DependencyInjection;
+using COMPASS.Infra.Logging;
+using COMPASS.Infra.Web;
 
 namespace COMPASS.Common.ViewModels.Modals.Import
 {

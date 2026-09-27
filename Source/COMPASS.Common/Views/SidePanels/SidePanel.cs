@@ -1,4 +1,4 @@
-﻿using Avalonia;
+using Avalonia;
 using Avalonia.Controls;
 
 namespace COMPASS.Common.Views.SidePanels

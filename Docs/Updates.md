@@ -25,9 +25,9 @@ UpdateManager (startup + every 6h)
 
 ## Components
 
-**`UpdateManager`** (`Services/StateManagers/UpdateManager.cs`) — orchestrates the check loop (immediately on startup, then via a 6-hour `PeriodicTimer`). Raises `OnUpdateFound` when new updates exist, clears `<appdata>/updates` when none do, and hosts the SHA256 verification (`IsChecksumCorrect`). `ExplicitCheckUpdates()` is the manual "Check for Updates" trigger; it resets `NotifiedUpdates` so the dialog can show again, and notifies if no updates were found.
+**`UpdateManager`** (`COMPASS.Infra/Updates/UpdateManager.cs`, registered in `InfraModule`) — orchestrates the check loop (immediately on startup, then via a 6-hour `PeriodicTimer`). Raises `OnUpdateFound` when new updates exist, clears `<appdata>/updates` when none do, and hosts the SHA256 verification (`IsChecksumCorrect`). `ExplicitCheckUpdates()` is the manual "Check for Updates" trigger; it resets `NotifiedUpdates` so the dialog can show again, and notifies if no updates were found.
 
-**`IUpdateService`** (`Infra/Interfaces/Services/IUpdateService.cs`) with shared base `UpdateServiceBase` (`Services/UpdateServiceBase.cs`) — platform-agnostic logic:
+**`IUpdateService`** (`COMPASS.Infra/Updates/IUpdateService.cs`) with shared base `UpdateServiceBase` (`COMPASS.Infra/Updates/UpdateServiceBase.cs`) — platform-agnostic logic:
 - `CheckForUpdates(includePrerelease)` — fetches releases, parses tags as semantic versions, keeps only those newer than the running version.
 - `OnUpdatesFound(updates)` — pre-downloads the installer, shows the update dialog unless the version was already notified (`NotifiedUpdates`), then calls `HandleUpdate` on confirmation.
 - `HandleUpdate(update)` — abstract, platform-specific.
@@ -40,7 +40,7 @@ Shared helpers download assets with SHA256 checksum verification (checksum from 
 
 ## Preferences
 
-`UpdatePreferences` (`Models/Preferences/UpdatePreferences.cs`), stored in the main `Preferences` JSON:
+`UpdatePreferences` (`COMPASS.Infra/Updates/UpdatePreferences.cs`, an `IPreferences` section read via `IPreferencesService.GetPreferences<UpdatePreferences>()`), stored in the main `Preferences` XML file:
 
 | Property | Default | Purpose |
 |---|---|---|

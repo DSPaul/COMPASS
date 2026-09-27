@@ -14,14 +14,14 @@ This means the Model is always the source of truth, and the ViewModel is a proje
 
 **File:** `ViewModels/ViewModelBase.cs`
 
-All view-models inherit from this. It provides:
+All domain view-models inherit from this. It derives from the generic `ValidatableViewModelBase` (`COMPASS.Infra.Avalonia/Wizard/ValidatableViewModelBase.cs`), which supplies the validation infrastructure; `ViewModelBase` itself only adds the domain shortcut `ActiveCollection`. Generic infra view-models (e.g. `WizardViewModel`) derive from `ValidatableViewModelBase` directly and therefore have no `ActiveCollection`.
 
-| Feature | Description |
-|---|---|
-| `INotifyDataErrorInfo` | Built-in validation infrastructure with per-property error tracking. |
-| `AddValidation(propertyName, validator)` | Registers a validation method for a property. Called automatically when that property changes. |
-| `Validate(propertyName)` | Clears previous errors, runs the validator, and if the VM implements `IConfirmable`, updates the confirm button's `CanExecute`. |
-| `ActiveCollection` | Convenience property to reach the current tab's `CodexCollection`. |
+| Feature | Provided by | Description |
+|---|---|---|
+| `INotifyDataErrorInfo` | `ValidatableViewModelBase` | Built-in validation infrastructure with per-property error tracking. |
+| `AddValidation(propertyName, validator)` | `ValidatableViewModelBase` | Registers a validation method for a property. Called automatically when that property changes. |
+| `Validate(propertyName)` | `ValidatableViewModelBase` | Clears previous errors, runs the validator, and if the VM implements `IConfirmable`, updates the confirm button's `CanExecute`. |
+| `ActiveCollection` | `ViewModelBase` | Convenience property to reach the current tab's `CodexCollection`. |
 
 ### `ModelViewModelBase<TModel>`
 
@@ -97,7 +97,7 @@ Rules:
 
 1. **Primary constructor = injected services only; `Create` parameters = runtime data only.** Services are long-lived and come from the container; runtime data (models, parent VMs, ids, flags) is short-lived and comes from the caller. Never mix them.
 2. **No interfaces on factories.** Factories are concrete classes; tests construct them directly with mocks (`new CodexViewModelFactory(new MockLogger(), ...)`).
-3. **`[Factory]` + auto-registration.** The attribute marks the class for `FactoryRegistrar.RegisterFactories`, which scans the assembly and registers every factory as self (transient, the Autofac default) — called from `CommonModule`, `MockModule`, and the UI test harness. Never register a factory by hand.
+3. **`[Factory]` + auto-registration.** The attribute (`COMPASS.Infra/DependencyInjection/FactoryAttribute.cs`) marks the class for `RegisterFactories(assembly)`, which scans the given assembly and registers every factory as self (transient, the Autofac default). `CommonModule` calls it for the Common, Infra and Infra.Avalonia assemblies; `MockModule` and the UI test harness call it too. Never register a factory by hand.
 4. **Factories hold `Lazy<T>`, VMs take concrete services.** When a creation graph cycles, the `Lazy` lives on the factory and is resolved (`.Value`) inside `Create` — never in the VM constructor. VMs stay directly test-constructible and never know a cycle existed.
 
 ## Operations classes
@@ -115,7 +115,8 @@ Not every ViewModel wraps a single model:
 | `FilterViewModel` | Filters are immutable value objects — no property changes to forward. Wraps a `Filter` but does not inherit `ModelViewModelBase`. |
 | `FiltersViewModel` | Manages a _collection_ of filters, not a single model instance. Inherits `ViewModelBase` directly. |
 | `MainViewModel`, `TabsViewModel` | Orchestration VMs with no corresponding single model. |
-| `WizardViewModel`, `SettingsViewModel` | Modal/workflow VMs that compose multiple models. |
+| `WizardViewModel` | Generic Infra.Avalonia wizard base; derives from `ValidatableViewModelBase`, not `ViewModelBase`. |
+| `SettingsViewModel` | Modal/workflow VM that composes multiple models. |
 
 ## Summary of rules
 

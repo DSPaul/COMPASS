@@ -10,7 +10,7 @@ This guarantees that partially edited or invalid data never leaks into the live 
 
 ## The `ICloneable<T>` contract
 
-**File:** `Infra/Models/Interfaces/IClonable.cs`
+**File:** `Source/COMPASS.Infra/Objects/ICloneable.cs`
 
 Every editable model implements `ICloneable<T>`, which declares just two methods:
 

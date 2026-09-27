@@ -1,20 +1,21 @@
-﻿using Avalonia.Threading;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Input;
-using COMPASS.Common.DependencyInjection;
-using COMPASS.Common.Interfaces.Services;
-using COMPASS.Common.Interfaces.Storage;
-using COMPASS.Common.Interfaces.ViewModels;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Common.Models.Preferences;
-using COMPASS.Common.Services;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels.Import;
 using COMPASS.Common.ViewModels.Main;
-using COMPASS.Infra.Interfaces.Services;
-using COMPASS.Infra.Models;
-using COMPASS.Infra.Models.Enums;
-using COMPASS.Infra.Tools.Logging;
+using COMPASS.Infra.Application;
+using COMPASS.Infra.Avalonia.Files;
+using COMPASS.Infra.Avalonia.Mvvm;
+using COMPASS.Infra.Collections;
+using COMPASS.Infra.DependencyInjection;
+using COMPASS.Infra.IO;
+using COMPASS.Infra.Logging;
+using COMPASS.Infra.Notifications;
+using COMPASS.Infra.Preferences;
+using COMPASS.Infra.Updates;
 using System.Collections.ObjectModel;
 
 namespace COMPASS.Common.ViewModels.Modals
@@ -22,6 +23,7 @@ namespace COMPASS.Common.ViewModels.Modals
     public class SettingsViewModel : ViewModelBase, IModalViewModel, IDisposable
     {
         private readonly ILogger _logger;
+        private readonly IApplicationService _applicationService;
         private readonly IApplicationDataService _applicationDataService;
         private readonly IIOService _ioService;
         private readonly IPreferencesService _preferencesService;
@@ -34,6 +36,7 @@ namespace COMPASS.Common.ViewModels.Modals
 
         public SettingsViewModel(
             ILogger logger,
+            IApplicationService applicationService,
             IApplicationDataService applicationDataService,
             IIOService ioService,
             IPreferencesService preferencesService,
@@ -49,6 +52,7 @@ namespace COMPASS.Common.ViewModels.Modals
             SelectedTabIndex = tabIndex >= 0 ? tabIndex : 0;
 
             _logger = logger;
+            _applicationService = applicationService;
             _applicationDataService = applicationDataService;
             _ioService = ioService;
             _preferencesService = preferencesService;
@@ -133,8 +137,6 @@ namespace COMPASS.Common.ViewModels.Modals
         
         #region Load and Save Settings
 
-        public Preferences Preferences => _preferencesService.Preferences;
-
         private void ApplyPreferences()
         {
             if (SelectedCollection == null) return;
@@ -161,22 +163,25 @@ namespace COMPASS.Common.ViewModels.Modals
 
         public bool PreferOnlineSource
         {
-            get => _preferencesService.Preferences.OpenCodexPriority.First().Id == Preferences.ONLINE_SOURCE_PRIORITY_ID;
+            get => _preferencesService.GetPreferences<Preferences>().OpenCodexPriority.First().Id == Preferences.ONLINE_SOURCE_PRIORITY_ID;
             set
             {
                 if (value == PreferOnlineSource) return;
                 //If the value changed, we can just switch the order around, because there are only 2 options
-                _preferencesService.Preferences.OpenCodexPriority = new(_preferencesService.Preferences.OpenCodexPriority.Reverse());
+                var preferences = _preferencesService.GetPreferences<Preferences>();
+                preferences.OpenCodexPriority = new(preferences.OpenCodexPriority.Reverse());
                 OnPropertyChanged();
             }
         }
+
+        public UIState UIPreferences => _preferencesService.GetPreferences<UIState>();
 
         #region Manage Data
 
         #region Data Path 
 
         public string UserDataPath => _applicationDataService.UserDataPath;
-        public string LogsPath => Path.Combine(IApplicationDataService.ApplicationDataPath, Models.Constants.DIR_LOGS);
+        public string LogsPath => Path.Combine(IApplicationDataService.ApplicationDataPath, Directories.LOGS);
 
         public AsyncRelayCommand ChangeDataPathCommand => field ??= new(ChooseNewDataPath);
         private async Task ChooseNewDataPath()
@@ -217,22 +222,22 @@ namespace COMPASS.Common.ViewModels.Modals
 
         public bool CheckForUpdatesOnStartup
         {
-            get => _preferencesService.Preferences.UpdatePreferences.CheckForUpdates;
+            get => _preferencesService.GetPreferences<UpdatePreferences>().CheckForUpdates;
             set
             {
                 if (value == CheckForUpdatesOnStartup) return;
-                _preferencesService.Preferences.UpdatePreferences.CheckForUpdates = value;
+                _preferencesService.GetPreferences<UpdatePreferences>().CheckForUpdates = value;
                 OnPropertyChanged();
             }
         }
 
         public bool IncludePrereleaseUpdates
         {
-            get => _preferencesService.Preferences.UpdatePreferences.IncludePrerelease;
+            get => _preferencesService.GetPreferences<UpdatePreferences>().IncludePrerelease;
             set
             {
                 if (value == IncludePrereleaseUpdates) return;
-                _preferencesService.Preferences.UpdatePreferences.IncludePrerelease = value;
+                _preferencesService.GetPreferences<UpdatePreferences>().IncludePrerelease = value;
                 OnPropertyChanged();
             }
         }
@@ -326,10 +331,10 @@ namespace COMPASS.Common.ViewModels.Modals
 
         public bool AutoLinkFolderTagSameName
         {
-            get => _preferencesService.Preferences.AutoLinkFolderTagSameName;
+            get => _preferencesService.GetPreferences<Preferences>().AutoLinkFolderTagSameName;
             set
             {
-                _preferencesService.Preferences.AutoLinkFolderTagSameName = value;
+                _preferencesService.GetPreferences<Preferences>().AutoLinkFolderTagSameName = value;
                 OnPropertyChanged();
             }
         }
@@ -338,7 +343,7 @@ namespace COMPASS.Common.ViewModels.Modals
         #endregion
 
         #region Tab: Metadata
-        public List<CodexProperty> MetadataPreferences => Preferences.ImportableCodexProperties.OrderBy(x => x.Name).ToList();
+        public List<CodexProperty> MetadataPreferences => _preferencesService.GetPreferences<Preferences>().ImportableCodexProperties.OrderBy(x => x.Name).ToList();
         #endregion
 
         #region Tab: Tools
@@ -346,7 +351,7 @@ namespace COMPASS.Common.ViewModels.Modals
         #endregion
         
         #region Tab: About
-        public string Version => "Version: " + ApplicationService.GetVersion();
+        public string Version => "Version: " + _applicationService.Version;
 
         public AsyncRelayCommand CheckForUpdatesCommand => field ??= new(CheckForUpdates);
         private async Task CheckForUpdates()
@@ -371,6 +376,7 @@ namespace COMPASS.Common.ViewModels.Modals
 
         public void Dispose()
         {
+            ApplyPreferences();
             BanishedPaths.CollectionChanged -= OnBanishedPathsChanged;
             _selectedCollectionHandle?.Dispose();
             ToolsVM.Dispose();
@@ -380,6 +386,7 @@ namespace COMPASS.Common.ViewModels.Modals
     [Factory]
     public class SettingsViewModelFactory(
         ILogger logger,
+        IApplicationService applicationService,
         IApplicationDataService applicationDataService,
         IIOService ioService,
         IPreferencesService preferencesService,
@@ -391,7 +398,7 @@ namespace COMPASS.Common.ViewModels.Modals
         CollectionManager collectionManager)
     {
         public SettingsViewModel Create(string tabToOpen = "")
-            => new(logger, applicationDataService, ioService, preferencesService, filesService, notificationService, updateManager,
+            => new(logger, applicationService, applicationDataService, ioService, preferencesService, filesService, notificationService, updateManager,
                    importFilesViewModelFactory, toolsViewModelFactory, collectionManager, tabToOpen);
     }
 }

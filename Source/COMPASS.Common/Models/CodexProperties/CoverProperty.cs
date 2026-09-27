@@ -1,6 +1,4 @@
-﻿using COMPASS.Common.Interfaces.Services;
-using COMPASS.Common.Services;
-using COMPASS.Infra.Tools;
+using COMPASS.Common.Interfaces.Services;
 using ImageMagick;
 
 namespace COMPASS.Common.Models.CodexProperties

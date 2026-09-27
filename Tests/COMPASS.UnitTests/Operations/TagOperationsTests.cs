@@ -1,7 +1,7 @@
 using Avalonia.Media;
 using COMPASS.Common.Models;
 using COMPASS.Common.Operations;
-using COMPASS.Infra.Models;
+using COMPASS.Infra.Collections;
 
 namespace COMPASS.UnitTests.Operations
 {

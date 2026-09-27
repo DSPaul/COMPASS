@@ -1,6 +1,5 @@
-﻿using Avalonia.Platform.Storage;
-using COMPASS.Common.Interfaces.Services;
-using COMPASS.Common.Models;
+using Avalonia.Platform.Storage;
+using COMPASS.Infra.Avalonia.Files;
 
 namespace COMPASS.Tests.Common.Mocks
 {
@@ -27,13 +26,6 @@ namespace COMPASS.Tests.Common.Mocks
             window.Show();
             return await window.StorageProvider.TryGetFileFromPathAsync(tempFilePath);
         }
-
-        public FilePickerFileType SatchelExtensionFilter =>
-            new("COMPASS Satchel File")
-            {
-                Patterns = [$"*{Constants.SatchelExtension}"]
-            };
-
 
         public FilePickerFileType ZipExtensionFilter =>
             new("Zip file")

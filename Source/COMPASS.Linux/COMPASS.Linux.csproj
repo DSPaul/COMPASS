@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <AssemblyName>COMPASS</AssemblyName>
@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avalonia.Desktop" Version="12.1.2" />
+    <PackageReference Include="Avalonia.Desktop" Version="12.1.3" />
     <PackageReference Include="HotAvalonia" Version="3.1.5" PrivateAssets="All" />
     <PackageReference Include="OpenCvSharp5.official.runtime.linux-x64.slim" Version="5.0.0.20260905" />
   </ItemGroup>

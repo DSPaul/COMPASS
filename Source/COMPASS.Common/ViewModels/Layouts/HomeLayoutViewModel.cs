@@ -1,12 +1,12 @@
-﻿using Avalonia.Threading;
-using COMPASS.Common.Interfaces.Services;
+using Avalonia.Threading;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Models.Preferences;
 using COMPASS.Common.Operations;
 using COMPASS.Common.ViewModels.Import;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.ModelVMs;
-using COMPASS.Infra.Avalonia.ExtensionMethods;
+using COMPASS.Infra.Avalonia.Threading;
+using COMPASS.Infra.Preferences;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 
@@ -95,7 +95,7 @@ namespace COMPASS.Common.ViewModels.Layouts
         CodexCollectionOperations collectionOperations) : LayoutViewModelFactoryBase
     {
         public override LayoutViewModel Create(CollectionTabVM tabVm) => new HomeLayoutViewModel(
-            preferencesService.Preferences.HomeLayoutPreferences, codexInfoVmFactory,
+            preferencesService.GetPreferences<HomeLayoutPreferences>(), codexInfoVmFactory,
             importFilesVmFactory, collectionOperations, tabVm);
     }
 }

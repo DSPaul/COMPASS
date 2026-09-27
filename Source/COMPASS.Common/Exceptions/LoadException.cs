@@ -1,5 +1,3 @@
-using System;
-
 namespace COMPASS.Common.Exceptions;
 
 public class LoadException : Exception

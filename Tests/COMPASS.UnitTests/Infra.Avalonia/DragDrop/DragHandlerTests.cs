@@ -1,8 +1,7 @@
 using Avalonia.Input;
+using COMPASS.Infra.Avalonia.DragDrop;
 using Border = global::Avalonia.Controls.Border;
 using Control = global::Avalonia.Controls.Control;
-using COMPASS.Infra.Avalonia.DragDrop;
-using COMPASS.Infra.Avalonia.ExtensionMethods;
 
 namespace COMPASS.UnitTests.Infra.Avalonia.DragDrop;
 

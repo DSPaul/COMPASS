@@ -1,9 +1,10 @@
-﻿using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services;
-using COMPASS.Infra.ExtensionMethods;
-using COMPASS.Infra.Tools.Logging;
+using COMPASS.Infra.Logging;
+using COMPASS.Infra.Preferences;
+using COMPASS.Infra.Text;
+using COMPASS.Infra.Web;
 using ImageMagick;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
@@ -80,7 +81,6 @@ namespace COMPASS.Common.Sources
                 IWebElement frame = driver.FindElement(frameSelector);
                 System.Drawing.Point location = frame.Location;
 
-                //TODO add cancelationtoken when redoing background processs system
                 wait.Until(d => d.SwitchTo().Frame(frame), cancellationToken);
                 wait.Until(d => d.FindElement(pageSelector)?.Displayed == true, cancellationToken);
 

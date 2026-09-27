@@ -1,19 +1,21 @@
-﻿using Autofac.Features.Indexed;
+using Autofac.Features.Indexed;
+using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Common.Models.Enums;
+using COMPASS.Common.Models.Preferences;
 using COMPASS.Common.Sources;
-using COMPASS.Infra.Models.Measuring;
-using COMPASS.Infra.Models.Progress;
+using COMPASS.Common.ViewModels.Modals;
+using COMPASS.Infra.Avalonia.Modal;
+using COMPASS.Infra.IO;
+using COMPASS.Infra.Logging;
+using COMPASS.Infra.Measuring;
+using COMPASS.Infra.Preferences;
+using COMPASS.Infra.Progress;
 using ImageMagick;
 using ImageMagick.Factories;
 using OpenQA.Selenium;
 using System.Diagnostics;
-using COMPASS.Common.Interfaces.Services;
-using COMPASS.Common.Services.StateManagers;
-using COMPASS.Common.ViewModels.Modals;
-using COMPASS.Infra.Tools;
-using COMPASS.Infra.Tools.Logging;
 
 namespace COMPASS.Common.Services
 {
@@ -38,10 +40,11 @@ namespace COMPASS.Common.Services
         public async Task GetAndApplyCover(Codex codex, ChooseMetadataViewModel? chooseMetadataViewModel = null, CancellationToken ct = default)
         {
             //TODO add visual feedback while fetching, like a spinner on the thumbnail
+            Preferences preferences = preferencesService.GetPreferences<Preferences>();
             IMagickImage<byte>? coverFromSource = null;
             try
             {
-                CodexProperty coverProp = preferencesService.Preferences.ImportableCodexProperties.First(prop => prop.Name == nameof(SourceMetadata.Cover));
+                CodexProperty coverProp = preferences.ImportableCodexProperties.First(prop => prop.Name == nameof(SourceMetadata.Cover));
 
                 switch (coverProp.OverwriteMode)
                 {

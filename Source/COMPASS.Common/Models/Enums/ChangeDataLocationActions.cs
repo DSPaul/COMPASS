@@ -1,7 +1,3 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace COMPASS.Common.Models.Enums
 {
     public enum ChangeDataLocationActions

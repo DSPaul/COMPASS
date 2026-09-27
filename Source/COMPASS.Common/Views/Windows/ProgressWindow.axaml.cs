@@ -1,7 +1,7 @@
-using System.Collections.Specialized;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using COMPASS.Common.Services.StateManagers;
+using COMPASS.Infra.Progress;
+using System.Collections.Specialized;
 
 namespace COMPASS.Common.Views.Windows;
 

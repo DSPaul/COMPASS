@@ -1,19 +1,20 @@
-﻿using Avalonia.Input;
+using Autofac.Features.Indexed;
+using Avalonia.Input;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
-using Autofac.Features.Indexed;
 using COMPASS.Common.Adorners;
-using COMPASS.Common.DependencyInjection;
-using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
+using COMPASS.Common.Models.Preferences;
 using COMPASS.Common.Operations;
 using COMPASS.Common.ViewModels.Import;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.ModelVMs;
 using COMPASS.Infra.Avalonia.DragDrop;
-using COMPASS.Infra.Avalonia.ExtensionMethods;
-using COMPASS.Infra.Models;
+using COMPASS.Infra.Avalonia.Threading;
+using COMPASS.Infra.Collections;
+using COMPASS.Infra.DependencyInjection;
+using COMPASS.Infra.Preferences;
 
 namespace COMPASS.Common.ViewModels.Layouts
 {
@@ -141,8 +142,9 @@ namespace COMPASS.Common.ViewModels.Layouts
     {
         public LayoutViewModel Create(CollectionTabVM tabVm, CodexLayout? layout = null)
         {
-            CodexLayout resolvedLayout = layout ?? preferencesService.Preferences.UIState.StartupLayout;
-            preferencesService.Preferences.UIState.StartupLayout = resolvedLayout;
+            var UIstate = preferencesService.GetPreferences<UIState>();
+            CodexLayout resolvedLayout = layout ?? UIstate.StartupLayout;
+            UIstate.StartupLayout = resolvedLayout;
             
             if (!layoutFactories.TryGetValue(resolvedLayout.ToString(), out LayoutViewModelFactoryBase? layoutFactory))
             {

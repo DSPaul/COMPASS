@@ -1,17 +1,16 @@
-using System.Diagnostics;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Threading;
 using COMPASS.ApiClients.Compass;
 using COMPASS.ApiClients.Compass.Models;
-using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
-using COMPASS.Common.Services;
-using COMPASS.Common.Services.StateManagers;
-using COMPASS.Infra.Models;
-using COMPASS.Infra.Models.Enums;
-using COMPASS.Infra.Tools;
-using COMPASS.Infra.Tools.Logging;
+using COMPASS.Infra.Application;
+using COMPASS.Infra.Avalonia.Modal;
+using COMPASS.Infra.DependencyInjection;
+using COMPASS.Infra.IO;
+using COMPASS.Infra.Logging;
+using COMPASS.Infra.Notifications;
+using System.Diagnostics;
 
 namespace COMPASS.Common.Tools;
 
@@ -74,7 +73,7 @@ public static class CrashHandler
         
         //Restart app with exception as argument
         var currentExecutablePath = Environment.ProcessPath;
-        string[] args = [$"--{Constants.CmdArgNotifyCrashed}", $"\"{ex}\""];
+        string[] args = [$"--{CmdLineArgumentService.CMD_ARG_NotifyCrashed}", $"\"{ex}\""];
         if (currentExecutablePath != null) Process.Start(currentExecutablePath, args);
 
         FlushLogs();
@@ -105,7 +104,7 @@ public static class CrashHandler
         string message = $"An unexpected error ocurred.\n \n" +
                          $"You can help improve COMPASS by reporting the issue on either discord, reddit, the github repo or by filling in an anonymous Google form. \n \n" +
                          $"Links to all of these can be found at {Constants.LinkTreeURL}. \n \n" +
-                         $"Please include the log file located at {IApplicationDataService.ApplicationDataPath}{Path.DirectorySeparatorChar}logs";
+                         $"Please include the log file located at {Path.Combine(IApplicationDataService.ApplicationDataPath, Directories.LOGS)}";
 
         Notification crashNotification = new($"COMPASS ran into a critical error.", message, Severity.Error);
         crashNotification.Details = exceptionMessage;
@@ -139,7 +138,7 @@ public static class CrashHandler
             {
                 var request = new CrashReport
                 {
-                    Version = ApplicationService.Version,
+                    Version = ServiceResolver.Resolve<IApplicationService>().Version,
                     OperatingSystem = System.Runtime.InteropServices.RuntimeInformation.OSDescription,
                     Error = exceptionMessage
                 };

@@ -1,4 +1,4 @@
-﻿using COMPASS.Infra.Tools.Logging;
+using COMPASS.Infra.Logging;
 
 namespace COMPASS.Tests.Common.Mocks;
 

@@ -2,10 +2,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:models="using:COMPASS.Infra.Models"
-        xmlns:enums="using:COMPASS.Infra.Models.Enums"
+        xmlns:models="using:COMPASS.Infra.Notifications"
+        xmlns:enums="using:COMPASS.Infra.Logging"
+        xmlns:notifications="using:COMPASS.Infra.Notifications"
         xmlns:converters="using:COMPASS.Infra.Avalonia.Converters"
-        xmlns:specialConverters="using:COMPASS.Common.Converters"
+        xmlns:specialConverters="using:COMPASS.Infra.Avalonia.Converters"
         xmlns:md="using:MarkView.Avalonia"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="COMPASS.Common.Views.Windows.NotificationWindow"
@@ -41,13 +42,13 @@
             </Border>
             <Panel Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Margin="20, 20, 0, 0" Width="60" Height="60">
                 <Svg Path="/Assets/Info.svg"
-                     IsVisible="{Binding Severity, Converter={x:Static converters:ObjectConverters.AreEqual},
+                     IsVisible="{Binding Severity, Converter={x:Static ObjectConverters.Equal},
                      ConverterParameter={x:Static enums:Severity.Info}}" />
                 <Svg Path="/Assets/Warning.svg"
-                     IsVisible="{Binding Severity, Converter={x:Static converters:ObjectConverters.AreEqual},
+                     IsVisible="{Binding Severity, Converter={x:Static ObjectConverters.Equal},
                      ConverterParameter={x:Static enums:Severity.Warning}}" />
                 <Svg Path="/Assets/Error.svg"
-                     IsVisible="{Binding Severity, Converter={x:Static converters:ObjectConverters.AreEqual},
+                     IsVisible="{Binding Severity, Converter={x:Static ObjectConverters.Equal},
                      ConverterParameter={x:Static enums:Severity.Error}}" />
             </Panel>
 
@@ -89,16 +90,16 @@
                 </StackPanel.Styles>
                 <Button Content="{Binding ConfirmText}" Click="ConfirmClick"
                         IsVisible="{Binding Actions, Converter={x:Static converters:EnumConverters.HasFlagConverter}, 
-                        ConverterParameter={x:Static enums:NotificationAction.Confirm}}"
+                        ConverterParameter={x:Static notifications:NotificationAction.Confirm}}"
                         Background="{Binding Severity, Converter={StaticResource SeverityToColorConverter}}"
                         Foreground="{StaticResource Layer0}" IsDefault="True" />
                 <Button Content="{Binding DeclineText}" Click="DeclineClick"
                         IsVisible="{Binding Actions, Converter={x:Static converters:EnumConverters.HasFlagConverter}, 
-                        ConverterParameter={x:Static enums:NotificationAction.Decline}}"
+                        ConverterParameter={x:Static notifications:NotificationAction.Decline}}"
                         BorderBrush="{StaticResource TextColor}" BorderThickness="2" Background="Transparent" />
                 <Button Content="{Binding CancelText}" Click="CancelClick"
                         IsVisible="{Binding Actions, Converter={x:Static converters:EnumConverters.HasFlagConverter}, 
-                        ConverterParameter={x:Static enums:NotificationAction.Cancel}}"
+                        ConverterParameter={x:Static notifications:NotificationAction.Cancel}}"
                         BorderBrush="{StaticResource TextColor}" BorderThickness="2" Background="Transparent" />
             </StackPanel>
         </Grid>

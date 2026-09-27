@@ -1,8 +1,8 @@
-﻿using Avalonia.Media;
+using Avalonia.Media;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Common.Models.Preferences;
-using COMPASS.Infra.ExtensionMethods;
+using COMPASS.Infra.Collections;
 using System.Collections.ObjectModel;
 using System.Text;
 

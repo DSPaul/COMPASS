@@ -1,9 +1,7 @@
-using System.Collections;
-using System.Linq;
 using Avalonia.Controls;
-using COMPASS.Common.Models;
 using COMPASS.Common.ViewModels.Layouts;
 using COMPASS.Common.ViewModels.ModelVMs;
+using System.Collections;
 
 namespace COMPASS.Common.Views.Layouts;
 

@@ -1,5 +1,3 @@
-﻿using Avalonia.Media;
-
 namespace COMPASS.Common.Models.Filters
 {
     public class FileExtensionFilter : Filter

@@ -1,10 +1,9 @@
-﻿using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Models.Preferences;
 using COMPASS.Common.Operations;
 using COMPASS.Common.ViewModels.Import;
 using COMPASS.Common.ViewModels.Main;
-using COMPASS.Common.ViewModels.ModelVMs;
+using COMPASS.Infra.Preferences;
 
 namespace COMPASS.Common.ViewModels.Layouts
 {
@@ -32,7 +31,7 @@ namespace COMPASS.Common.ViewModels.Layouts
         CodexCollectionOperations collectionOperations) : LayoutViewModelFactoryBase
     {
         public override LayoutViewModel Create(CollectionTabVM tabVm) => new CardLayoutViewModel(
-            preferencesService.Preferences.CardLayoutPreferences, codexInfoVmFactory,
+            preferencesService.GetPreferences<CardLayoutPreferences>(), codexInfoVmFactory,
             importFilesVmFactory, collectionOperations, tabVm);
     }
 }

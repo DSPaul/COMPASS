@@ -1,12 +1,13 @@
-﻿using System.Diagnostics;
-using System.Net;
-using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
-using COMPASS.Infra.ExtensionMethods;
-using COMPASS.Infra.Tools.Logging;
+using COMPASS.Infra.Collections;
+using COMPASS.Infra.Logging;
+using COMPASS.Infra.Preferences;
+using COMPASS.Infra.Web;
 using HtmlAgilityPack;
 using ImageMagick;
+using System.Diagnostics;
+using System.Net;
 
 namespace COMPASS.Common.Sources
 {

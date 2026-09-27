@@ -1,4 +1,5 @@
 using COMPASS.Common.ViewModels.ModelVMs;
+using COMPASS.Infra.Collections;
 
 namespace COMPASS.Common.Models.Hierarchy;
 

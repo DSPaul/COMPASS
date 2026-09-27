@@ -5,8 +5,9 @@
              xmlns:vm="using:COMPASS.Common.ViewModels.Layouts"
              xmlns:modelVm="using:COMPASS.Common.ViewModels.ModelVMs"
              xmlns:behav="using:COMPASS.Infra.Avalonia.Behaviors"
+             xmlns:dragdrop="using:COMPASS.Infra.Avalonia.DragDrop"
              xmlns:conv="using:COMPASS.Infra.Avalonia.Converters"
-             xmlns:controls="using:COMPASS.Common.Controls"
+             xmlns:controls="using:COMPASS.Infra.Avalonia.Controls"
              xmlns:materialDesign="using:Material.Icons.Avalonia"
              xmlns:layouts="clr-namespace:COMPASS.Common.Views.Layouts"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
@@ -47,8 +48,8 @@
                 <Setter Property="Background" Value="Transparent"/>
             </Style>
             <Style Selector="DataGridRow" x:DataType="modelVm:CodexViewModel">
-                <Setter Property="behav:DropBehavior.IsDropTarget" Value="True" />
-                <Setter Property="behav:DropBehavior.DropManager" Value="{Binding DropManager}" />
+                <Setter Property="dragdrop:DropBehavior.IsDropTarget" Value="True" />
+                <Setter Property="dragdrop:DropBehavior.DropManager" Value="{Binding DropManager}" />
             </Style>
             <Style Selector="TextBlock">
                 <Setter Property="TextWrapping" Value="Wrap" />

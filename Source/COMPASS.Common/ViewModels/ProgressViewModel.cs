@@ -1,9 +1,8 @@
-using System.Collections.ObjectModel;
-using System.ComponentModel;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Input;
-using COMPASS.Common.Services.StateManagers;
-using COMPASS.Infra.Models.Progress;
+using COMPASS.Infra.Progress;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 
 namespace COMPASS.Common.ViewModels;
 

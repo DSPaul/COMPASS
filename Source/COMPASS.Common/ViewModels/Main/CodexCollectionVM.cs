@@ -1,21 +1,19 @@
-using System.Collections.Specialized;
-using System.ComponentModel;
+using Autofac.Features.Indexed;
 using COMPASS.Common.Interfaces.Repos;
 using COMPASS.Common.Interfaces.Storage;
-using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels.Import;
 using COMPASS.Common.ViewModels.ModelVMs;
-using COMPASS.Infra.ExtensionMethods;
-using COMPASS.Infra.Interfaces.Services;
-using COMPASS.Infra.Models;
-using COMPASS.Infra.Models.Enums;
-using COMPASS.Infra.Models.Measuring;
-using COMPASS.Infra.Models.Progress;
-using COMPASS.Infra.Tools.Logging;
-using Autofac.Features.Indexed;
+using COMPASS.Infra.Collections;
+using COMPASS.Infra.DependencyInjection;
+using COMPASS.Infra.Logging;
+using COMPASS.Infra.Measuring;
+using COMPASS.Infra.Notifications;
+using COMPASS.Infra.Progress;
+using System.Collections.Specialized;
+using System.ComponentModel;
 
 namespace COMPASS.Common.ViewModels.Main;
 

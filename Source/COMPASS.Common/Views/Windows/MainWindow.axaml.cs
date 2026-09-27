@@ -1,16 +1,21 @@
-﻿using Avalonia;
+using Avalonia;
 using Avalonia.Controls;
-using COMPASS.Common.Interfaces.Services;
+using COMPASS.Common.Models.Preferences;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels.Main;
-using COMPASS.Infra.Tools;
+using COMPASS.Infra.DependencyInjection;
+using COMPASS.Infra.Preferences;
 
 namespace COMPASS.Common.Views.Windows;
 
 public partial class MainWindow : Window
 {
+    private IPreferencesService _preferencesService;
+
     public MainWindow()
     {
+        _preferencesService = ServiceResolver.Resolve<IPreferencesService>();
+
         InitializeComponent();
         ExtendClientAreaToDecorationsHint = true;
         RestoreWindowPlacement();
@@ -18,7 +23,7 @@ public partial class MainWindow : Window
 
     private void RestoreWindowPlacement()
     {
-        var windowState = ServiceResolver.Resolve<IPreferencesService>().Preferences.WindowState;
+        var windowState = _preferencesService.GetPreferences<WindowRestoreState>();
 
         Width = windowState.Width;
         Height = windowState.Height;
@@ -29,7 +34,7 @@ public partial class MainWindow : Window
 
     private void UpdateWindowPlacement()
     {
-        var windowState = ServiceResolver.Resolve<IPreferencesService>().Preferences.WindowState;
+        var windowState = _preferencesService.GetPreferences<WindowRestoreState>();
         windowState.WindowState = WindowState == WindowState.Maximized ? WindowState.Maximized : WindowState.Normal;
         if (WindowState == WindowState.Normal)
         {

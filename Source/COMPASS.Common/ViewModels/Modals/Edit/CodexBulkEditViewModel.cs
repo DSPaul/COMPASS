@@ -1,13 +1,11 @@
-﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Exceptions;
-using COMPASS.Common.Interfaces.ViewModels;
 using COMPASS.Common.Models;
-using COMPASS.Common.Models.Hierarchy;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.ModelVMs;
-using COMPASS.Infra.ExtensionMethods;
-
+using COMPASS.Infra.Avalonia.Mvvm;
+using COMPASS.Infra.Collections;
+using System.Collections.ObjectModel;
 namespace COMPASS.Common.ViewModels.Modals.Edit
 {
     public class CodexBulkEditViewModel : ViewModelBase, IConfirmable, IModalViewModel

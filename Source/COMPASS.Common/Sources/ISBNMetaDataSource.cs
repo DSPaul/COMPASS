@@ -1,12 +1,12 @@
-﻿using System.Diagnostics;
-using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
-using COMPASS.Infra.Models;
+using COMPASS.Infra.Logging;
+using COMPASS.Infra.Preferences;
+using COMPASS.Infra.Text;
+using COMPASS.Infra.Web;
 using ImageMagick;
+using System.Diagnostics;
 using System.Text.Json.Nodes;
-using COMPASS.Infra.ExtensionMethods;
-using COMPASS.Infra.Tools.Logging;
 
 namespace COMPASS.Common.Sources
 {

@@ -1,8 +1,10 @@
-using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.CodexProperties;
-using COMPASS.Infra.Models;
+using COMPASS.Common.Models.Preferences;
+using COMPASS.Infra.Collections;
+using COMPASS.Infra.DependencyInjection;
+using COMPASS.Infra.Preferences;
 
 namespace COMPASS.Common.ViewModels.Modals;
 
@@ -21,7 +23,7 @@ public class MetadataProposalViewModel : ViewModelBase, IDisposable
 
         _coverService = coverService;
 
-        ShouldUseNewValue = preferencesService.Preferences.ImportableCodexProperties
+        ShouldUseNewValue = preferencesService.GetPreferences<Preferences>().ImportableCodexProperties
                                               .ToDictionary(prop => prop.Name, prop => new ObservableKeyValuePair<CodexProperty, bool>(prop, false));
         MetadataChoiceGroupNames = ShouldUseNewValue.Keys.ToDictionary(
             propertyName => propertyName,

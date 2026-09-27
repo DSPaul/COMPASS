@@ -1,8 +1,9 @@
-﻿using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
-using COMPASS.Infra.Tools.Logging;
-using COMPASS.Infra.Tools;
+using COMPASS.Common.Models.Preferences;
+using COMPASS.Infra.IO;
+using COMPASS.Infra.Logging;
+using COMPASS.Infra.Preferences;
 using ImageMagick;
 
 namespace COMPASS.Common.Sources
@@ -35,7 +36,7 @@ namespace COMPASS.Common.Sources
 
         protected virtual List<Tag> GetMatchingTags(SourceSet sources, IList<Tag> availableTags)
         {
-            var autoLinkEnabled = Preferences.Preferences.AutoLinkFolderTagSameName;
+            var autoLinkEnabled = Preferences.GetPreferences<Preferences>().AutoLinkFolderTagSameName;
             List<Tag> matchingTags = new();
 
             // Tags based on file path

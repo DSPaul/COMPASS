@@ -1,10 +1,8 @@
-﻿using Autofac.Features.Indexed;
+using Autofac.Features.Indexed;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
-using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Sources;
-using COMPASS.Common.ViewModels.Main;
-using COMPASS.Infra.Tools;
+using COMPASS.Infra.DependencyInjection;
 
 namespace COMPASS.IntegrationTests.Common.Sources;
 

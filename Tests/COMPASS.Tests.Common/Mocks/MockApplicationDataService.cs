@@ -1,5 +1,4 @@
-using System.Threading.Tasks;
-using COMPASS.Common.Interfaces.Storage;
+using COMPASS.Infra.IO;
 
 namespace COMPASS.Tests.Common.Mocks;
 

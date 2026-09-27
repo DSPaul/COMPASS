@@ -1,5 +1,4 @@
 using Avalonia.Controls;
-using COMPASS.Common.Views.Main;
 using COMPASS.Tests.UI.ViewModels;
 
 namespace COMPASS.Tests.UI;

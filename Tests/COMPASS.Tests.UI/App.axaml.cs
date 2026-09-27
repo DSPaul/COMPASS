@@ -1,13 +1,12 @@
-﻿using Autofac;
+using Autofac;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using COMPASS.Common.DependencyInjection;
-using COMPASS.Common.Interfaces.Services;
-using COMPASS.Common.Models.Preferences;
-using COMPASS.Common.Services.StateManagers;
-using COMPASS.Infra.Tools.Logging;
-using COMPASS.Infra.Tools;
+using COMPASS.Infra.Avalonia.Modal;
+using COMPASS.Infra.DependencyInjection;
+using COMPASS.Infra.Logging;
+using COMPASS.Infra.Preferences;
 
 namespace COMPASS.Tests.UI;
 
@@ -45,8 +44,7 @@ public partial class App : Application
 
     private class InMemoryPreferencesService : IPreferencesService
     {
-        public Preferences Preferences { get; private set; } = new();
+        public T GetPreferences<T>() where T : IPreferences, new() => new T();
         public void SavePreferences() { }
-        public Preferences? LoadPreferences() => Preferences;
     }
 }

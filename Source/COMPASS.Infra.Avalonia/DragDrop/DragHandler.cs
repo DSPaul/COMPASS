@@ -1,6 +1,5 @@
-﻿using Avalonia;
+using Avalonia;
 using Avalonia.Input;
-using COMPASS.Infra.Avalonia.ExtensionMethods;
 
 namespace COMPASS.Infra.Avalonia.DragDrop
 {

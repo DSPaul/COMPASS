@@ -9,6 +9,6 @@
   <conv:PlusOneConverter x:Key="PlusOneConverter" />
   <conv:EnumForRadioBtnConverter x:Key="EnumForRadioBtnConverter" />
   <conv:CollectionUnionConverter x:Key="CollectionUnionConverter" />
-  <commonConv:SeverityToColorConverter x:Key="SeverityToColorConverter"/>
+  <conv:SeverityToColorConverter x:Key="SeverityToColorConverter"/>
   <commonConv:IsMetadataPropertyEmpty x:Key="IsMetadataPropertyEmpty" />
 </ResourceDictionary>

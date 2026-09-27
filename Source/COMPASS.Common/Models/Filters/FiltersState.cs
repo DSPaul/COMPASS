@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace COMPASS.Common.Models.Filters;
 
 public class FiltersState

@@ -1,19 +1,16 @@
 using Autofac;
 using Avalonia.Platform.Storage;
 using COMPASS.Common.DependencyInjection;
-using COMPASS.Common.Interfaces.Repos;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Filters;
 using COMPASS.Common.Repositories;
 using COMPASS.Common.Services;
-using COMPASS.Common.ViewModels;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.ModelVMs;
-using COMPASS.Infra.Models;
-using COMPASS.Infra.Tools;
+using COMPASS.Infra.Collections;
+using COMPASS.Infra.DependencyInjection;
 using COMPASS.Tests.Common;
-using COMPASS.Tests.Common.Mocks;
 using System.ComponentModel;
 
 namespace COMPASS.UnitTests.Services;
@@ -299,5 +296,11 @@ public class FilterServiceTests
         public Task ExportCollection(CodexCollection collection, IStorageFile? file, bool includeFiles, bool includeCovers) => Task.CompletedTask;
         public Task ExportTags(CodexCollection collection) => Task.CompletedTask;
         public void CompressUserDataToZip(string zipPath) { }
+
+        public FilePickerFileType SatchelExtensionFilter => field ??=
+            new("COMPASS Satchel File")
+            {
+                Patterns = [$"*{Constants.SatchelExtension}"]
+            };
     }
 }

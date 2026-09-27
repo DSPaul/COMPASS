@@ -3,7 +3,8 @@
                     xmlns:sys="using:System"
                     xmlns:materialIcons="using:Material.Icons.Avalonia"
                     xmlns:converters="using:COMPASS.Infra.Avalonia.Converters"
-                    xmlns:controls="using:COMPASS.Common.Controls">
+                    xmlns:customControls="using:COMPASS.Common.Controls"
+                    xmlns:controls="using:COMPASS.Infra.Avalonia.Controls">
     
     <!--Icon Button-->
     <ControlTheme TargetType="controls:IconButton" x:Key="IconOnly">
@@ -167,10 +168,10 @@
     </ControlTheme>
     
     <!--Include/Exclude selector-->
-    <ControlTheme TargetType="controls:FilterModeSelector"
-                  x:Key="{x:Type controls:FilterModeSelector}">
+    <ControlTheme TargetType="customControls:FilterModeSelector"
+                  x:Key="{x:Type customControls:FilterModeSelector}">
         <Setter Property="Template">
-            <ControlTemplate TargetType="controls:FilterModeSelector">
+            <ControlTemplate TargetType="customControls:FilterModeSelector">
                 <Border Classes="RadioBtnStrip"
                         HorizontalAlignment="Stretch">
                     <Grid ColumnSpacing="3" ColumnDefinitions="*, *"
@@ -341,7 +342,7 @@
                     <Grid RowDefinitions="Auto *" ColumnDefinitions="* Auto">
                         <controls:StretchingWrapPanel Grid.Row="0" Grid.Column="0">
                             <ItemsControl ItemsSource="{TemplateBinding SelectedItems, Mode=OneWay}" VerticalAlignment="Center"
-                                          IsVisible="{TemplateBinding SelectionMode, Converter={x:Static converters:ObjectConverters.AreEqual}, ConverterParameter={x:Static SelectionMode.Multiple}}">
+                                          IsVisible="{TemplateBinding SelectionMode, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:Static SelectionMode.Multiple}}">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <WrapPanel />
@@ -432,7 +433,7 @@
                 <controls:ImprovedComboBox PlaceholderText="Create item"/>
                 <ComboBox IsEditable="True" HorizontalAlignment="Stretch"></ComboBox>
                 
-                <controls:FilterModeSelector />
+                <customControls:FilterModeSelector />
 
                 <StackPanel Orientation="Horizontal">
                     <controls:IconButton Icon="About" Theme="{StaticResource IconOnly}" />

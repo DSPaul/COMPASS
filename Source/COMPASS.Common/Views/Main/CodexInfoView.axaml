@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:vm="clr-namespace:COMPASS.Common.ViewModels.Main"
-             xmlns:controls="clr-namespace:COMPASS.Common.Controls"
+             xmlns:controls="using:COMPASS.Infra.Avalonia.Controls"
              xmlns:converters="using:COMPASS.Infra.Avalonia.Converters"
              xmlns:md="using:MarkView.Avalonia"
              mc:Ignorable="d" d:DesignWidth="270" d:DesignHeight="850"

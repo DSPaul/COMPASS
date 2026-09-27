@@ -1,11 +1,11 @@
-﻿using System.Collections.ObjectModel;
-using System.Text;
 using Avalonia.Media;
 using COMPASS.Common.Models.CodexProperties;
-using COMPASS.Infra.ExtensionMethods;
-using COMPASS.Infra.Tools.Logging;
-using COMPASS.Infra.Tools;
+using COMPASS.Infra.Collections;
+using COMPASS.Infra.DependencyInjection;
+using COMPASS.Infra.Logging;
 using NuGet.Versioning;
+using System.Collections.ObjectModel;
+using System.Text;
 
 namespace COMPASS.Common.Models.XmlDtos
 {

@@ -1,8 +1,7 @@
-using COMPASS.Common.Interfaces.Storage;
-using COMPASS.Common.Models;
+using COMPASS.Infra.IO;
 using Serilog;
 using Serilog.Events;
-using ILogger = COMPASS.Infra.Tools.Logging.ILogger;
+using ILogger = COMPASS.Infra.Logging.ILogger;
 
 namespace COMPASS.Common.Tools.Logging;
 
@@ -17,7 +16,7 @@ public class SerilogLogger : ILogger, IDisposable
 
     public SerilogLogger()
     {
-        string logsDirectory = Path.Combine(IApplicationDataService.ApplicationDataPath, Constants.DIR_LOGS);
+        string logsDirectory = Path.Combine(IApplicationDataService.ApplicationDataPath, Directories.LOGS);
         Directory.CreateDirectory(logsDirectory);
 
         _log = new LoggerConfiguration()

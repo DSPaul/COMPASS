@@ -1,11 +1,11 @@
-﻿using System.ComponentModel;
-using CommunityToolkit.Mvvm.ComponentModel;
 using COMPASS.Common.Models.Enums;
+using COMPASS.Infra.Preferences;
+using System.ComponentModel;
 
 namespace COMPASS.Common.Models.Preferences
 {
     [Serializable]
-    public class UIState
+    public class UIState : IPreferences
     {
         public CodexLayout StartupLayout { get; set; } = CodexLayout.Home;
         public string StartupCollection { get; set; } = Constants.DEFAULT_COLLECTION_NAME;

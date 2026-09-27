@@ -1,24 +1,22 @@
-﻿using CommunityToolkit.Mvvm.Input;
-using COMPASS.Common.DependencyInjection;
+using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
-using COMPASS.Common.Operations;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Models.Filters;
-using COMPASS.Common.Models.Hierarchy;
+using COMPASS.Common.Operations;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.Modals;
 using COMPASS.Common.ViewModels.Modals.Edit;
 using COMPASS.Common.ViewModels.Modals.Import;
 using COMPASS.Common.ViewModels.ModelVMs;
-using COMPASS.Common.Views.Windows;
-using COMPASS.Infra.ExtensionMethods;
-using COMPASS.Infra.Interfaces.Services;
-using COMPASS.Infra.Models;
+using COMPASS.Infra.Avalonia.Modal;
+using COMPASS.Infra.Collections;
+using COMPASS.Infra.DependencyInjection;
+using COMPASS.Infra.Logging;
+using COMPASS.Infra.Notifications;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using COMPASS.Infra.Tools.Logging;
 
 namespace COMPASS.Common.ViewModels.SidePanels
 {

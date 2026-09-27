@@ -3,7 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:COMPASS.Common.ViewModels.Modals.Import"
-             xmlns:controls="using:COMPASS.Common.Controls"
+             xmlns:controls="using:COMPASS.Infra.Avalonia.Controls"
              mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="450"
              x:Class="COMPASS.Common.Views.Modals.Import.ImportURLView"
              x:DataType="vm:ImportURLViewModel" MinWidth="600" Margin="10">

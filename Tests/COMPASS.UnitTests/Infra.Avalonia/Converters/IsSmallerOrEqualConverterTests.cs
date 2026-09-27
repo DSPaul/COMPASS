@@ -1,5 +1,5 @@
-using System.Globalization;
 using COMPASS.Infra.Avalonia.Converters;
+using System.Globalization;
 
 namespace COMPASS.UnitTests.Infra.Avalonia.Converters;
 

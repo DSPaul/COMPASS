@@ -1,5 +1,3 @@
-﻿using System.IO;
-
 namespace COMPASS.Common.Models.Filters
 {
     internal class HasBrokenPathFilter : Filter

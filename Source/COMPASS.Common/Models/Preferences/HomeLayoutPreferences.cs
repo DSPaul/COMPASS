@@ -1,9 +1,10 @@
 ﻿using Avalonia;
 using CommunityToolkit.Mvvm.ComponentModel;
+using COMPASS.Infra.Preferences;
 
 namespace COMPASS.Common.Models.Preferences
 {
-    public class HomeLayoutPreferences : ObservableObject
+    public class HomeLayoutPreferences : ObservableObject, IPreferences
     {
         private double _tileWidth = 100;
         public double TileWidth

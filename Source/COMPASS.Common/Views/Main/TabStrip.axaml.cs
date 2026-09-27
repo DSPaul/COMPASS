@@ -1,8 +1,5 @@
-using System.Linq;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
-using Avalonia.Markup.Xaml;
 using COMPASS.Common.ViewModels.Main;
 
 namespace COMPASS.Common.Views.Main;

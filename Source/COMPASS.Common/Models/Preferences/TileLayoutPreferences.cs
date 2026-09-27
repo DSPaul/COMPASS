@@ -1,10 +1,10 @@
-﻿using System;
 using Avalonia;
 using CommunityToolkit.Mvvm.ComponentModel;
+using COMPASS.Infra.Preferences;
 
 namespace COMPASS.Common.Models.Preferences
 {
-    public class TileLayoutPreferences : ObservableObject
+    public class TileLayoutPreferences : ObservableObject, IPreferences
     {
         public enum DataOption
         {

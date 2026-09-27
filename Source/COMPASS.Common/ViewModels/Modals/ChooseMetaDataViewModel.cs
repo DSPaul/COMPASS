@@ -1,7 +1,7 @@
-﻿using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Models;
-using COMPASS.Infra.ExtensionMethods;
-
+using COMPASS.Infra.Avalonia.Wizard;
+using COMPASS.Infra.Collections;
+using COMPASS.Infra.DependencyInjection;
 namespace COMPASS.Common.ViewModels.Modals
 {
     public class ChooseMetadataViewModel : WizardViewModel

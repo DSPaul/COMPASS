@@ -1,8 +1,9 @@
-﻿using Autofac;
-using COMPASS.Common.Interfaces.Services;
-using COMPASS.Common.Interfaces.Storage;
-using COMPASS.Infra.Interfaces.Services;
-using COMPASS.Infra.Tools.Logging;
+using Autofac;
+using COMPASS.Infra.Avalonia.Files;
+using COMPASS.Infra.IO;
+using COMPASS.Infra.Logging;
+using COMPASS.Infra.Notifications;
+using COMPASS.Infra.Preferences;
 using COMPASS.Tests.Common.Mocks;
 
 namespace COMPASS.Tests.Common

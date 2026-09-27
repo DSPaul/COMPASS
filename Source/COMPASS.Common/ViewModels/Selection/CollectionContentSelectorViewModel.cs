@@ -1,15 +1,15 @@
-﻿using System.Reflection;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Attributes;
-using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
-using COMPASS.Common.Models.Hierarchy;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.ModelVMs;
-using COMPASS.Infra.ExtensionMethods;
+using COMPASS.Infra.Avalonia.Wizard;
+using COMPASS.Infra.Collections;
+using COMPASS.Infra.DependencyInjection;
+using COMPASS.Infra.Selection;
 using System.Collections;
-using COMPASS.Infra.Models;
+using System.Reflection;
 
 namespace COMPASS.Common.ViewModels.Selection
 {
@@ -160,11 +160,11 @@ namespace COMPASS.Common.ViewModels.Selection
                     allSelectableTags.Single(st => st.Item.Id == tag.Id).IsChecked = true;
                 }
 
-                CuratedCollection.RootTags = CheckableTreeNode.GetCheckedModels<TagViewModel, Tag>(SelectableTags).ToList();
+                CuratedCollection.RootTags = CheckableTreeNode.GetCheckedModels(SelectableTags, static tagVm => tagVm.GetModel()).ToList();
             }
             else //otherwise use the users choice
             {
-                CuratedCollection.RootTags = CheckableTreeNode.GetCheckedModels<TagViewModel, Tag>(SelectableTags).ToList();
+                CuratedCollection.RootTags = CheckableTreeNode.GetCheckedModels(SelectableTags, static tagVm => tagVm.GetModel()).ToList();
 
                 //Remove the tags that didn't make it from codices
                 var removedTags = CompleteCollection.AllTags.Except(CuratedCollection.RootTags.Flatten()).ToList();

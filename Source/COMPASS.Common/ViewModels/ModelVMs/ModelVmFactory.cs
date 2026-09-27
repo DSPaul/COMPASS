@@ -1,6 +1,6 @@
-using COMPASS.Common.Models.Filters;
 using Avalonia.Media;
 using COMPASS.Common.Models.CodexProperties;
+using COMPASS.Common.Models.Filters;
 
 namespace COMPASS.Common.ViewModels.ModelVMs;
 

@@ -1,5 +1,3 @@
-﻿using System;
-
 namespace COMPASS.Common.Models.Filters
 {
     public class StartReleaseDateFilter : Filter

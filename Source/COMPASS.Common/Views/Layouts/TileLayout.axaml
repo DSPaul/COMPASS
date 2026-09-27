@@ -5,9 +5,10 @@
              xmlns:vm="using:COMPASS.Common.ViewModels.Layouts"
              xmlns:modelVm="using:COMPASS.Common.ViewModels.ModelVMs"
              xmlns:behav="using:COMPASS.Infra.Avalonia.Behaviors"
+             xmlns:dragdrop="using:COMPASS.Infra.Avalonia.DragDrop"
              xmlns:conv="using:COMPASS.Infra.Avalonia.Converters"
              xmlns:preferences="using:COMPASS.Common.Models.Preferences"
-             xmlns:controls="using:COMPASS.Common.Controls"
+             xmlns:controls="using:COMPASS.Infra.Avalonia.Controls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:DataType="vm:TileLayoutViewModel"
              x:Class="COMPASS.Common.Views.Layouts.TileLayout">
@@ -45,8 +46,8 @@
                       DoubleTapped="Codex_DoubleTapped"
                       Background="Transparent"
                       Classes="ZoomOnHover"
-                      behav:DropBehavior.IsDropTarget="True"
-                      behav:DropBehavior.DropManager="{Binding DropManager}">
+                      dragdrop:DropBehavior.IsDropTarget="True"
+                      dragdrop:DropBehavior.DropManager="{Binding DropManager}">
                     <Panel Margin="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.TilePanelMargin}" Grid.Row="0"
                            Width="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.TileWidth}"
                            Height="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.TileHeight}">
@@ -76,19 +77,19 @@
                         </Panel.Styles>
                         <TextBlock Text="{Binding Title}"
                                    IsVisible="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.DisplayedData, 
-                                    Converter={x:Static conv:ObjectConverters.AreEqual}, 
+                                    Converter={x:Static ObjectConverters.Equal}, 
                                     ConverterParameter={x:Static preferences:TileLayoutPreferences+DataOption.Title}}" />
                         <TextBlock Text="{Binding AuthorsAsString}"
                                    IsVisible="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.DisplayedData, 
-                                    Converter={x:Static conv:ObjectConverters.AreEqual}, 
+                                    Converter={x:Static ObjectConverters.Equal}, 
                                     ConverterParameter={x:Static preferences:TileLayoutPreferences+DataOption.Author}}" />
                         <TextBlock Text="{Binding Publisher}"
                                    IsVisible="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.DisplayedData, 
-                                    Converter={x:Static conv:ObjectConverters.AreEqual}, 
+                                    Converter={x:Static ObjectConverters.Equal}, 
                                     ConverterParameter={x:Static preferences:TileLayoutPreferences+DataOption.Publisher}}" />
                         <controls:RatingControl Value="{Binding Rating}" HorizontalAlignment="Center" Margin="0,0,0,5" Height="20"
                                                 IsVisible="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.DisplayedData, 
-                                          Converter={x:Static conv:ObjectConverters.AreEqual}, 
+                                          Converter={x:Static ObjectConverters.Equal}, 
                                           ConverterParameter={x:Static preferences:TileLayoutPreferences+DataOption.Rating}}" />
                     </Panel>
                 </Grid>

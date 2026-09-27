@@ -1,5 +1,3 @@
-﻿using System;
-
 namespace COMPASS.Common.ViewModels.Import
 {
     [Flags]

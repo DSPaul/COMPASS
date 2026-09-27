@@ -3,7 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:COMPASS.Common.ViewModels.Modals"
-             xmlns:contols="using:COMPASS.Common.Controls"
+             xmlns:contols="using:COMPASS.Infra.Avalonia.Controls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="COMPASS.Common.Views.Modals.FileNotFoundView"
              x:DataType="vm:FileNotFoundViewModel" Margin="10">

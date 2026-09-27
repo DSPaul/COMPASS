@@ -1,7 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using COMPASS.Infra.Models;
-using COMPASS.Infra.Models.Enums;
+using COMPASS.Infra.Notifications;
 
 namespace COMPASS.Common.Views.Windows;
 

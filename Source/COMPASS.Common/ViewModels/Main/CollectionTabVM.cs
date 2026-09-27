@@ -1,10 +1,9 @@
 using CommunityToolkit.Mvvm.Input;
-using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Models.Filters;
-using COMPASS.Common.Interfaces.Services;
+using COMPASS.Common.Models.Preferences;
 using COMPASS.Common.Operations;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels.Layouts;
@@ -12,12 +11,11 @@ using COMPASS.Common.ViewModels.Modals;
 using COMPASS.Common.ViewModels.Modals.Edit;
 using COMPASS.Common.ViewModels.Modals.Import;
 using COMPASS.Common.ViewModels.SidePanels;
-using COMPASS.Common.Views.Windows;
-using COMPASS.Infra.Interfaces.Services;
-using COMPASS.Infra.Models;
-using COMPASS.Infra.Models.Enums;
-using COMPASS.Common.Models.Preferences;
-using COMPASS.Infra.Tools.Logging;
+using COMPASS.Infra.Avalonia.Modal;
+using COMPASS.Infra.DependencyInjection;
+using COMPASS.Infra.Logging;
+using COMPASS.Infra.Notifications;
+using COMPASS.Infra.Preferences;
 
 namespace COMPASS.Common.ViewModels.Main;
 
@@ -69,7 +67,7 @@ public class CollectionTabVM : ViewModelBase, IDisposable
         _layoutViewModelFactory = layoutViewModelFactory;
         _importCollectionViewModelFactory = importCollectionViewModelFactory;
         _exportCollectionViewModelFactory = exportCollectionViewModelFactory;
-        _uiState = preferencesService.Preferences.UIState;
+        _uiState = preferencesService.GetPreferences<UIState>();
         _collectionHandle = collectionHandle;
 
         _filtersVM = filtersViewModelFactory.Create(_collectionHandle.CollectionVM, filtersState);

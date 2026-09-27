@@ -1,5 +1,3 @@
-﻿using System;
-
 namespace COMPASS.Common.Models.Filters
 {
     public abstract class Filter : IEquatable<Filter>

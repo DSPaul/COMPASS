@@ -1,8 +1,7 @@
-﻿using Avalonia.Input;
+using Avalonia.Input;
 using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Adorners;
-using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.DragDrop;
@@ -10,9 +9,10 @@ using COMPASS.Common.Operations;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Infra.Avalonia.DragDrop;
-using COMPASS.Infra.ExtensionMethods;
-using COMPASS.Infra.Tools.Logging;
-using COMPASS.Infra.Models;
+using COMPASS.Infra.Collections;
+using COMPASS.Infra.DependencyInjection;
+using COMPASS.Infra.Logging;
+using COMPASS.Infra.Text;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 
