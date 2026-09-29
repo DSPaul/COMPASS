@@ -5,7 +5,7 @@ using COMPASS.Infra.Collections;
 
 namespace COMPASS.Common.ViewModels.Selection
 {
-    //TODO make this use the more generic HierachicalSelectorViewmodel
+    //TODO make this use the more generic HierarchicalSelectorViewModel
     public class TagsSelectorViewModel : ViewModelBase
     {
         #region ctor

@@ -1,9 +1,9 @@
 using COMPASS.Common.Models;
 using COMPASS.Infra.Collections;
 
-namespace COMPASS.UnitTests.Models
+namespace COMPASS.UnitTests.Infra.Collections
 {
-    public class CheckableTreeNode
+    public class CheckableTreeNodeTests
     {
         private static CheckableTreeNode<Tag>? checkableRoot;
 

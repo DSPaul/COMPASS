@@ -1,7 +1,7 @@
 using COMPASS.Infra.Measuring;
 using COMPASS.Infra.Progress;
 
-namespace COMPASS.UnitTests.Common.StateManagers;
+namespace COMPASS.UnitTests.Infra.Progress;
 
 [TestFixture]
 public class ProgressTrackingManagerTests

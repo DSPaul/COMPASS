@@ -1,9 +1,9 @@
 using COMPASS.Common.Features.ISBN;
 
-namespace COMPASS.IntegrationTests.Common.Services;
+namespace COMPASS.UnitTests.Features.ISBN;
 
 [TestFixture]
-public class IsbnValidatorTests
+public class ISBNValidatorTests
 {
     [Test]
     [TestCase("0306406152", true)]    // Valid ISBN-10

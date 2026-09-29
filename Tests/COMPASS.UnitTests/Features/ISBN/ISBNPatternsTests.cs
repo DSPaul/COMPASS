@@ -1,6 +1,6 @@
 using COMPASS.Common.Features.ISBN;
 
-namespace COMPASS.UnitTests.Services;
+namespace COMPASS.UnitTests.Features.ISBN;
 
 [TestFixture]
 public class ISBNPatternsTests

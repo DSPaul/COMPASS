@@ -235,7 +235,7 @@ Closed tabs are pushed onto a `Stack<TabState>`, allowing re-open ("undo close t
 | `ICoverStorageService` / `CoverStorageService` | Save, load, and delete cover art and thumbnails on disk. |
 | `IImportExportService` / `ImportExportService` | Read and write `.satchel` archives. |
 | `XmlService` (`Infra/Xml`) | Thin wrapper around `System.Xml.Serialization` used by the XML repository. |
-| `IIOService` (`Infra/IO`) / `IOServiceBase` (`Infra.Avalonia/Files/IOService.cs`) | File copy/move/delete operations. Platform subclasses `IOService` live in `COMPASS.Windows/Services` and `COMPASS.Linux/Services`. |
+| `IIOService` (`Infra/IO`) / `IOServiceBase` (`Infra.Avalonia/Files`) | File copy/move/delete operations. Platform subclasses `IOService` live in `COMPASS.Windows/Services` and `COMPASS.Linux/Services`. |
 | `IFilesService` / `FilesService` (`Infra.Avalonia/Files`) | Open/save file & folder pickers. |
 
 The `StorageStrategy` enum (`Common/Models/Enums`) (`Xml` or `Memory`) determines which `ICodexCollectionRepository` implementation is used when constructing a `CodexCollectionVM`.
