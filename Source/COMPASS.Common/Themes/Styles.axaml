@@ -197,6 +197,13 @@
         </Setter>
     </Style>
 
+    <!-- Workaround for an Avalonia bug, clicking a month should move back day picker, 
+         but focus is moved to calender textbox instead which closes the popup.
+         TODO: remove once https://github.com/AvaloniaUI/Avalonia/issues/22353 is fixed -->
+    <Style Selector="CalendarButton">
+        <Setter Property="Focusable" Value="False" />
+    </Style>
+
     <!-- Slider -->
     <Style Selector="Slider">
         <Setter Property="Foreground" Value="{StaticResource AccentColorMuted}" />
