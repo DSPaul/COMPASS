@@ -4,8 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:vm="clr-namespace:COMPASS.Common.ViewModels.Main"
+             xmlns:modelVms="using:COMPASS.Common.ViewModels.ModelVMs"
              xmlns:controls="using:COMPASS.Infra.Avalonia.Controls"
              xmlns:converters="using:COMPASS.Infra.Avalonia.Converters"
+             xmlns:dragdrop="using:COMPASS.Infra.Avalonia.DragDrop"
              xmlns:md="using:MarkView.Avalonia"
              mc:Ignorable="d" d:DesignWidth="270" d:DesignHeight="850"
              x:Class="COMPASS.Common.Views.Main.CodexInfoView"
@@ -121,10 +123,10 @@
 
                         <StackPanel Orientation="Horizontal" Grid.Row="10" Grid.ColumnSpan="2" Grid.Column="0">
                             <TextBlock Text="Tags:" VerticalAlignment="Top" Margin="5,5,10,5"/>
-                            <ItemsControl ItemsSource="{Binding OrderedTags, Mode=OneWay}" 
+                            <ItemsControl x:Name="TagsControl"
+                                          ItemsSource="{Binding OrderedTags, Mode=OneWay}" 
                                           Background="{x:Null}" BorderBrush="{x:Null}"  
                                           Foreground="Black" FontSize="15" VerticalAlignment="Bottom">
-                                <!-- TODO: keep functionality of dd:DragDrop.IsDragSource="True" -->
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <WrapPanel Orientation="Horizontal" Width="170"
@@ -132,17 +134,12 @@
                                     </ItemsPanelTemplate>
                                 </ItemsControl.ItemsPanel>
                                 <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <Button Classes="BlankButton"
-                                                Command="{Binding #CodexInfoContainer.((vm:CodexInfoViewModel)DataContext).AddTagFilterCommand}" 
-                                                CommandParameter="{Binding}">
-                                            <Button.Template>
-                                                <ControlTemplate TargetType="Button">
-											        <controls:Chip Background="{Binding BackgroundColor, Converter={x:Static converters:ColorConverters.ColorToBrush}}" 
-                                                                   Text="{Binding Name}"/>
-                                                </ControlTemplate>
-                                            </Button.Template>
-                                        </Button>
+                                    <DataTemplate DataType="modelVms:TagViewModel">
+                                        <controls:Chip Text="{Binding Name}"
+                                                       Background="{Binding BackgroundColor, Converter={x:Static converters:ColorConverters.ColorToBrush}}"
+                                                       Cursor="Hand"
+                                                       ToolTip.Tip="Click or drag to filter on this tag"
+                                                       dragdrop:DragBehavior.IsDragSource="True"/>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
