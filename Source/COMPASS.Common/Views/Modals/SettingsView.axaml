@@ -96,7 +96,7 @@
                                     <Border Grid.Column="1" Classes="RadioBtnStrip">
                                         <StackPanel Orientation="Horizontal" Spacing="5">
                                             <RadioButton GroupName="OpenPref"
-                                                         Content="Prefer URL"
+                                                         Content="Prefer website"
                                                          IsChecked="{Binding PreferOnlineSource}"
                                                          Background="{StaticResource AccentColorMuted}" />
                                             <RadioButton GroupName="OpenPref"

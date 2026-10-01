@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.Input;
+using COMPASS.Common.Exceptions;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
@@ -279,7 +280,8 @@ public class CollectionTabVM : ViewModelBase, IDisposable
 
         if (newHandle == null)
         {
-            //load failed TODO
+            _logger.Error("Failed to load collection while swithing to it", new LoadException(collectionToChangeTo.Identifier));
+            await _notificationService.ShowDialog(new Notification("Error", $"Failed to load collection {collectionToChangeTo.Identifier}"));
             return;
         }
 
@@ -297,7 +299,7 @@ public class CollectionTabVM : ViewModelBase, IDisposable
         _collectionHandle.Dispose();
         _collectionHandle = newHandle;
         
-        //update Startup collection, TODO make this a setting, choose between a set collection or last used (current behaviour)
+        //update Startup collection which is the last used one (might become a setting later)
         _uiState.StartupCollection = _collectionHandle.CollectionVM.Identifier;
         
         
