@@ -66,6 +66,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceInclude Source="avares://COMPASS.Common/Themes/Dark.axaml" />
+                <ResourceInclude Source="avares://COMPASS.Common/Themes/Controls/Calendar.axaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
         <FontFamily x:Key="HostGroteskFont">avares://COMPASS.Common/Assets/Fonts#Host Grotesk</FontFamily>
