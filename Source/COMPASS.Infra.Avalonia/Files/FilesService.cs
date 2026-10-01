@@ -25,6 +25,26 @@ namespace COMPASS.Infra.Avalonia.Files
             return await WindowManager.MainWindow.StorageProvider.SaveFilePickerAsync(options).ConfigureAwait(false);
         }
 
+        public async Task<IStorageFolder?> TryGetFolderFromPathAsync(string folderPath)
+        {
+            if (string.IsNullOrWhiteSpace(folderPath) || !Directory.Exists(folderPath))
+            {
+                return null;
+            }
+
+            try
+            {
+                string fullPath = Path.GetFullPath(folderPath);
+
+                return await WindowManager.MainWindow.StorageProvider
+                    .TryGetFolderFromPathAsync(new Uri(fullPath)).ConfigureAwait(false);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         public FilePickerFileType ZipExtensionFilter =>
             new("Zip file")
             {

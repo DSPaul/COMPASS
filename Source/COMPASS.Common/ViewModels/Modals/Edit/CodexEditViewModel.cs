@@ -109,16 +109,29 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         public AsyncRelayCommand BrowsePathCommand => _browsePathCommand ??= new(BrowsePath);
         private async Task BrowsePath()
         {
-            var files = await _filesService.OpenFilesAsync(new()
+            IStorageFolder? startLocation = null;
+            string? directory = Path.GetDirectoryName(WorkingCopy.Sources.Path);
+            if (!string.IsNullOrWhiteSpace(directory))
             {
-                //TODO, this needs to be a folder, not a path
-                //SuggestedStartLocation = Path.GetDirectoryName(WorkingCopy.Sources.Path) ?? string.Empty
-            });
+                startLocation = await _filesService.TryGetFolderFromPathAsync(directory).ConfigureAwait(false);
+            }
 
-            if (files.Any())
+            try
             {
-                using var file = files.Single();
-                WorkingCopy.Sources.Path = file.Path.LocalPath;
+                var files = await _filesService.OpenFilesAsync(new()
+                {
+                    SuggestedStartLocation = startLocation
+                });
+
+                if (files.Any())
+                {
+                    using var file = files.Single();
+                    WorkingCopy.Sources.Path = file.Path.LocalPath;
+                }
+            }
+            finally
+            {
+                startLocation?.Dispose();
             }
         }
 
