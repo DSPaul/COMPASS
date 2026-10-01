@@ -1,5 +1,6 @@
 using COMPASS.Infra.Logging;
 using COMPASS.Infra.Progress;
+using System.Net;
 
 namespace COMPASS.Infra.Web;
 
@@ -169,20 +170,61 @@ public class ConnectivityManager(
         return IsOnline;
     }
 
-    public async Task<bool> VerifyUrlReachable(string url)
+    public async Task<bool> VerifyUrlReachable(string url, CancellationToken cancellationToken = default)
+    {
+        // Any response below 500 means the host is alive (bot walls, auth, 404s all count).
+        // Only 5xx or no response at all counts as unreachable so users can still open their link.
+        HttpStatusCode? headStatusCode = await TryGetStatusCodeAsync(HttpMethod.Head, url, cancellationToken).ConfigureAwait(false);
+        if (headStatusCode.HasValue)
+        {
+            IsOnline = true;
+            if ((int)headStatusCode.Value < 500) return true;
+            // HEAD handlers sometimes 500 while GET works, fall through to the GET fallback
+        }
+
+        // Fallback: some servers block or mishandle HEAD, but serve GET fine.
+        // Range request keeps it lightweight.
+        HttpStatusCode? getStatusCode = await TryGetStatusCodeAsync(HttpMethod.Get, url, cancellationToken).ConfigureAwait(false);
+        if (getStatusCode.HasValue)
+        {
+            IsOnline = true;
+            return (int)getStatusCode.Value < 500;
+        }
+
+        // No response at all: could be us (offline) or them (DNS down).
+        // CheckConnection updates IsOnline globally so the UI reflects it.
+        await CheckConnection().ConfigureAwait(false);
+        return false;
+    }
+
+    private async Task<HttpStatusCode?> TryGetStatusCodeAsync(HttpMethod method, string url, CancellationToken cancellationToken)
     {
         try
         {
-            var client = httpClientFactory.CreateClient(WebService.ConnectionCheckHttpClient);
-            using HttpResponseMessage reply = await client.SendAsync(new HttpRequestMessage(HttpMethod.Head, url)).ConfigureAwait(false);
-            reply.EnsureSuccessStatusCode();
-            IsOnline = true;
-            return true;
+            var httpClient = httpClientFactory.CreateClient(WebService.ConnectionCheckHttpClient);
+            using var request = new HttpRequestMessage(method, url);
+            if (method == HttpMethod.Get)
+            {
+                request.Headers.Range = new System.Net.Http.Headers.RangeHeaderValue(0, 0);
+            }
+            using HttpResponseMessage reply = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+            return reply.StatusCode;
         }
-        catch (HttpRequestException)
+        catch (HttpRequestException ex) when (ex.StatusCode.HasValue)
         {
-            await CheckConnection().ConfigureAwait(false);
-            return false;
+            // Some handlers surface non-success statuses via exception; still a live host
+            return ex.StatusCode.Value;
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch (Exception ex) when (ex is OperationCanceledException // timeout on the 3s connection-check client
+                                   || ex is HttpRequestException
+                                   || ex is InvalidOperationException
+                                   || ex is UriFormatException)
+        {
+            return null;
         }
     }
 }

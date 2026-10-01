@@ -350,8 +350,8 @@ public class CodexViewModel : ModelViewModelBase<Codex>
     private bool CanOpenCodexLocally() => _codexOperations.CanOpenCodexLocally(_model);
 
     //Open codex Online
-    public RelayCommand OpenCodexOnlineCommand => field ??= new(OpenCodexOnline, CanOpenCodexOnline);
-    private void OpenCodexOnline() => _codexOperations.OpenCodexOnline(_model);
+    public AsyncRelayCommand OpenCodexOnlineCommand => field ??= new(OpenCodexOnline, CanOpenCodexOnline);
+    private async Task OpenCodexOnline() => await _codexOperations.OpenCodexOnline(_model);
     private bool CanOpenCodexOnline() => _codexOperations.CanOpenCodexOnline(_model);
     
     //Edit File

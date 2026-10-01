@@ -22,8 +22,11 @@ using COMPASS.Infra.Measuring;
 using COMPASS.Infra.Notifications;
 using COMPASS.Infra.Preferences;
 using COMPASS.Infra.Progress;
+using COMPASS.Infra.Web;
 using System.Collections;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+
 namespace COMPASS.Common.Operations
 {
     /// Domain operations for <see cref="Codex"/>
@@ -40,6 +43,7 @@ namespace COMPASS.Common.Operations
         ChooseMetadataViewModelFactory chooseMetadataViewModelFactory,
         Lazy<CollectionManager> collectionManager,
         ProgressTrackingManager progressTrackingManager,
+        ConnectivityManager connectivityManager,
         IIndex<string, MetadataSource> metaDataSources)
     {
         #region Open Codex
@@ -100,29 +104,63 @@ namespace COMPASS.Common.Operations
         }
 
         //Open codex Online
-        public bool OpenCodexOnline(Codex? toOpen)
+        public async Task<bool> OpenCodexOnline(Codex? toOpen)
         {
             if (!CanOpenCodexOnline(toOpen)) return false;
+            string url = toOpen.Sources.SourceURL;
+
+            if (!Uri.TryCreate(url, UriKind.Absolute, out _))
+            {
+                logger.Warn($"Cannot open online source '{url}': invalid URL");
+                return false;
+            }
+
+            if (!connectivityManager.IsOnline && !await connectivityManager.CheckConnection().ConfigureAwait(false))
+            {
+                logger.Warn($"Cannot open online source '{url}': no internet connection");
+                notificationService.Notify(new Notification("No internet connection", "Could not open online source because COMPASS is offline", Severity.Warning));
+                return false;
+            }
+
+            bool reachable = await connectivityManager.VerifyUrlReachable(url).ConfigureAwait(false);
+            if (!reachable)
+            {
+                logger.Warn($"Online source '{url}' could not be reached");
+                notificationService.Notify(new Notification("Source unreachable", $"'{url}' could not be reached", Severity.Warning));
+                return false;
+            }
+
             try
             {
-                //TODO detect if source is even reachable before opening the brower
-                Process.Start(new ProcessStartInfo(toOpen!.Sources.SourceURL) { UseShellExecute = true });
+                Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
                 toOpen.LastOpened = DateTime.Now;
                 toOpen.OpenedCount++;
-                logger.Info($"Opened {toOpen.Sources.SourceURL}");
+                logger.Info($"Opened {url}");
                 return true;
             }
             catch (Exception ex)
             {
-                logger.Error($"Failed to open {toOpen!.Sources.SourceURL}", ex);
+                logger.Error($"Failed to open {url}", ex);
                 return false;
             }
         }
-        public bool CanOpenCodexOnline(Codex? toOpen)
+        public bool CanOpenCodexOnline([NotNullWhen(true)]Codex? toOpen)
         {
             if (toOpen is null) return false;
 
-            return toOpen.Sources.HasOnlineSource();
+            if(!toOpen.Sources.HasOnlineSource())
+            {
+                return false;
+            }
+
+            string url = toOpen.Sources.SourceURL;
+
+            if (!Uri.TryCreate(url, UriKind.Absolute, out _))
+            {
+                return false;
+            }
+
+            return true;
         }
 
         //Open Multiple Files

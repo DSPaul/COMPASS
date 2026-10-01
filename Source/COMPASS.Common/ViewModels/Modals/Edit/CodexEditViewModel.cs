@@ -122,13 +122,13 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             }
         }
 
-        private RelayCommand? _browseURLCommand;
-        public RelayCommand BrowseURLCommand => _browseURLCommand ??= new(BrowseURL);
-        private void BrowseURL()
+        private AsyncRelayCommand? _browseURLCommand;
+        public AsyncRelayCommand BrowseURLCommand => _browseURLCommand ??= new(BrowseURL);
+        private async Task BrowseURL()
         {
             if (_codexOperations.CanOpenCodexOnline(WorkingCopy.GetModel()))
             {
-                _codexOperations.OpenCodexOnline(WorkingCopy.GetModel());
+                await _codexOperations.OpenCodexOnline(WorkingCopy.GetModel());
             }
         }
 
