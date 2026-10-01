@@ -307,7 +307,7 @@
                                         <TextBlock Text="Banished files"/>
                                         <controls:Explainer>
                                             These files will be excluded from future imports, supports glob syntax.
-                                            <!-- TODO explain glob syntax -->
+                                            e.g. *.tmp, *draft*, **/excluded/**
                                         </controls:Explainer>
                                     </StackPanel>
                                 </Expander.Header>

@@ -65,7 +65,6 @@
                           IsChecked="{Binding PhysicallyOwned, Mode=TwoWay}" />
 
                 <!-- Release Date -->
-                <!-- TODO Add clear btn if not default  -->
                 <TextBlock Grid.Row="3" Grid.Column="3"
                            Text="Release Date:" />
                 <CalendarDatePicker Grid.Row="3" Grid.Column="4" Width="140"
