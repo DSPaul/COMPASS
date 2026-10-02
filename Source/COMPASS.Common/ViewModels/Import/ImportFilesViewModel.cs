@@ -17,7 +17,7 @@ public class ImportFilesViewModel : ViewModelBase, IDisposable
     private readonly ILogger _logger;
     private readonly IIOService _ioService;
     private readonly INotificationService _notificationService;
-    private readonly ImportFolderWizardFactory _importFolderWizardFactory;
+    private readonly ImportFolderViewModelFactory _importFolderDialogFactory;
     private readonly FolderFactory _folderFactory;
     private readonly CodexCollectionOperations _codexCollectionOperations;
     private readonly CollectionManager _collectionManager;
@@ -31,7 +31,7 @@ public class ImportFilesViewModel : ViewModelBase, IDisposable
     public ImportFilesViewModel(
         ILogger logger,
         IIOService ioService, INotificationService notificationService, 
-        ImportFolderWizardFactory importFolderWizardFactory, 
+        ImportFolderViewModelFactory importFolderDialogFactory, 
         FolderFactory folderFactory,
         CodexCollectionOperations codexCollectionOperations,
         CollectionManager collectionManager,
@@ -40,7 +40,7 @@ public class ImportFilesViewModel : ViewModelBase, IDisposable
         _logger = logger;
         _ioService = ioService;
         _notificationService = notificationService;
-        _importFolderWizardFactory = importFolderWizardFactory;
+        _importFolderDialogFactory = importFolderDialogFactory;
         _folderFactory = folderFactory;
         _codexCollectionOperations = codexCollectionOperations;
         _collectionManager = collectionManager;
@@ -159,27 +159,27 @@ public class ImportFilesViewModel : ViewModelBase, IDisposable
     }
 
     /// <summary>
-    /// Shows an ImportFolderWizard if certain conditions are met
+    /// Shows an ImportFolder dialog if certain conditions are met
     /// </summary>
     /// <returns></returns>
-    private async Task<List<string>> LetUserFilterToImport(IList<string> allFilesToImport)
+    private async Task<IList<string>> LetUserFilterToImport(IList<string> allFilesToImport)
     {
         IList<Folder> folders = RecursiveDirectories.Select(_folderFactory.Create)
                                                     .Concat(ExistingFolders)
                                                     .ToList();
         
-        var folderImportWizardVm = _importFolderWizardFactory.Create(_autoImport, _TargetCollection.Info, folders, allFilesToImport);
+        var folderImportDialogVm = _importFolderDialogFactory.Create(_autoImport, _TargetCollection.Info, folders, allFilesToImport);
         
-        if (folderImportWizardVm.Steps.Any())
+        if (folderImportDialogVm.ShouldShowDialog)
         {
-            await WindowManager.OpenModal(folderImportWizardVm);
-            if (!folderImportWizardVm.Finished)
+            await WindowManager.OpenModal(folderImportDialogVm);
+            if (!folderImportDialogVm.Finished)
             {
                 return [];
             }
         }
 
-        return folderImportWizardVm.GetFilteredFiles(allFilesToImport);
+        return folderImportDialogVm.GetFilteredFiles(allFilesToImport);
     }
 
     public void Dispose()
@@ -192,7 +192,7 @@ public class ImportFilesViewModel : ViewModelBase, IDisposable
     public class ImportFilesViewModelFactory(
         ILogger logger,
         IIOService ioService, INotificationService notificationService, 
-        ImportFolderWizardFactory importFolderWizardFactory,
+        ImportFolderViewModelFactory importFolderDialogFactory,
         Lazy<TabsViewModel> tabsViewModel,
         FolderFactory folderFactory,
         CodexCollectionOperations codexCollectionOperations,
@@ -212,7 +212,7 @@ public class ImportFilesViewModel : ViewModelBase, IDisposable
         {
             return new ImportFilesViewModel(
                 logger, ioService, notificationService, 
-                importFolderWizardFactory, folderFactory,
+                importFolderDialogFactory, folderFactory,
                 codexCollectionOperations, collectionManager.Value,
                 targetCollectionId, autoImport);
         }

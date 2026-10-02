@@ -1,0 +1,171 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:COMPASS.Common.ViewModels.Modals.Import"
+             xmlns:controls="using:COMPASS.Infra.Avalonia.Controls"
+             xmlns:materialIcons="using:Material.Icons.Avalonia"
+             mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="300"
+             x:Class="COMPASS.Common.Views.Modals.Import.ImportFolderView"
+             x:DataType="vm:ImportFolderViewModel"
+             MinWidth="600" MinHeight="250">
+
+    <Grid RowDefinitions="auto,auto,auto,auto, *" 
+          RowSpacing="10" Margin="20" MaxWidth="800">
+
+        <!-- Header -->
+        <DockPanel VerticalSpacing="5">
+            <Rectangle DockPanel.Dock="Bottom" Height="1" Fill="{StaticResource Separator}" />
+            <TextBlock DockPanel.Dock="Right" Text="{Binding FilesToImportSummary}" />
+            <TextBlock Text="{Binding FilesFoundSummary}" />
+        </DockPanel>
+
+        <!-- Auto import -->
+        <CheckBox Grid.Row="1"
+            Content="Automatically import future files from these folders"
+            IsChecked="{Binding AddAutoImportFolders, Mode=TwoWay}" />
+
+        <!-- Subfolder exclusion -->
+        <controls:CheckableContainer Grid.Row="2"
+                                     Header="{Binding SubfoldersCheckBoxText}"
+                                     IsChecked="{Binding IncludeSubfolders, Mode=TwoWay}"
+                                     IsVisible="{Binding HasSubfolderChoices}">
+            <ScrollViewer MaxHeight="250">
+                <ItemsControl ItemsSource="{Binding SelectSubfoldersVM.OptionsRoot}">
+				    <ItemsControl.ItemTemplate>
+					    <DataTemplate>
+			                <controls:IconButton
+                                    Background="Transparent"
+                                    Icon="Folder">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+								        <ColumnDefinition Width="auto" SharedSizeGroup="FolderName"/>
+								        <ColumnDefinition Width="auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{Binding Item.Name}"/>
+                                    <materialIcons:MaterialIcon Grid.Column="1" Kind="ChevronRight" IconSize="16"/>
+                                </Grid>
+                                <Button.Flyout>
+                                    <Flyout Placement="Right" HorizontalOffset="10">
+                                        <StackPanel>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock FontWeight="Bold" Margin="5" >
+												    <Run Text="Subfolder of"/>
+                                                    <Run Text="{Binding Item.Name}" FontStyle="Italic"/>
+                                                </TextBlock>
+                                            </StackPanel>
+                                            <TreeView Background="Transparent"
+                                                      MinWidth="300" MaxHeight="400"
+                                                      Classes="NoSelection"
+                                                      ItemsSource="{Binding SelectableChildren}"
+                                                      HorizontalAlignment="Stretch" BorderThickness="0">
+                                                <TreeView.ItemTemplate>
+                                                    <TreeDataTemplate ItemsSource="{Binding Children}">
+                                                        <CheckBox Margin="5" IsChecked="{Binding IsChecked, Mode=TwoWay}"
+                                                                  Content="{Binding Item.Name}" />
+                                                    </TreeDataTemplate>
+                                                </TreeView.ItemTemplate>
+                                            </TreeView>
+                                        </StackPanel>
+                                    </Flyout>
+                                </Button.Flyout>
+                            </controls:IconButton>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </controls:CheckableContainer>
+
+        <!-- File type exclusion -->
+        <controls:CheckableContainer Grid.Row="3"
+                                     IsChecked="{Binding ExcludeFileTypes, Mode=TwoWay}">
+            <controls:CheckableContainer.Header>
+			    <Grid ColumnDefinitions="auto, *" ColumnSpacing="20">
+                    <TextBlock Text="Exclude some file extensions"/>
+                     <TextBlock Grid.Column="1"
+                       Text="{Binding NewFileTypesHint}"
+                       IsVisible="{Binding ShowNewFileTypesHint}"
+                       TextTrimming="CharacterEllipsis"
+                       Opacity="0.8" />
+                </Grid>	
+            </controls:CheckableContainer.Header>
+
+            <StackPanel Spacing="5">
+           
+                <Button Background="Transparent" CornerRadius="5">
+                    <StackPanel Orientation="Horizontal">
+						<TextBlock Text="{Binding UnknownTypesFoundSummary}" />
+                        <materialIcons:MaterialIcon Grid.Column="1" Kind="ChevronRight" IconSize="16"/>
+                    </StackPanel>
+                    <Button.Flyout>
+                        <Flyout Placement="Right" HorizontalOffset="10">
+                            <ScrollViewer MinWidth="350" MaxHeight="400">
+                                <StackPanel IsVisible="{Binding HasNewFileTypes}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="Newly Found Extensions" FontWeight="Bold" Margin="5" />
+										<controls:Explainer Content="These file types have not been imported before"/>
+                                    </StackPanel>
+                                    <ItemsControl ItemsSource="{Binding UnknownFileTypes}" Margin="5"
+                                                    Background="{x:Null}" BorderBrush="{x:Null}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <UniformGrid Columns="2" />
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <CheckBox Content="{Binding DisplayText}"
+                                                            IsChecked="{Binding ShouldImport, Mode=TwoWay}"
+                                                            Margin="5" />
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
+                            </ScrollViewer>
+                        </Flyout>
+                    </Button.Flyout>
+                </Button>
+
+                <Button Background="Transparent" CornerRadius="5">
+                    <StackPanel Orientation="Horizontal">
+						<TextBlock Text="{Binding KnownTypesFoundSummary}" />
+                        <materialIcons:MaterialIcon Grid.Column="1" Kind="ChevronRight" IconSize="16"/>
+                    </StackPanel>
+                    <Button.Flyout>
+                        <Flyout Placement="Right" HorizontalOffset="10">
+                            <ScrollViewer MinWidth="350" MaxHeight="400">
+                                <StackPanel IsVisible="{Binding !!KnownFileTypes.Count}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="Known Extensions" FontWeight="Bold" Margin="5" />
+										<controls:Explainer Content="These file types have been imported before"/>
+                                    </StackPanel>
+                                    <ItemsControl ItemsSource="{Binding KnownFileTypes}" Margin="5"
+                                                    Background="{x:Null}" BorderBrush="{x:Null}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <UniformGrid Columns="2" />
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <CheckBox Content="{Binding DisplayText}"
+                                                            IsChecked="{Binding ShouldImport, Mode=TwoWay}"
+                                                            Margin="5" />
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
+                            </ScrollViewer>
+                        </Flyout>
+                    </Button.Flyout>
+                </Button>
+            </StackPanel>
+        </controls:CheckableContainer>
+        
+
+        <controls:ConfirmControls Grid.Row="4" HorizontalAlignment="Right"
+                                  Margin="0,10,0,0"
+                                  ConfirmLabel="{Binding ConfirmButtonText}"
+                                  ConfirmIcon="Import" />
+    </Grid>
+</UserControl>

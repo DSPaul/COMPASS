@@ -21,7 +21,7 @@ public static class ModalDialogs
         ModalWindow.Register<CodexEditViewModel, CodexEditView>();
         ModalWindow.Register<CodexBulkEditViewModel, CodexBulkEditView>();
         ModalWindow.Register<ImportURLViewModel, ImportURLView>();
-        ModalWindow.Register<ImportFolderWizardVm, ImportFolderWizard>();
+        ModalWindow.Register<ImportFolderViewModel, ImportFolderView>();
         ModalWindow.Register<ImportTagsViewModel, ImportTagsView>();
         ModalWindow.Register<ISBNScannerViewModel, ISBNScannerView>();
         ModalWindow.Register<FileNotFoundViewModel, FileNotFoundView>();

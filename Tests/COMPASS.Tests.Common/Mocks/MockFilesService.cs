@@ -27,6 +27,8 @@ namespace COMPASS.Tests.Common.Mocks
             return await window.StorageProvider.TryGetFileFromPathAsync(tempFilePath);
         }
 
+        public Task<IStorageFolder?> TryGetFolderFromPathAsync(string folderPath) => Task.FromResult<IStorageFolder?>(null);
+
         public FilePickerFileType ZipExtensionFilter =>
             new("Zip file")
             {
