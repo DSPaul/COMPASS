@@ -30,6 +30,7 @@ modules:
           --configuration Release
           --runtime linux-x64 
           --self-contained true 
+          --property:PublishReadyToRun=true
           --source ./nuget-sources
           --output /app/bin/
       - install -Dm644 Deployment/flatpak/info.compassapp.COMPASS.desktop ${FLATPAK_DEST}/share/applications/info.compassapp.COMPASS.desktop

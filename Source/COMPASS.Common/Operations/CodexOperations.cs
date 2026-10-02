@@ -511,7 +511,8 @@ namespace COMPASS.Common.Operations
 
         private async Task FetchMetadata(IList<Codex> codices, IProgress<IProgressReport> progressTracker, CancellationToken cancellationToken)
         {
-            Debug.Assert(codices.HasCommonValue(c => c.Collection, out CodexCollection? collection), "FetchMetadataAsync called with empty codices list");
+            bool hasCommonValue = codices.HasCommonValue(c => c.Collection, out CodexCollection? collection);
+            Debug.Assert(hasCommonValue, "FetchMetadata called with codices from multiple collections");
 
             using CollectionHandle? localCollectionHandle = collection?.Load();
             if (localCollectionHandle == null)
