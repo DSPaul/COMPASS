@@ -10,7 +10,7 @@
              x:DataType="vm:ImportFolderViewModel"
              MinWidth="600" MinHeight="250">
 
-    <Grid RowDefinitions="auto,auto,auto,auto, *" 
+    <Grid RowDefinitions="auto,auto,auto,auto,auto,*" 
           RowSpacing="10" Margin="20" MaxWidth="800">
 
         <!-- Header -->
@@ -162,8 +162,12 @@
             </StackPanel>
         </controls:CheckableContainer>
         
+        <!-- Edit when done -->
+        <CheckBox Grid.Row="4"
+            Content="Open edit window when import is done"
+            IsChecked="{Binding OpenEditWindowWhenDone, Mode=TwoWay}" />
 
-        <controls:ConfirmControls Grid.Row="4" HorizontalAlignment="Right"
+        <controls:ConfirmControls Grid.Row="5" HorizontalAlignment="Right"
                                   Margin="0,10,0,0"
                                   ConfirmLabel="{Binding ConfirmButtonText}"
                                   ConfirmIcon="Import" />

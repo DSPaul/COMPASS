@@ -20,6 +20,7 @@ public class ImportFilesViewModel : ViewModelBase, IDisposable
     private readonly ImportFolderViewModelFactory _importFolderDialogFactory;
     private readonly FolderFactory _folderFactory;
     private readonly CodexCollectionOperations _codexCollectionOperations;
+    private readonly CodexOperations _codexOperations;
     private readonly CollectionManager _collectionManager;
 
     private readonly bool _autoImport;
@@ -34,6 +35,7 @@ public class ImportFilesViewModel : ViewModelBase, IDisposable
         ImportFolderViewModelFactory importFolderDialogFactory, 
         FolderFactory folderFactory,
         CodexCollectionOperations codexCollectionOperations,
+        CodexOperations codexOperations,
         CollectionManager collectionManager,
         string targetCollectionId, bool autoImport)
     {
@@ -43,6 +45,7 @@ public class ImportFilesViewModel : ViewModelBase, IDisposable
         _importFolderDialogFactory = importFolderDialogFactory;
         _folderFactory = folderFactory;
         _codexCollectionOperations = codexCollectionOperations;
+        _codexOperations = codexOperations;
         _collectionManager = collectionManager;
         
         var handle = _collectionManager.LoadCollection(targetCollectionId);
@@ -96,8 +99,17 @@ public class ImportFilesViewModel : ViewModelBase, IDisposable
         
         if (toImport.Any())
         {
-            toImport = await LetUserFilterToImport(toImport);
-            await _codexCollectionOperations.ImportFilesAsync(toImport, _targetCollectionHandle.CollectionVM.Identifier);
+            ImportFolderViewModel? folderImportDialogVm = await LetUserRefineImport(toImport);
+            if (folderImportDialogVm is null) return;
+
+            IList<string> filteredFiles = folderImportDialogVm.GetFilteredFiles(toImport);
+            IList<Codex> importedCodices = await _codexCollectionOperations.ImportFilesAsync(filteredFiles, _targetCollectionHandle.CollectionVM.Identifier);
+
+            //EditCodices opens the single edit window for 1 codex and bulk edit for several
+            if (folderImportDialogVm.OpenEditWindowWhenDone && importedCodices.Any())
+            {
+                await _codexOperations.EditCodices(importedCodices.ToList());
+            }
         }
         else if (!_autoImport)
         {
@@ -159,10 +171,11 @@ public class ImportFilesViewModel : ViewModelBase, IDisposable
     }
 
     /// <summary>
-    /// Shows an ImportFolder dialog if certain conditions are met
+    /// Shows an ImportFolder dialog if certain conditions are met.
+    /// Returns null when the user cancels the dialog.
     /// </summary>
     /// <returns></returns>
-    private async Task<IList<string>> LetUserFilterToImport(IList<string> allFilesToImport)
+    private async Task<ImportFolderViewModel?> LetUserRefineImport(IList<string> allFilesToImport)
     {
         IList<Folder> folders = RecursiveDirectories.Select(_folderFactory.Create)
                                                     .Concat(ExistingFolders)
@@ -170,16 +183,13 @@ public class ImportFilesViewModel : ViewModelBase, IDisposable
         
         var folderImportDialogVm = _importFolderDialogFactory.Create(_autoImport, _TargetCollection.Info, folders, allFilesToImport);
         
-        if (folderImportDialogVm.ShouldShowDialog)
+        if (!folderImportDialogVm.ShouldShowDialog)
         {
-            await WindowManager.OpenModal(folderImportDialogVm);
-            if (!folderImportDialogVm.Finished)
-            {
-                return [];
-            }
+            return folderImportDialogVm;
         }
 
-        return folderImportDialogVm.GetFilteredFiles(allFilesToImport);
+        await WindowManager.OpenModal(folderImportDialogVm);
+        return folderImportDialogVm.Finished ? folderImportDialogVm : null;
     }
 
     public void Dispose()
@@ -196,6 +206,7 @@ public class ImportFilesViewModel : ViewModelBase, IDisposable
         Lazy<TabsViewModel> tabsViewModel,
         FolderFactory folderFactory,
         CodexCollectionOperations codexCollectionOperations,
+        CodexOperations codexOperations,
         Lazy<CollectionManager> collectionManager)
     {
         public ImportFilesViewModel Create(bool autoImport)
@@ -213,7 +224,7 @@ public class ImportFilesViewModel : ViewModelBase, IDisposable
             return new ImportFilesViewModel(
                 logger, ioService, notificationService, 
                 importFolderDialogFactory, folderFactory,
-                codexCollectionOperations, collectionManager.Value,
+                codexCollectionOperations, codexOperations, collectionManager.Value,
                 targetCollectionId, autoImport);
         }
     }

@@ -122,6 +122,12 @@ namespace COMPASS.Common.ViewModels.Modals.Import
             set => SetProperty(ref field, value);
         } = true;
 
+        public bool OpenEditWindowWhenDone
+        {
+            get;
+            set => SetProperty(ref field, value);
+        } = false;
+
         #region Subfolder inclusion
 
         public HierarchicalSelectorViewModel<Folder>? SelectSubfoldersVM { get; }

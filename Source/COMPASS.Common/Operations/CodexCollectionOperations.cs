@@ -123,7 +123,7 @@ public class CodexCollectionOperations(
         return codex;
     }
 
-    public async Task ImportFilesAsync(IList<string> paths, string targetCollectionId)
+    public async Task<IList<Codex>> ImportFilesAsync(IList<string> paths, string targetCollectionId)
     {
         using CollectionHandle targetCollectionHandle = collectionManager.Value.LoadCollection(targetCollectionId)
                                                         ?? throw new LoadException(targetCollectionId);
@@ -140,10 +140,10 @@ public class CodexCollectionOperations(
             })
             .ToList();
 
-        await CreateCodicesAsync(sourceSets, targetCollectionId);
+        return await CreateCodicesAsync(sourceSets, targetCollectionId);
     }
 
-    public async Task CreateCodicesAsync(IList<SourceSet> sourceSets, string? targetCollectionId = null)
+    public async Task<IList<Codex>> CreateCodicesAsync(IList<SourceSet> sourceSets, string? targetCollectionId = null)
     {
         targetCollectionId ??= TabsViewModel.GetInstance().ActiveTab?.CollectionVM.Identifier
                                ?? throw new NoTabException("There is no open tab, so no collection to import the items to");
@@ -152,7 +152,7 @@ public class CodexCollectionOperations(
                                                         ?? throw new LoadException(targetCollectionId);
         var targetCollection = targetCollectionHandle.CollectionVM.Collection;
 
-        if (sourceSets.Count == 0) return;
+        if (sourceSets.Count == 0) return [];
 
         List<Codex> newCodices = [];
 
@@ -175,5 +175,7 @@ public class CodexCollectionOperations(
         {
             codex.NotifyCoverChanged();
         }
+
+        return newCodices;
     }
 }
