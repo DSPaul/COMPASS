@@ -299,32 +299,32 @@
       },
       "Magick.NET-Q8-AnyCPU": {
         "type": "Transitive",
-        "resolved": "14.17.1",
-        "contentHash": "qcRjhaQ6XueNp2ZUAXYcDrCWlWWlzw3VatXmhCKXDpG4MABGJJr5+o1KQqOe1EtSZaDS6hQNAh4nU8XjCENDiw==",
+        "resolved": "14.17.2",
+        "contentHash": "AIvpBH4fvP3/NUwvWsVj9SxAA6hrU4p5/RNfColyrDn4jipl7loR6y4ZgYLXfBQgjmSEc7m2D2DbkWMnZt+brg==",
         "dependencies": {
-          "Magick.NET.Core": "14.17.1"
+          "Magick.NET.Core": "14.17.2"
         }
       },
       "Magick.NET.AvaloniaMediaImaging": {
         "type": "Transitive",
-        "resolved": "1.1.15",
-        "contentHash": "SYFT1uigxk1f+rF1tyJWSolDM1YtvTAOu/VGCoG7wYf4bDS9BP2TozZNZFTKeBXMQKLUFYZgU7UG962APr1cRg==",
+        "resolved": "1.1.16",
+        "contentHash": "21nSidr5o3q4BAjLXLaJwAHj5fQJ4/qrLiSP1EhXz+P1+W21PatP5By1lPdywnIxaGHpWJp7EMB9VBOeS9lh6w==",
         "dependencies": {
           "Avalonia": "12.1.0",
-          "Magick.NET.Core": "14.17.0"
+          "Magick.NET.Core": "14.17.2"
         }
       },
       "Magick.NET.Core": {
         "type": "Transitive",
-        "resolved": "14.17.1",
-        "contentHash": "4BBbU5l5DmdT9isSNGrIE/0VwAh29SoKMSDMiIvFBDqz6vQfG6EYBFJQOemdCH3xkMfesSzImOVPjnyMf/PIqA=="
+        "resolved": "14.17.2",
+        "contentHash": "KKvR6eBUcfgkZpfHfN/UKRcK/FjHW6NXXoRRf5HJdhFk5bYLEEFuKu6op0zfNo6Msah51Yw42p599pz3A0CDQQ=="
       },
       "Magick.NET.SystemDrawing": {
         "type": "Transitive",
-        "resolved": "8.0.27",
-        "contentHash": "iE24YlBA2+O5THEA0+IpLLwfNldN1MKjcvSGYKw2sYY7KLBvXXguJ0zLH6lp3jyK3Whi+MFVJTEYGQ4QlDeKwA==",
+        "resolved": "8.0.28",
+        "contentHash": "R9jpF/nxcPwDOYmexU0pcxTzM74aGCnBeAd/2R4B27trL/cqaQ2/i3YCi6wns8kvvTcmzkndRYx2rsHAwoeq+Q==",
         "dependencies": {
-          "Magick.NET.Core": "14.17.1",
+          "Magick.NET.Core": "14.17.2",
           "System.Drawing.Common": "8.0.29"
         }
       },
@@ -522,16 +522,16 @@
       },
       "Selenium.Support": {
         "type": "Transitive",
-        "resolved": "4.49.0",
-        "contentHash": "NOU5gXJ0MudmeZ6ZfQHMhqHb+qHPptxa5eQD8DJMxHn9fUTWBp/73xrwHhTBtAMfe2uczuYJn2isTmGsMd3t5A==",
+        "resolved": "4.50.0",
+        "contentHash": "2XOu51CULudkhL3jVab6yJ42lEXBsuh2Ww7GntOluzCSCasmrdZXgGp4lnBuzKd4lqbrhv+CPq1p9x8KYuQ37Q==",
         "dependencies": {
-          "Selenium.WebDriver": "4.49.0"
+          "Selenium.WebDriver": "4.50.0"
         }
       },
       "Selenium.WebDriver": {
         "type": "Transitive",
-        "resolved": "4.49.0",
-        "contentHash": "WsqfFJ4mvOeUoI0mD1208tc9SgmjI0c90RdpWXqnosksCwo0+dQWf/3LqeewDDAVzpbIbtfhEetdpBhjDpkdzg=="
+        "resolved": "4.50.0",
+        "contentHash": "4D7SYT9u25xHk7KYI7cyd1vQnv04jUAKkGWi2Ia6RUj2SDzYLhlTMZ7uknliS/HNu+WELewsugY/fLUaYpMVNA=="
       },
       "Serilog": {
         "type": "Transitive",
@@ -693,8 +693,8 @@
           "Avalonia.Themes.Fluent": "[12.1.3, )",
           "COMPASS.Infra.Avalonia": "[2.0.0-beta.3, )",
           "CommandLineParser": "[2.9.1, )",
-          "Magick.NET.AvaloniaMediaImaging": "[1.1.15, )",
-          "Magick.NET.SystemDrawing": "[8.0.27, )",
+          "Magick.NET.AvaloniaMediaImaging": "[1.1.16, )",
+          "Magick.NET.SystemDrawing": "[8.0.28, )",
           "PDFtoImage": "[5.2.1, )",
           "PdfPig": "[0.1.16, )",
           "Svg.Controls.Skia.Avalonia": "[12.0.0.17, )"
@@ -710,12 +710,12 @@
           "CommunityToolkit.Mvvm": "[8.4.2, )",
           "FuzzySharp": "[2.0.2, )",
           "HtmlAgilityPack": "[1.13.0, )",
-          "Magick.NET-Q8-AnyCPU": "[14.17.1, )",
+          "Magick.NET-Q8-AnyCPU": "[14.17.2, )",
           "Microsoft.Extensions.FileSystemGlobbing": "[10.0.12, )",
           "Microsoft.Extensions.Http": "[10.0.12, )",
           "NuGet.Versioning": "[7.9.0, )",
-          "Selenium.Support": "[4.49.0, )",
-          "Selenium.WebDriver": "[4.49.0, )",
+          "Selenium.Support": "[4.50.0, )",
+          "Selenium.WebDriver": "[4.50.0, )",
           "Serilog": "[4.4.0, )",
           "Serilog.Sinks.File": "[7.0.0, )",
           "SharpCompress": "[0.50.4, )"
@@ -791,10 +791,10 @@
       },
       "Magick.NET-Q8-AnyCPU": {
         "type": "Transitive",
-        "resolved": "14.17.1",
-        "contentHash": "qcRjhaQ6XueNp2ZUAXYcDrCWlWWlzw3VatXmhCKXDpG4MABGJJr5+o1KQqOe1EtSZaDS6hQNAh4nU8XjCENDiw==",
+        "resolved": "14.17.2",
+        "contentHash": "AIvpBH4fvP3/NUwvWsVj9SxAA6hrU4p5/RNfColyrDn4jipl7loR6y4ZgYLXfBQgjmSEc7m2D2DbkWMnZt+brg==",
         "dependencies": {
-          "Magick.NET.Core": "14.17.1"
+          "Magick.NET.Core": "14.17.2"
         }
       },
       "Microsoft.Win32.SystemEvents": {
@@ -804,8 +804,8 @@
       },
       "Selenium.WebDriver": {
         "type": "Transitive",
-        "resolved": "4.49.0",
-        "contentHash": "WsqfFJ4mvOeUoI0mD1208tc9SgmjI0c90RdpWXqnosksCwo0+dQWf/3LqeewDDAVzpbIbtfhEetdpBhjDpkdzg=="
+        "resolved": "4.50.0",
+        "contentHash": "4D7SYT9u25xHk7KYI7cyd1vQnv04jUAKkGWi2Ia6RUj2SDzYLhlTMZ7uknliS/HNu+WELewsugY/fLUaYpMVNA=="
       },
       "SkiaSharp.NativeAssets.Linux": {
         "type": "Transitive",

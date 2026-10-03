@@ -29,8 +29,8 @@
     <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.3" />
     <PackageReference Include="CommandLineParser" Version="2.9.1" />
     <PackageReference Include="PdfPig" Version="0.1.16" />
-    <PackageReference Include="Magick.NET.AvaloniaMediaImaging" Version="1.1.15" />
-    <PackageReference Include="Magick.NET.SystemDrawing" Version="8.0.27" />
+    <PackageReference Include="Magick.NET.AvaloniaMediaImaging" Version="1.1.16" />
+    <PackageReference Include="Magick.NET.SystemDrawing" Version="8.0.28" />
     <PackageReference Include="PDFtoImage" Version="5.2.1" />
     <PackageReference Include="Svg.Controls.Skia.Avalonia" Version="12.0.0.17" />
     <PackageReference Include="HotAvalonia" Version="3.1.5" PrivateAssets="All" Publish="True" />
