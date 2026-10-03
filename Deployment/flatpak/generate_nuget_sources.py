@@ -28,9 +28,11 @@ NUGET_CACHE = Path(os.environ.get("NUGET_PACKAGES", Path.home() / ".nuget" / "pa
 
 # Runtime packs required for a self-contained linux-x64 publish.
 # These are not tracked in packages.lock.json but are fetched directly from NuGet.
+# crossgen2 is required when PublishReadyToRun=true (used in info.compassapp.COMPASS.yaml).
 LINUX_RUNTIME_PACKS = (
     "microsoft.netcore.app.runtime.linux-x64",
     "microsoft.netcore.app.host.linux-x64",
+    "microsoft.netcore.app.crossgen2.linux-x64",
     "microsoft.aspnetcore.app.runtime.linux-x64",
 )
 
