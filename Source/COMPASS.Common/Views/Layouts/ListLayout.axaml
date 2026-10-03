@@ -51,8 +51,15 @@
                 <Setter Property="dragdrop:DropBehavior.IsDropTarget" Value="True" />
                 <Setter Property="dragdrop:DropBehavior.DropManager" Value="{Binding DropManager}" />
             </Style>
-            <Style Selector="TextBlock">
+            <Style Selector="DataGridCell > TextBlock">
                 <Setter Property="TextWrapping" Value="Wrap" />
+                <Setter Property="MaxLines" Value="2" />
+                <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+                <Setter Property="ToolTip.Tip" Value="{Binding $self.Text}" />
+                <Style Selector="^ ToolTip > TextBlock">
+                    <!--Reset maxlines back so it does show whole content in tooltip-->
+					<Setter Property="MaxLines" Value="0" />
+                </Style>
             </Style>
         </DataGrid.Styles>
 
