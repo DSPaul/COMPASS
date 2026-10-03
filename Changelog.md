@@ -1,5 +1,13 @@
 # CHANGELOG
-## COMPASS v1.8.10 (23 November 2025)
+## COMPASS v2.0.0-rc.1 (03 October 2026)
+
+### New Features
+
+### Improvements
+
+### Fixes
+
+## COMPASS v1.8.10 (23 November 2025)
 
 ### Improvements
 

@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "COMPASS"
-#define MyAppVersion "2.0.0-beta.3"
+#define MyAppVersion "2.0.0-rc.1"
 #define MyAppPublisher "Paul De Smul"
 #define MyAppURL "https://www.compassapp.info"
 #define MyAppExeName "COMPASS.exe"
