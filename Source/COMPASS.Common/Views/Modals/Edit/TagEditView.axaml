@@ -32,8 +32,7 @@
                 <Grid Grid.Row="0" ColumnDefinitions="Auto, Auto, *, Auto" Margin="10">
                     <TextBlock Grid.Column="0" Text="Linked Folders/URL's" />
                     <controls:Explainer Grid.Column="1"  Margin="10,0">
-                        <!-- TODO -->
-                        This is an explainer for how folder linking works
+                        This tag will automatically be assigned to any file that matches any of the given file path patterns.
                     </controls:Explainer>
                     
                     <controls:IconButton Grid.Column="3"
