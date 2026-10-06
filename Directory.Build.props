@@ -13,4 +13,13 @@
     <AssemblyVersion>2.0.0.0</AssemblyVersion>
     <FileVersion>2.0.0.0</FileVersion>
   </PropertyGroup>
+
+  <!-- Strip third-party .pdb files (e.g. libSkiaSharp.pdb ~82MB, libHarfBuzzSharp.pdb ~20MB)
+       from publish output. Keeps much smaller COMPASS*.pdb files so user logs still include file/line info. 
+       Applies to `dotnet publish` everywhere so no per-packaging exclusions are needed. -->
+  <Target Name="ExcludeThirdPartyPdbsFromPublish" AfterTargets="ComputeFilesToPublish">
+    <ItemGroup>
+      <ResolvedFileToPublish Remove="@(ResolvedFileToPublish)" Condition="'%(Extension)' == '.pdb' And !$([System.String]::Copy('%(Filename)').StartsWith('COMPASS'))" />
+    </ItemGroup>
+  </Target>
 </Project>
