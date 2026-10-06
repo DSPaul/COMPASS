@@ -14,7 +14,7 @@ namespace COMPASS.Common.Models.Preferences
         public bool ShowCodexInfoPanel { get; set; } = true;
         public bool AutoHideCodexInfoPanel { get; set; } = true;
 
-        public string SortProperty { get; set; } = nameof(Codex.Title);
+        public string SortProperty { get; set; } = nameof(Codex.SortingTitle);
         public ListSortDirection SortDirection { get; set; } = ListSortDirection.Ascending;
     }
 }

@@ -325,6 +325,11 @@ namespace COMPASS.Common.ViewModels.Main
             {
                 _logger.Warn("One of the sort property paths does not exist", new MissingMemberException());
             }
+
+            if (SortProperty is null || !possibleSortPropertyNames.Contains(SortProperty))
+            {
+                SortProperty = nameof(CodexViewModel.SortingTitle);
+            }
         }
 
         public void UpdateSortProperty(string sortProperty)
@@ -495,7 +500,7 @@ namespace COMPASS.Common.ViewModels.Main
             }
             catch (Exception ex)
             {
-                _logger.Warn("Something when wrong during filtering", ex);
+                _logger.Warn("Something went wrong during filtering", ex);
             }
         }
         
