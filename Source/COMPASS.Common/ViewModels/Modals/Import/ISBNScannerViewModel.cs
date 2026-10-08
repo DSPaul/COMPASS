@@ -10,7 +10,7 @@ using COMPASS.Common.Sources;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Infra.Avalonia.Barcode;
 using COMPASS.Infra.Avalonia.Camera;
-using COMPASS.Infra.Avalonia.Mvvm;
+using COMPASS.Infra.Avalonia.Modal;
 using COMPASS.Infra.DependencyInjection;
 using System.Collections.ObjectModel;
 namespace COMPASS.Common.ViewModels.Modals.Import

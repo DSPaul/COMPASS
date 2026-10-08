@@ -3,9 +3,9 @@ using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
-using COMPASS.Infra.Avalonia.Mvvm;
 using COMPASS.Infra.DependencyInjection;
 using COMPASS.Infra.Logging;
+
 namespace COMPASS.Infra.Avalonia.Modal;
 
 public partial class ModalWindow : Window

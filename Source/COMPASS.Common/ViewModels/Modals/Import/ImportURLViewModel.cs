@@ -7,7 +7,6 @@ using COMPASS.Common.Sources;
 using COMPASS.Common.ViewModels.Import;
 using COMPASS.Common.ViewModels.Modals.Edit;
 using COMPASS.Infra.Avalonia.Modal;
-using COMPASS.Infra.Avalonia.Mvvm;
 using COMPASS.Infra.DependencyInjection;
 using COMPASS.Infra.Logging;
 using COMPASS.Infra.Web;

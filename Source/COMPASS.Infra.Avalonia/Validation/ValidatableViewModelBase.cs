@@ -1,11 +1,11 @@
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
-using COMPASS.Infra.Avalonia.Mvvm;
+using COMPASS.Infra.Avalonia.Modal;
 using COMPASS.Infra.Avalonia.Threading;
 using System.Collections;
 using System.ComponentModel;
 
-namespace COMPASS.Infra.Avalonia.Wizard;
+namespace COMPASS.Infra.Avalonia.Validation;
 
 /// <summary>
 /// View-model base with touched-tracking validation (INotifyDataErrorInfo).

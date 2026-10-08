@@ -1,7 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Models;
-using COMPASS.Infra.Avalonia.Mvvm;
+using COMPASS.Infra.Avalonia.Modal;
 using COMPASS.Infra.Collections;
 using COMPASS.Infra.DependencyInjection;
 using COMPASS.Infra.IO;

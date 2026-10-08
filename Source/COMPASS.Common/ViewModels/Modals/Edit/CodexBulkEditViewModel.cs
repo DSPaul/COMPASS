@@ -3,9 +3,10 @@ using COMPASS.Common.Exceptions;
 using COMPASS.Common.Models;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.ModelVMs;
-using COMPASS.Infra.Avalonia.Mvvm;
+using COMPASS.Infra.Avalonia.Modal;
 using COMPASS.Infra.Collections;
 using System.Collections.ObjectModel;
+
 namespace COMPASS.Common.ViewModels.Modals.Edit
 {
     public class CodexBulkEditViewModel : ViewModelBase, IConfirmable, IModalViewModel

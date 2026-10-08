@@ -1,6 +1,5 @@
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
-using COMPASS.Infra.Avalonia.Mvvm;
 using COMPASS.Infra.DependencyInjection;
 using COMPASS.Infra.Web;
 

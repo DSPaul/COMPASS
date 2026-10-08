@@ -1,8 +1,9 @@
 using CommunityToolkit.Mvvm.Input;
-using COMPASS.Infra.Avalonia.Mvvm;
+using COMPASS.Infra.Avalonia.Modal;
 using COMPASS.Infra.Collections;
 using System.Collections.Specialized;
 using System.ComponentModel;
+
 namespace COMPASS.Infra.Avalonia.Wizard
 {
     public abstract class WizardViewModel : ValidatableViewModelBase, IModalViewModel

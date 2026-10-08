@@ -47,7 +47,7 @@ public class ProgressTrackingManagerTests
         var workException = new InvalidOperationException("boom");
         ProgressTracker tracker = new(Quantities.Items());
 
-        Assert.ThrowsAsync<InvalidOperationException>(async () =>
+        await Assert.ThrowsAsync<InvalidOperationException>(async () =>
             await _manager.RunAsync(tracker, "Doing stuff", (_, _) => Task.FromException(workException)));
 
         Assert.That(_manager.GetSnapshot(), Is.Empty);

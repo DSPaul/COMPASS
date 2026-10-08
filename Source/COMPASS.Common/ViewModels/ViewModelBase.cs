@@ -1,7 +1,7 @@
 using COMPASS.Common.Exceptions;
 using COMPASS.Common.Models;
 using COMPASS.Common.ViewModels.Main;
-using COMPASS.Infra.Avalonia.Wizard;
+using COMPASS.Infra.Avalonia.Validation;
 
 namespace COMPASS.Common.ViewModels
 {

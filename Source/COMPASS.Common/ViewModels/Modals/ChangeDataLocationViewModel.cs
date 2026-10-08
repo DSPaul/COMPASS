@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Models.Enums;
-using COMPASS.Infra.Avalonia.Mvvm;
+using COMPASS.Infra.Avalonia.Modal;
+
 namespace COMPASS.Common.ViewModels.Modals;
 
 public class ChangeDataLocationViewModel : ViewModelBase, IModalViewModel

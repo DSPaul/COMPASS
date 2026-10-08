@@ -1,3 +1,5 @@
+using COMPASS.Infra.Avalonia.Validation;
+
 namespace COMPASS.Infra.Avalonia.Wizard;
 
 public class WizardStepViewModel : ValidatableViewModelBase

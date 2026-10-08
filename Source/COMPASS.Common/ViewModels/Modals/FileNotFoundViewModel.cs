@@ -3,10 +3,11 @@ using COMPASS.Common.Models;
 using COMPASS.Common.Operations;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Infra.Avalonia.Files;
-using COMPASS.Infra.Avalonia.Mvvm;
+using COMPASS.Infra.Avalonia.Modal;
 using COMPASS.Infra.DependencyInjection;
 using COMPASS.Infra.IO;
 using COMPASS.Infra.Logging;
+
 namespace COMPASS.Common.ViewModels.Modals
 {
     public class FileNotFoundViewModel : ViewModelBase, IModalViewModel

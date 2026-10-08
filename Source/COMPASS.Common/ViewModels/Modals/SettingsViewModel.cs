@@ -8,7 +8,7 @@ using COMPASS.Common.ViewModels.Import;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Infra.Application;
 using COMPASS.Infra.Avalonia.Files;
-using COMPASS.Infra.Avalonia.Mvvm;
+using COMPASS.Infra.Avalonia.Modal;
 using COMPASS.Infra.Collections;
 using COMPASS.Infra.DependencyInjection;
 using COMPASS.Infra.IO;

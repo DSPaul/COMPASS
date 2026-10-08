@@ -1,6 +1,6 @@
 using CommunityToolkit.Mvvm.Input;
 
-namespace COMPASS.Infra.Avalonia.Mvvm
+namespace COMPASS.Infra.Avalonia.Modal
 {
     public interface IConfirmable
     {

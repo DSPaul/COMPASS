@@ -6,9 +6,10 @@ using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.ModelVMs;
 using COMPASS.Common.ViewModels.Selection;
-using COMPASS.Infra.Avalonia.Mvvm;
+using COMPASS.Infra.Avalonia.Modal;
 using COMPASS.Infra.Collections;
 using COMPASS.Infra.DependencyInjection;
+
 namespace COMPASS.Common.ViewModels.Modals.Import
 {
     public class ImportTagsViewModel : ViewModelBase, IDisposable, IModalViewModel, IConfirmable
