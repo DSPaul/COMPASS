@@ -56,13 +56,14 @@
                         <StackPanel Orientation="Vertical">
                             <Grid>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" MaxWidth="200" />
+                                    <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
-                                <Panel Grid.Column="0">
+                                <Panel Grid.Column="0" ClipToBounds="True">
                                     <controls:RoundedImage Source="{Binding Thumbnail^, Mode=OneWay}"
                                             Stretch="UniformToFill" HorizontalAlignment="Center"
-                                            MaxHeight="{Binding Bounds.Height, ElementName=PropGrid}"
+                                            Width="120"
+                                            Height="{Binding Bounds.Height, ElementName=PropGrid}"
                                             CornerRadius="5,0,0,0"/>
                                     <Border VerticalAlignment="Bottom" Height="25"
                                             IsVisible="{Binding $parent[ListBox].((vm:CardLayoutViewModel)DataContext).Preferences.ShowFileIcons}">
@@ -111,8 +112,6 @@
                                                 <Setter Property="FontSize" Value="14" />
                                                 <Setter Property="Foreground" Value="{StaticResource TextColor}" />
                                                 <Setter Property="Margin" Value="3,2" />
-                                                <Setter Property="TextWrapping" Value="Wrap" />
-                                                <Setter Property="MaxLines" Value="2" />
                                                 <Setter Property="TextTrimming" Value="CharacterEllipsis" />
                                             </Style>
                                         </Grid.Styles>
@@ -143,7 +142,7 @@
                                     </Grid>
                                 </Border>
                             </Grid>
-                            <Rectangle Fill="{StaticResource AccentColor}" Height="3" />
+                            <Rectangle Fill="{StaticResource AccentColorMuted}" Height="3" />
                             <ItemsControl Foreground="Black" Margin="10,3" MinHeight="20"
                                           ItemsSource="{Binding OrderedTags, Mode=OneWay}"
                                           Background="Transparent" BorderBrush="{x:Null}"

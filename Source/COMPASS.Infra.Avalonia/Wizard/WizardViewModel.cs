@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Infra.Avalonia.Modal;
+using COMPASS.Infra.Avalonia.Validation;
 using COMPASS.Infra.Collections;
 using System.Collections.Specialized;
 using System.ComponentModel;
