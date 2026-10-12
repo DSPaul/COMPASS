@@ -202,15 +202,20 @@ public class CodexCollectionVM : ModelViewModelBase<CodexCollection>
     
     public async Task AutoImport()
     {
+        var autoImportFolders = Collection.Info.AutoImportFolders.Flatten().ToList();
+        if(autoImportFolders.Count == 0)
+        {
+            return;
+        }
+
         // Created and configured on the calling (UI) thread; only the scan + import run in the background.
         ImportFilesViewModel folderImportVM = _importFilesViewModelFactory.Create(autoImport: true);
-        folderImportVM.NonRecursiveDirectories = Collection.Info.AutoImportFolders.Flatten().Select(f => f.FullPath).ToList() ?? [];
-
+        folderImportVM.NonRecursiveDirectories = autoImportFolders.Select(f => f.FullPath).ToList() ?? [];
         ProgressTracker autoImportProgressTracker = new(Quantities.Items());
 
         try
         {
-            await _progressTrackingManager.RunAsync(autoImportProgressTracker, $"Importing dicovered file...",
+            await _progressTrackingManager.RunAsync(autoImportProgressTracker, $"Scanning for new files...",
                 async (_, cancellationToken) =>
                 {
                     //Check for any new folders
