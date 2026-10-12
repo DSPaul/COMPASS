@@ -10,15 +10,16 @@ public interface ICoverService
     /// Fetches a cover image for the given codex
     /// </summary>
     /// <exception cref="System.OperationCanceledException"></exception>
-    Task GetAndApplyCover(Codex codex, ChooseMetadataViewModel? chooseMetadataViewModel = null, CancellationToken cancellationToken = default);
+    Task FetchAndApplyCover(Codex codex, ChooseMetadataViewModel? chooseMetadataViewModel = null, CancellationToken cancellationToken = default);
 
-    Task GetAndApplyCover(List<Codex> codices);
+    Task FetchAndApplyCovers(List<Codex> codices);
 
-    Task SaveCover(Codex destCodex, IMagickImage image);
+    Task ApplyCover(Codex destCodex, string imagePath, CancellationToken cancellationToken = default);
+    Task ApplyCover(Codex destCodex, IMagickImage image, CancellationToken cancellationToken = default);
 
-    MagickImage? GetCoverFromImage(string imagePath);
-
-    IMagickImage? CreateThumbnail(Codex c, IMagickImage? image = null);
-
-    string GetThumbnailPath(Codex c);
+    /// <summary>
+    /// Ensures an up to date thumbnail exists on disk for the given codex.
+    /// Regens if outdated, missing or corrupt. 
+    /// </summary>
+    string? EnsureThumbnailFile(Codex codex);
 }

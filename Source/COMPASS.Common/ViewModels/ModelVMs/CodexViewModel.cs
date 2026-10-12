@@ -231,37 +231,23 @@ public class CodexViewModel : ModelViewModelBase<Codex>
     {
         try
         {
-            // Invalidate stale thumbnail: if the cover art was updated after the thumbnail was generated, delete it
-            var thumbnailPath = _coverService.GetThumbnailPath(_model);
-            if (File.Exists(thumbnailPath) && File.Exists(_model.CoverArtPath) &&
-                File.GetLastWriteTimeUtc(_model.CoverArtPath) > File.GetLastWriteTimeUtc(thumbnailPath))
+            return await Task.Run(() =>
             {
-                File.Delete(thumbnailPath);
-            }
-
-            if (File.Exists(thumbnailPath))
-            {
-                return await Task.Run(() => _thumbnail = new Bitmap(thumbnailPath));
-            }
-            else if(File.Exists(_model.CoverArtPath))
-            {
-                return await Task.Run(() =>
+                string? thumbnailPath = _coverService.EnsureThumbnailFile(_model);
+                if (thumbnailPath != null)
                 {
-                    using var thumbnail = _coverService.CreateThumbnail(_model);
-                    if(thumbnail == null)
-                    {
-                        return null;
-                    }
-                    using MemoryStream ms = new();
-                    thumbnail?.Write(ms);
-                    ms.Position = 0;
-                    return _thumbnail = new Bitmap(ms);
-                });
-            }
-            else
-            {
+                    return _thumbnail = new Bitmap(thumbnailPath);
+                }
+
+                // Cover exists but thumbnail could not be created (e.g. corrupt cover
+                // that is being re-fetched) -> blank for now, CoverChanged will retry.
+                if (File.Exists(_model.CoverArtPath))
+                {
+                    return null;
+                }
+
                 return _thumbnail = AssetsService.GetPlaceholder(_model);
-            }
+            });
         }
         catch (Exception ex)
         {

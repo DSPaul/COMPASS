@@ -34,17 +34,17 @@ public class CoverStorageServiceTests
     }
 
     [Test]
-    public void InitCodexImagePaths_SetsExpectedPath()
+    public void GetCoverPath_GetExpectedPath()
     {
         var container = BuildContainer();
 
         var collection = new CodexCollection(_testCollectionName);
         var codex = new Codex(collection) { Id = 42 };
         var coverStorageService = container.Resolve<ICoverStorageService>();
-        coverStorageService.InitCodexImagePaths(codex);
+        string coverPath = coverStorageService.GetCoverPath(collection, codex);
 
-        Assert.That(codex.CoverArtPath, Does.Contain(_testCollectionName));
-        Assert.That(codex.CoverArtPath, Does.EndWith("42.png"));
+        Assert.That(coverPath, Does.Contain(_testCollectionName));
+        Assert.That(coverPath, Does.EndWith("42.png"));
     }
 
     [Test]

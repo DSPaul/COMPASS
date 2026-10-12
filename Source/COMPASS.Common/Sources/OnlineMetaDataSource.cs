@@ -2,6 +2,7 @@ using COMPASS.Common.Models;
 using COMPASS.Infra.Logging;
 using COMPASS.Infra.Preferences;
 using COMPASS.Infra.Web;
+using ImageMagick;
 using OpenQA.Selenium;
 
 namespace COMPASS.Common.Sources
@@ -16,7 +17,14 @@ namespace COMPASS.Common.Sources
         IWebDriverService webDriverService) : MetadataSource(logger, preferencesService)
     {
         protected IWebService WebService => webService;
-        protected private async Task<WebDriver?> GetWebDriverAsync(CancellationToken cancellationToken = default) => await webDriverService.GetWebDriver(cancellationToken).ConfigureAwait(false);
+        protected private async Task<WebDriver?> GetWebDriverAsync(CancellationToken cancellationToken = default) => 
+            await webDriverService.GetWebDriver(cancellationToken).ConfigureAwait(false);
+
+        protected IMagickImage<byte> Screenshot(IWebDriver driver, IWebElement element) =>
+            webDriverService.GetCroppedScreenshot(driver, element);
+
+        protected IMagickImage<byte> Screenshot(IWebDriver driver, System.Drawing.Point location, System.Drawing.Size size) =>
+            webDriverService.GetCroppedScreenshot(driver, location, size);
 
         /// <summary>
         /// The prefix of the URL for this source. For example, "https://www.example.com/metadata/".

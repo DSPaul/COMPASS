@@ -1,6 +1,6 @@
-using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
+using COMPASS.Infra.Image;
 using COMPASS.Infra.IO;
 using COMPASS.Infra.Logging;
 using COMPASS.Infra.Preferences;
@@ -10,12 +10,12 @@ namespace COMPASS.Common.Sources
 {
     public class ImageMetadataSource : MetadataSource
     {
-        private readonly ICoverService _coverService;
+        private readonly IImageService _imageService;
 
-        public ImageMetadataSource(ILogger logger, IPreferencesService preferencesService, ICoverService coverService) :  
+        public ImageMetadataSource(ILogger logger, IPreferencesService preferencesService, IImageService imageService) :  
             base(logger, preferencesService) 
         {
-            _coverService = coverService;
+            _imageService = imageService;
         }
         
         public override MetadataSourceType Type => MetadataSourceType.Image;
@@ -31,7 +31,7 @@ namespace COMPASS.Common.Sources
 
             return Task.FromResult(metaData);
         }
-        public override async Task<IMagickImage<byte>?> FetchCover(SourceSet sources, CancellationToken cancellationToken = default) => await Task.Run(() => 
-            _coverService.GetCoverFromImage(sources.Path), cancellationToken);
+        public override async Task<IMagickImage<byte>?> FetchCover(SourceSet sources, CancellationToken cancellationToken = default) 
+            => await _imageService.LoadImageAsync(sources.Path, cancellationToken);
     }
 }

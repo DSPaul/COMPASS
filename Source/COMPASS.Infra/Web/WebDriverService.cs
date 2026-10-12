@@ -1,4 +1,6 @@
 using COMPASS.Infra.Logging;
+using ImageMagick;
+using ImageMagick.Factories;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Edge;
@@ -10,6 +12,9 @@ namespace COMPASS.Infra.Web
 {
     internal class WebDriverService(ILogger logger) : IWebDriverService
     {
+        const int _headlessWindowWidth = 3000;
+        const int _headlessWindowHeight = 3000;
+
         protected Browser _browser;
         protected string _browserPath = "";
         protected enum Browser
@@ -52,9 +57,9 @@ namespace COMPASS.Infra.Web
             List<string> driverArguments =
             [
                 "--headless",
-                "--window-size=3000,3000",
-                "--width=3000",
-                "--height=3000"
+                $"--window-size={_headlessWindowWidth},{_headlessWindowHeight}",
+                $"--width={_headlessWindowWidth}",
+                $"--height={_headlessWindowHeight}"
             ];
 
             WebDriver? webDriver = null;
@@ -120,6 +125,18 @@ namespace COMPASS.Infra.Web
             }
 
             return webDriver;
+        }
+
+        public IMagickImage<byte> GetCroppedScreenshot(IWebDriver driver, IWebElement element)
+            => GetCroppedScreenshot(driver, element.Location, element.Size);
+
+        public IMagickImage<byte> GetCroppedScreenshot(IWebDriver driver, System.Drawing.Point location, System.Drawing.Size size)
+        {
+            Screenshot screenshot = ((ITakesScreenshot)driver).GetScreenshot();
+            var imageFactory = new MagickImageFactory();
+            using var fullScreenshot = imageFactory.Create(screenshot.AsByteArray);
+            fullScreenshot.Resize(_headlessWindowWidth, _headlessWindowHeight); //same size as headless window
+            return fullScreenshot.CloneArea(location.X, location.Y, (uint)size.Width, (uint)size.Height);
         }
 
         private async Task GetPreferredBrowser()

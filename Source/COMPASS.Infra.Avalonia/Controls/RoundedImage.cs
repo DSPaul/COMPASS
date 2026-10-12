@@ -6,7 +6,7 @@ using COMPASS.Infra.Logging;
 
 namespace COMPASS.Infra.Avalonia.Controls
 {
-    public class RoundedImage : Image
+    public class RoundedImage : global::Avalonia.Controls.Image
     {
         public static readonly AttachedProperty<CornerRadius> CornerRadiusProperty =
             AvaloniaProperty.RegisterAttached<RoundedImage, CornerRadius>(

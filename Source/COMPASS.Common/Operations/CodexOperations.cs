@@ -657,12 +657,12 @@ namespace COMPASS.Common.Operations
         public async Task GetCover(Codex? codex)
         {
             if (codex is null) return;
-            await coverService.GetAndApplyCover(codex);
+            await coverService.FetchAndApplyCover(codex);
         }
 
         public AsyncRelayCommand<IList> GetCoverBulkCommand => field ??= new(GetCoverBulk);
         private async Task GetCoverBulk(IList? items) =>
-            await coverService.GetAndApplyCover(GatherCodices(items) ?? []);
+            await coverService.FetchAndApplyCovers(GatherCodices(items) ?? []);
         
         public async void HandleKeyDownOnCodex(IList? selectedItems, KeyEventArgs e)
         {

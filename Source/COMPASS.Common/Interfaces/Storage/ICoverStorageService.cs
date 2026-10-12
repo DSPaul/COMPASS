@@ -4,7 +4,9 @@ namespace COMPASS.Common.Interfaces.Storage;
 
 public interface ICoverStorageService
 {
-    void InitCodexImagePaths(Codex codex);
+    string GetCoverPath(CodexCollection collection, Codex codex);
+
+    string GetThumbnailPath(Codex codex);
     
     /// <summary>
     /// Copies the full res cover to the new collection

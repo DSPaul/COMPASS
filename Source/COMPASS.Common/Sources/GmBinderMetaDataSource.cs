@@ -1,6 +1,5 @@
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
-using COMPASS.Common.Services;
 using COMPASS.Infra.Logging;
 using COMPASS.Infra.Preferences;
 using COMPASS.Infra.Web;
@@ -62,7 +61,7 @@ namespace COMPASS.Common.Sources
                 await driver.Navigate().GoToUrlAsync(sources.SourceURL).ConfigureAwait(false);
                 IWebElement coverPage = driver.FindElement(By.Id("p1"));
                 //screenshot and download the image
-                return CoverService.GetCroppedScreenShot(driver, coverPage);
+                return Screenshot(driver, coverPage);
             }
             catch (Exception ex)
             {

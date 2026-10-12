@@ -28,7 +28,7 @@ namespace COMPASS.Common.Models.CodexProperties
         public async Task ApplyAsync(SourceMetadata source, Codex target, ICoverService coverService)
         {
             if (source.Cover == null) return;
-            await coverService.SaveCover(target, source.Cover);
+            await coverService.ApplyCover(target, source.Cover);
             source.Cover.Dispose();
         }
 
@@ -54,12 +54,19 @@ namespace COMPASS.Common.Models.CodexProperties
 
         private MagickImage? GetCover(IHasCodexMetadata hasCodexMetadata)
         {
-            return hasCodexMetadata switch
+            try
             {
-                Codex c => new(c.CoverArtPath),
-                SourceMetadata md => md.Cover is IMagickImage<byte> mi ? new MagickImage(mi) : null,
-                _ => null
-            };
+                return hasCodexMetadata switch
+                {
+                    Codex c => new(c.CoverArtPath),
+                    SourceMetadata md => md.Cover is IMagickImage<byte> mi ? new MagickImage(mi) : null,
+                    _ => null
+                };
+            }
+            catch(Exception)
+            {
+                return null;
+            }
         }
     }
 }

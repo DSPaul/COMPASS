@@ -1,4 +1,3 @@
-using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Infra.IO;
@@ -8,23 +7,15 @@ namespace COMPASS.Common.Services.Storage;
 
 public class CoverStorageService(
     IApplicationDataService applicationDataService,
-    ICoverService coverService,
     IIOService ioService,
     ILogger logger) 
     : ICoverStorageService
 {
     private readonly string _collectionsPath = Path.Combine(applicationDataService.UserDataPath, Constants.DIR_COLLECTIONS);
 
-    private string CoverArtDirectory(CodexCollection collection) => Path.Combine(_collectionsPath, collection.Name, Constants.DIR_COVERS);
-    private string DefaultCoverArtPath(Codex codex) => Path.Combine(CoverArtDirectory(codex.Collection), $"{codex.Id}.png");
+    public string GetCoverPath(CodexCollection collection, Codex codex) => Path.Combine(GetCoverArtDirectory(collection), $"{codex.Id}.png");
+    public string GetThumbnailPath(Codex codex) => Path.Combine(GetThumbnailDirectory(), $"{codex.GlobalId}.png");
 
-    private bool EnsureDirectoriesExists(CodexCollection collection) => ioService.EnsureDirectoryExists(CoverArtDirectory(collection));
-
-    public void InitCodexImagePaths(Codex codex)
-    {
-        codex.CoverArtPath = DefaultCoverArtPath(codex);
-    }
-    
     public void MoveCodexDataToCollection(Codex codex, CodexCollection targetCollection, bool copy = false)
     {
         bool dirsExist = EnsureDirectoriesExists(targetCollection);
@@ -35,7 +26,7 @@ public class CoverStorageService(
             return;
         }
 
-        string newCoverPath = Path.Combine(CoverArtDirectory(targetCollection), $"{codex.Id}.png");
+        string newCoverPath = GetCoverPath(targetCollection, codex);
 
         //Move Cover file
         try
@@ -74,7 +65,7 @@ public class CoverStorageService(
     {
         foreach (Codex codex in collection.AllCodices)
         {
-            codex.CoverArtPath = DefaultCoverArtPath(codex);
+            codex.CoverArtPath = GetCoverPath(collection, codex);
         }
     }
     
@@ -83,12 +74,12 @@ public class CoverStorageService(
         //Cleanup codex files, take care not to remove user files
         try
         {
-            if (codex.CoverArtPath.StartsWith(CoverArtDirectory(codex.Collection)))
+            if (codex.CoverArtPath.StartsWith(GetCoverArtDirectory(codex.Collection)))
             {
                 File.Delete(codex.CoverArtPath);
             }
 
-            var thumbnailPath = coverService.GetThumbnailPath(codex);
+            var thumbnailPath = GetThumbnailPath(codex);
             File.Delete(thumbnailPath);
         }
         catch(Exception ex)
@@ -98,5 +89,15 @@ public class CoverStorageService(
             //not a big deal as it will just get overwritten in case of the cover when a new codex gets the freed id
             //or be an orphaned thumbnail in case of the thumbnail, so we can just ignore any exceptions here
         }
+    }
+
+    private string GetCoverArtDirectory(CodexCollection collection) => Path.Combine(_collectionsPath, collection.Name, Constants.DIR_COVERS);
+    private string GetThumbnailDirectory() => Path.Combine(IApplicationDataService.ApplicationDataPath, Constants.DIR_THUMBNAILS);
+
+    private bool EnsureDirectoriesExists(CodexCollection collection)
+    {
+        bool coverDirExists = ioService.EnsureDirectoryExists(GetCoverArtDirectory(collection));
+        bool thumbnailDirExists = ioService.EnsureDirectoryExists(GetThumbnailDirectory());
+        return coverDirExists && thumbnailDirExists;
     }
 }

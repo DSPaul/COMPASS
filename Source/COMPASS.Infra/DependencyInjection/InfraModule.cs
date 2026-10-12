@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using COMPASS.Infra.Image;
 using COMPASS.Infra.Logging;
 using COMPASS.Infra.Progress;
 using COMPASS.Infra.Updates;
@@ -18,6 +19,9 @@ namespace COMPASS.Infra.DependencyInjection
 
             //Updates
             builder.RegisterType<UpdateManager>().AsSelf().SingleInstance();
+
+            //Image
+            builder.RegisterType<ImageService>().As<IImageService>().SingleInstance();
 
             //Web
             builder.RegisterType<ConnectivityHandler>().AsSelf();

@@ -222,7 +222,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             //get the cover
             try
             {
-                await _coverService.GetAndApplyCover(WorkingCopy.GetModel());
+                await _coverService.FetchAndApplyCover(WorkingCopy.GetModel());
             }
             finally
             {
@@ -245,11 +245,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             if (files.Any())
             {
                 using var file = files.Single();
-                var img = _coverService.GetCoverFromImage(file.Path.LocalPath);
-                if (img != null)
-                {
-                    await _coverService.SaveCover(WorkingCopy.GetModel(), img);
-                }
+                await _coverService.ApplyCover(WorkingCopy.GetModel(), file.Path.LocalPath, CancellationToken.None);
                 WorkingCopy.LoadCover();
             }
         }
@@ -279,11 +275,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
                 && FileFormatUtils.IsImageFile(files[0].Path.LocalPath))
             {
                 string path = files[0].Path.LocalPath;
-                var img = _coverService.GetCoverFromImage(path);
-                if (img != null)
-                {
-                    await _coverService.SaveCover(WorkingCopy.GetModel(), img);
-                }
+                await _coverService.ApplyCover(WorkingCopy.GetModel(), path, CancellationToken.None);
                 WorkingCopy.LoadCover();
             }
         }

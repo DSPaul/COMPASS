@@ -1,6 +1,5 @@
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
-using COMPASS.Common.Services;
 using COMPASS.Infra.Logging;
 using COMPASS.Infra.Preferences;
 using COMPASS.Infra.Text;
@@ -91,7 +90,7 @@ namespace COMPASS.Common.Sources
                 location.Y += coverPage.Location.Y;
 
                 //screenshot and download the image
-                return CoverService.GetCroppedScreenShot(driver, location, coverPage.Size) as MagickImage;
+                return Screenshot(driver, location, coverPage.Size);
             }
             catch (Exception ex)
             {

@@ -117,9 +117,11 @@ public class CodexCollectionOperations(
 
     public Codex CreateNewCodex(CodexCollection collection)
     {
-        var codex = new Codex(collection);
-        codex.Id = IdGenerator.GetAvailableId(collection.AllCodices);
-        coverStorageService.InitCodexImagePaths(codex);
+        var codex = new Codex(collection)
+        {
+            Id = IdGenerator.GetAvailableId(collection.AllCodices)
+        };
+        codex.CoverArtPath = coverStorageService.GetCoverPath(collection, codex);
         return codex;
     }
 
@@ -169,7 +171,7 @@ public class CodexCollectionOperations(
 
         //now get metadata and cover async
         await codexOperations.FetchMetadata(newCodices);
-        await coverService.GetAndApplyCover(newCodices);
+        await coverService.FetchAndApplyCovers(newCodices);
 
         foreach (Codex codex in newCodices)
         {

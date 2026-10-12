@@ -158,7 +158,7 @@ public class ImportExportService(
             //Image paths need to be updated to point to the dir where the files where extracted
             foreach(var codex in collection.AllCodices)
             {
-                coverStorageService.InitCodexImagePaths(codex);
+                codex.CoverArtPath = coverStorageService.GetCoverPath(collection, codex);
             }
 
             xmlservice.SaveCodices(collection);
