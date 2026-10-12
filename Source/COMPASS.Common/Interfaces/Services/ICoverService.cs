@@ -19,4 +19,6 @@ public interface ICoverService
     MagickImage? GetCoverFromImage(string imagePath);
 
     IMagickImage? CreateThumbnail(Codex c, IMagickImage? image = null);
+
+    string GetThumbnailPath(Codex c);
 }

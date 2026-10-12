@@ -1,3 +1,4 @@
+using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Infra.IO;
@@ -7,6 +8,7 @@ namespace COMPASS.Common.Services.Storage;
 
 public class CoverStorageService(
     IApplicationDataService applicationDataService,
+    ICoverService coverService,
     IIOService ioService,
     ILogger logger) 
     : ICoverStorageService
@@ -86,7 +88,8 @@ public class CoverStorageService(
                 File.Delete(codex.CoverArtPath);
             }
 
-            File.Delete(codex.ThumbnailPath);
+            var thumbnailPath = coverService.GetThumbnailPath(codex);
+            File.Delete(thumbnailPath);
         }
         catch(Exception ex)
         {

@@ -2,7 +2,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using COMPASS.Common.Attributes;
 using COMPASS.Infra.Avalonia.Threading;
 using COMPASS.Infra.Collections;
-using COMPASS.Infra.IO;
 using COMPASS.Infra.Objects;
 using COMPASS.Infra.Text;
 using System.Collections.ObjectModel;
@@ -44,8 +43,6 @@ namespace COMPASS.Common.Models
             get => _coverArtPath;
             set => SetProperty(ref _coverArtPath, value);
         }
-
-        public string ThumbnailPath => Path.Combine(IApplicationDataService.ApplicationDataPath, Constants.DIR_THUMBNAILS, $"{GlobalId}.png");
 
         #endregion
 

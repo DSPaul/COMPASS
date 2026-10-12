@@ -224,9 +224,10 @@ namespace COMPASS.Common.Services
             image.Thumbnail(newWidth, newHeight);
 
             //create thumbnail
-            if (ioService.EnsureDirectoryExists(c.ThumbnailPath))
+            string path = GetThumbnailPath(c);
+            if (ioService.EnsureDirectoryExists(path))
             {
-                image.Write(c.ThumbnailPath);
+                image.Write(path);
             }
 
             return image;
@@ -279,6 +280,12 @@ namespace COMPASS.Common.Services
             using var img = mf.Create(ss.AsByteArray);
             img.Resize(3000, 3000); //same size as headless window
             return img.CloneArea(location.X, location.Y, (uint)size.Width, (uint)size.Height);
+        }
+
+        public string GetThumbnailPath(Codex codex)
+        {
+            ArgumentNullException.ThrowIfNull(codex);
+            return Path.Combine(IApplicationDataService.ApplicationDataPath, Constants.DIR_THUMBNAILS, $"{codex.GlobalId}.png");
         }
     }
 }

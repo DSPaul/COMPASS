@@ -232,15 +232,16 @@ public class CodexViewModel : ModelViewModelBase<Codex>
         try
         {
             // Invalidate stale thumbnail: if the cover art was updated after the thumbnail was generated, delete it
-            if (File.Exists(_model.ThumbnailPath) && File.Exists(_model.CoverArtPath) &&
-                File.GetLastWriteTimeUtc(_model.CoverArtPath) > File.GetLastWriteTimeUtc(_model.ThumbnailPath))
+            var thumbnailPath = _coverService.GetThumbnailPath(_model);
+            if (File.Exists(thumbnailPath) && File.Exists(_model.CoverArtPath) &&
+                File.GetLastWriteTimeUtc(_model.CoverArtPath) > File.GetLastWriteTimeUtc(thumbnailPath))
             {
-                File.Delete(_model.ThumbnailPath);
+                File.Delete(thumbnailPath);
             }
 
-            if (File.Exists(_model.ThumbnailPath))
+            if (File.Exists(thumbnailPath))
             {
-                return await Task.Run(() => _thumbnail = new Bitmap(_model.ThumbnailPath));
+                return await Task.Run(() => _thumbnail = new Bitmap(thumbnailPath));
             }
             else if(File.Exists(_model.CoverArtPath))
             {
