@@ -35,9 +35,9 @@ jobs:
 
     - name: Test
       run: |
-        dotnet test Tests/COMPASS.UnitTests --no-restore -v normal --filter Priority!=2
-        dotnet test Tests/COMPASS.IntegrationTests.Common --no-restore -v normal --filter Priority!=2
-        dotnet test Tests/COMPASS.IntegrationTests.Windows --no-restore -v normal --filter Priority!=2
+        dotnet test Tests/COMPASS.UnitTests --no-restore -v normal
+        dotnet test Tests/COMPASS.IntegrationTests.Common --no-restore -v normal
+        dotnet test Tests/COMPASS.IntegrationTests.Windows --no-restore -v normal
 
     - name: Smoke test - launch app and verify it survives startup
       shell: pwsh
@@ -71,9 +71,9 @@ jobs:
 
     - name: Test
       run: |
-        dotnet test Tests/COMPASS.UnitTests --no-restore -v normal --filter Priority!=2
-        dotnet test Tests/COMPASS.IntegrationTests.Common --no-restore -v normal --filter Priority!=2
-        dotnet test Tests/COMPASS.IntegrationTests.Linux --no-restore -v normal --filter Priority!=2
+        dotnet test Tests/COMPASS.UnitTests --no-restore -v normal
+        dotnet test Tests/COMPASS.IntegrationTests.Common --no-restore -v normal
+        dotnet test Tests/COMPASS.IntegrationTests.Linux --no-restore -v normal
 
     - name: Smoke test - launch app and verify it survives startup
       run: |

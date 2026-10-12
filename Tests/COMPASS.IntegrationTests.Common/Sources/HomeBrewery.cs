@@ -34,7 +34,7 @@ public class HomeBrewery
         });
     }
 
-    [Test, Order(2)]
+    [Test]
     public async Task GetCoverFromHomeBrewery()
     {
         //Setup
