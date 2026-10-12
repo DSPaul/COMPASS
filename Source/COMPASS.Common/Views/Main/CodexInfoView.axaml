@@ -44,7 +44,7 @@
                           IsVisible="{Binding #CodexInfoContainer.((vm:CodexInfoViewModel)DataContext).HasDisplayedCodex}"
                           Name="MainGrid" Focusable="True" Margin="5" Width="270"
                           ColumnDefinitions="100,170"
-                          RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto">
+                           RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto">
                         <Grid.Styles>
                             <Style Selector="TextBlock">
                                 <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
@@ -72,9 +72,27 @@
                                 <DropShadowEffect BlurRadius="10"/>
                             </Border.Effect>
                         </Border>
-                        <TextBlock Text="{Binding Title}"
-                                   Grid.ColumnSpan="2" Grid.Row="1"
-                                   FontSize="18" FontWeight="SemiBold"/>
+                        <Grid Grid.ColumnSpan="2" Grid.Row="1" ColumnDefinitions="*,Auto">
+                            <TextBlock Text="{Binding Title}"
+                                       FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                            <Panel Grid.Column="1" VerticalAlignment="Top" Margin="5 10 5 0">
+                                <controls:IconButton Command="{Binding FavoriteCodexCommand}" ToolTip.Tip="Favorite"
+                                                     Background="Transparent" Classes="SmallZoomOnHover"
+                                                     Theme="{StaticResource IconOnly}" Icon="HeartOutline" FontSize="16"
+                                                     IsVisible="{Binding !Favorite}" />
+                                <Button Command="{Binding FavoriteCodexCommand}" ToolTip.Tip="Unfavorite"
+                                        Background="Transparent" BorderThickness="0" Padding="0"
+                                        Classes="SmallZoomOnHover"
+                                        IsVisible="{Binding Favorite}">
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <ContentPresenter Content="{TemplateBinding Content}" />
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                    <materialIcons:MaterialIcon Kind="Heart" Width="16" Height="16" Foreground="IndianRed" />
+                                </Button>
+                            </Panel>
+                        </Grid>
 
                         <Grid Grid.ColumnSpan="2" Grid.Row="2" ColumnDefinitions="Auto,*" Margin="0 0 0 15">
                             <TextBlock Text="By" Margin="5 0" IsVisible="{Binding !!Authors.Count}"/>
@@ -101,12 +119,18 @@
                             <TextBlock Text="{Binding Publisher}" Classes="Link" Margin="5,2"/>
                         </Button>
 
-                        <TextBlock Text="Version:"  Grid.Column="0" Grid.Row="4"/>
-                        <TextBlock Text="{Binding Version}"  Grid.Column="1" Grid.Row="4"/>
+                        <TextBlock Text="Version:"  Grid.Column="0" Grid.Row="4"
+                                   IsVisible="{Binding Version, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+                        <TextBlock Text="{Binding Version}"  Grid.Column="1" Grid.Row="4"
+                                   IsVisible="{Binding Version, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
 
                         <TextBlock Text="Release Date:" Grid.Column="0" Grid.Row="5"/>
                         <TextBlock Text="{Binding ReleaseDateAsString}"
-                                   Grid.Column="1" Grid.Row="5"/>
+                                   Grid.Column="1" Grid.Row="5"
+                                   IsVisible="{Binding ReleaseDateAsString, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+                        <TextBlock Text="Unknown" FontStyle="Italic" Foreground="{StaticResource TextMutedColor}"
+                                   Grid.Column="1" Grid.Row="5"
+                                   IsVisible="{Binding ReleaseDateAsString, Converter={x:Static StringConverters.IsNullOrEmpty}}"/>
 
                         <TextBlock Text="PageCount:"  Grid.Column="0" Grid.Row="6"/>
                         <TextBlock Text="{Binding PageCount}" Grid.Column="1" Grid.Row="6"/>
@@ -117,39 +141,32 @@
                         <TextBlock Text="Rating:"  Grid.Column="0" Grid.Row="8"/>
                         <controls:RatingControl Value="{Binding Rating, Mode=OneWay}" IsEnabled="False" Margin="5" Grid.Column="1" Grid.Row="8"/>
 
-                        <TextBlock Text="Favorite:" Grid.Column="0" Grid.Row="9"/>
-                        <CheckBox Name="FileFavoriteCb" IsChecked="{Binding Favorite, Mode=OneWay}"
-                                  Grid.Column="1" Grid.Row="9" Margin="5"/>
+                        <ItemsControl x:Name="TagsControl" Grid.Row="9" Grid.ColumnSpan="2" Grid.Column="0"
+                                      HorizontalAlignment="Left" Margin="5"
+                                      ItemsSource="{Binding OrderedTags, Mode=OneWay}"
+                                      Foreground="Black" FontSize="15">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel Orientation="Horizontal"
+                                               ItemSpacing="5" LineSpacing="5"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="modelVms:TagViewModel">
+                                    <controls:Chip Text="{Binding Name}"
+                                                    Background="{Binding BackgroundColor, Converter={x:Static converters:ColorConverters.ColorToBrush}}"
+                                                    Cursor="Hand"
+                                                    ToolTip.Tip="Click or drag to filter on this tag"
+                                                    dragdrop:DragBehavior.IsDragSource="True"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
 
-                        <StackPanel Orientation="Horizontal" Grid.Row="10" Grid.ColumnSpan="2" Grid.Column="0">
-                            <TextBlock Text="Tags:" VerticalAlignment="Top" Margin="5,5,10,5"/>
-                            <ItemsControl x:Name="TagsControl"
-                                          ItemsSource="{Binding OrderedTags, Mode=OneWay}" 
-                                          Background="{x:Null}" BorderBrush="{x:Null}"  
-                                          Foreground="Black" FontSize="15" VerticalAlignment="Bottom">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <WrapPanel Orientation="Horizontal" Width="170"
-                                                   ItemSpacing="5" LineSpacing="5"/>
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate DataType="modelVms:TagViewModel">
-                                        <controls:Chip Text="{Binding Name}"
-                                                       Background="{Binding BackgroundColor, Converter={x:Static converters:ColorConverters.ColorToBrush}}"
-                                                       Cursor="Hand"
-                                                       ToolTip.Tip="Click or drag to filter on this tag"
-                                                       dragdrop:DragBehavior.IsDragSource="True"/>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </StackPanel>
-
-                        <TextBlock Text="Description:" Grid.Row="11" Grid.Column="0" />
-                        <Border CornerRadius="3" Grid.Row="12" Grid.ColumnSpan="2" Grid.Column="0"
+                        <TextBlock Text="Description:" Grid.Row="10" Grid.Column="0" />
+                        <Border CornerRadius="3" Grid.Row="11" Grid.ColumnSpan="2" Grid.Column="0"
                                 BorderBrush="{StaticResource LogBorder}" BorderThickness="2">
                             <md:MarkdownViewer Markdown="{Binding Description}" MinHeight="50"
-                                               FontSize="14"
+                                               FontSize="14" Padding="10 5"
                                                Background="Transparent"/>
                         </Border>
                     </Grid>

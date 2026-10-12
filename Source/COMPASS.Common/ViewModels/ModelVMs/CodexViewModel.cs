@@ -154,9 +154,10 @@ public class CodexViewModel : ModelViewModelBase<Codex>
     public IReadOnlyCollection<TagViewModel> Tags { get; private set; }
 
     //order them in same order as allTags by starting with allTags and keeping the ones we need using intersect
-    public IEnumerable<TagViewModel> OrderedTags => _model.Collection.RootTags.Flatten()
-                                                                              .Intersect(_model.Tags)
-                                                                              .Select(_codexCollectionVM.GetTagVm);
+    public IReadOnlyList<TagViewModel> OrderedTags => _model.Collection.RootTags.Flatten()
+                                                                                .Intersect(_model.Tags)
+                                                                                .Select(_codexCollectionVM.GetTagVm)
+                                                                                .ToList();
     
     public bool PhysicallyOwned
     {
