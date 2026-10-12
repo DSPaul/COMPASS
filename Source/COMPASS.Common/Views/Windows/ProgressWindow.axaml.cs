@@ -17,6 +17,11 @@ public partial class ProgressWindow : Window
         ((INotifyCollectionChanged)LogsControl.Items).CollectionChanged += Logs_CollectionChanged;
     }
 
+    public ProgressWindow()
+    {
+        throw new NotImplementedException("DO NOT USE THIS CONSTRUCTOR, IT IS ONLY FOR DESIGN TIME PURPOSES. USE ProgressWindow(TrackedOperation operation) INSTEAD.");
+    }
+
     private void Logs_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
         if (e.Action == NotifyCollectionChangedAction.Add)
