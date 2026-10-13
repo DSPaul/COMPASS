@@ -1,5 +1,5 @@
-using COMPASS.Common.Models;
 using COMPASS.Infra.Collections;
+using COMPASS.Common.Domain;
 
 namespace COMPASS.UnitTests.Infra.Collections
 {

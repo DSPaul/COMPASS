@@ -2,11 +2,8 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
-using COMPASS.Common.Models.Preferences;
-using COMPASS.Common.Services;
-using COMPASS.Common.Tools;
-using COMPASS.Common.ViewModels.Main;
-using COMPASS.Common.Views.Windows;
+using COMPASS.Common.Features.Settings;
+using COMPASS.Common.Shell;
 using COMPASS.Infra.Application;
 using COMPASS.Infra.Avalonia.Markdown;
 using COMPASS.Infra.Avalonia.Modal;
@@ -16,6 +13,7 @@ using COMPASS.Infra.Logging;
 using COMPASS.Infra.Preferences;
 using COMPASS.Infra.Progress;
 using NuGet.Versioning;
+using COMPASS.Common.Features.Notifications;
 
 namespace COMPASS.Common;
 

@@ -1,9 +1,8 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:avaloniaConverters="using:Avalonia.Controls.Converters"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:views="using:COMPASS.Common.Views"
         xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-        xmlns:main="clr-namespace:COMPASS.Common.Views.Main">
+        xmlns:main="using:COMPASS.Common.Shell">
     <Design.PreviewWith>
         <ScrollViewer MaxHeight="600" AllowAutoHide="False">
             <StackPanel Spacing="10">

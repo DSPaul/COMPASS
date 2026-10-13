@@ -1,8 +1,8 @@
 using Autofac.Features.Indexed;
-using COMPASS.Common.Models;
-using COMPASS.Common.Models.Enums;
-using COMPASS.Common.Sources;
+using COMPASS.Common.Features.Metadata;
+using COMPASS.Common.Features.Metadata.Sources;
 using COMPASS.Infra.DependencyInjection;
+using COMPASS.Common.Domain;
 
 namespace COMPASS.IntegrationTests.Common.Sources;
 

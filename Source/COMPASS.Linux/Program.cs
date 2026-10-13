@@ -2,11 +2,11 @@ using Autofac;
 using Avalonia;
 using COMPASS.Common;
 using COMPASS.Common.DependencyInjection;
-using COMPASS.Common.Tools;
 using COMPASS.Infra.Application;
 using COMPASS.Infra.DependencyInjection;
 using COMPASS.Infra.Logging;
 using COMPASS.Linux.DependencyInjection;
+using COMPASS.Common.Shell;
 
 namespace COMPASS.Linux;
 

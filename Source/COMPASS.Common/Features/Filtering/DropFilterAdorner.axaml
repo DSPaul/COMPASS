@@ -1,0 +1,28 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="using:COMPASS.Infra.Avalonia.Controls"
+                    xmlns:converters="using:COMPASS.Infra.Avalonia.Converters"
+                    xmlns:filtering="using:COMPASS.Common.Features.Filtering">
+
+	<ControlTheme TargetType="filtering:DropFilterAdorner" x:Key="{x:Type filtering:DropFilterAdorner}">
+		<Setter Property="Template">
+			<ControlTemplate TargetType="filtering:DropFilterAdorner">
+				<Border IsHitTestVisible="False" CornerRadius="5"
+						BorderThickness="3" BorderBrush="DeepSkyBlue"
+						x:DataType="filtering:FilterViewModel">
+					<Border.Background>
+						<SolidColorBrush Color="Black" Opacity="0.8"/>
+					</Border.Background>
+					<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center"
+								Spacing="5">
+						<TextBlock Text="{TemplateBinding Prefix}" IsVisible="{TemplateBinding Prefix, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+						<controls:Chip Text="{Binding Content}"
+									   Background="{Binding BackgroundColor, Converter={x:Static converters:ColorConverters.ColorToBrush}}"/>
+						<TextBlock Text="{TemplateBinding Suffix}" IsVisible="{TemplateBinding Suffix, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+					</StackPanel>
+				</Border>
+			</ControlTemplate>
+		</Setter>
+	</ControlTheme>
+
+</ResourceDictionary>

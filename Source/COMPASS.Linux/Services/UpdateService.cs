@@ -1,5 +1,4 @@
 using COMPASS.ApiClients.GitHub;
-using COMPASS.Common.Models;
 using COMPASS.Infra.Application;
 using COMPASS.Infra.IO;
 using COMPASS.Infra.Logging;
@@ -8,6 +7,7 @@ using COMPASS.Infra.Preferences;
 using COMPASS.Infra.Updates;
 using COMPASS.Infra.Web;
 using System.Diagnostics;
+using COMPASS.Common.Domain;
 
 namespace COMPASS.Linux.Services
 {

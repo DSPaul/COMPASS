@@ -1,10 +1,15 @@
 using Avalonia.Media;
-using COMPASS.Common.Models;
-using COMPASS.Common.Models.CodexProperties;
-using COMPASS.Common.Models.Preferences;
+using COMPASS.Common.Features.Layouts.Card;
+using COMPASS.Common.Features.Layouts;
+using COMPASS.Common.Features.Layouts.Home;
+using COMPASS.Common.Features.Layouts.List;
+using COMPASS.Common.Features.Layouts.Tile;
+using COMPASS.Common.Features.Metadata;
+using COMPASS.Common.Features.Settings;
 using COMPASS.Infra.Collections;
 using System.Collections.ObjectModel;
 using System.Text;
+using COMPASS.Common.Domain;
 
 namespace COMPASS.Tests.Common.DataGenerators;
 
@@ -154,7 +159,7 @@ public static class RandomGenerator
             SortDirection = GetRandomEnum<System.ComponentModel.ListSortDirection>(),
             SortProperty = "Title",
             StartupCollection = GetRandomString(),
-            StartupLayout = GetRandomEnum<COMPASS.Common.Models.Enums.CodexLayout>(),
+            StartupLayout = GetRandomEnum<CodexLayout>(),
             StartupTab = 3
         },
         WindowState = new WindowRestoreState()

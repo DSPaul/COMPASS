@@ -21,7 +21,7 @@ Every editable model implements `ICloneable<T>`, which declares just two methods
 
 ## `EditViewModelBase<TViewModel, TModel>`
 
-**File:** `ViewModels/Modals/Edit/EditViewModelBase.cs`
+**File:** `Source/COMPASS.Infra.Avalonia/Mvvm/EditViewModelBase.cs`
 
 This is the generic base class for all edit dialogs. It orchestrates the full clone → edit → apply/cancel lifecycle.
 
@@ -77,7 +77,7 @@ On **Cancel**, the working copy is simply cleared (re-cloned from the source, di
 
 ### `CodexEditViewModel`
 
-**File:** `ViewModels/Modals/Edit/CodexEditViewModel.cs`
+**File:** `Source/COMPASS.Common/Features/Codices/CodexEditViewModel.cs`
 
 Edits a single `Codex`. On confirm:
 - **New:** adds the codex to `Collection.AllCodices`.
@@ -87,7 +87,7 @@ Also handles browsing for file paths, fetching metadata, and loading cover art �
 
 ### `TagEditViewModel`
 
-**File:** `ViewModels/Modals/Edit/TagEditViewModel.cs`
+**File:** `Source/COMPASS.Common/Features/Tags/TagEditViewModel.cs`
 
 Edits a single `Tag`. Has extra logic in the hooks:
 - **`HandleCreateNew`**: assigns a unique ID, adds to `AllTags`, inserts into the parent's `Children` (or `RootTags`), and calls `TagsChanged()`.
@@ -96,7 +96,7 @@ Edits a single `Tag`. Has extra logic in the hooks:
 
 ### `CollectionEditViewModel`
 
-**File:** `ViewModels/Modals/Edit/CollectionEditViewModel.cs`
+**File:** `Source/COMPASS.Common/Features/CodexCollections/CollectionEditViewModel.cs`
 
 Edits `CollectionInfo` (and optionally the collection name). On confirm:
 - **New:** creates a new collection via `CollectionManager` and switches the active tab to it.
@@ -104,7 +104,7 @@ Edits `CollectionInfo` (and optionally the collection name). On confirm:
 
 ### `CodexBulkEditViewModel`
 
-**File:** `ViewModels/Modals/Edit/CodexBulkEditViewModel.cs`
+**File:** `Source/COMPASS.Common/Features/Codices/CodexBulkEditViewModel.cs`
 
 The exception to the pattern — does **not** extend `EditViewModelBase` because it operates on multiple codices at once. Instead, it finds common values across the selection and applies only the changed fields to each codex on confirm.
 

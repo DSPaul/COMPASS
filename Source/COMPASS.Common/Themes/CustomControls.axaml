@@ -4,7 +4,8 @@
                     xmlns:materialIcons="using:Material.Icons.Avalonia"
                     xmlns:converters="using:COMPASS.Infra.Avalonia.Converters"
                     xmlns:customControls="using:COMPASS.Common.Controls"
-                    xmlns:controls="using:COMPASS.Infra.Avalonia.Controls">
+                    xmlns:controls="using:COMPASS.Infra.Avalonia.Controls"
+                    xmlns:filtering="clr-namespace:COMPASS.Common.Features.Filtering" >
     
     <!--Icon Button-->
     <ControlTheme TargetType="controls:IconButton" x:Key="IconOnly">
@@ -168,10 +169,10 @@
     </ControlTheme>
     
     <!--Include/Exclude selector-->
-    <ControlTheme TargetType="customControls:FilterModeSelector"
-                  x:Key="{x:Type customControls:FilterModeSelector}">
+    <ControlTheme TargetType="filtering:FilterModeSelector"
+                  x:Key="{x:Type filtering:FilterModeSelector}">
         <Setter Property="Template">
-            <ControlTemplate TargetType="customControls:FilterModeSelector">
+            <ControlTemplate TargetType="filtering:FilterModeSelector">
                 <Border Classes="RadioBtnStrip"
                         HorizontalAlignment="Stretch">
                     <Grid ColumnSpacing="3" ColumnDefinitions="*, *"
@@ -433,7 +434,7 @@
                 <controls:ImprovedComboBox PlaceholderText="Create item"/>
                 <ComboBox IsEditable="True" HorizontalAlignment="Stretch"></ComboBox>
                 
-                <customControls:FilterModeSelector />
+                <filtering:FilterModeSelector />
 
                 <StackPanel Orientation="Horizontal">
                     <controls:IconButton Icon="About" Theme="{StaticResource IconOnly}" />

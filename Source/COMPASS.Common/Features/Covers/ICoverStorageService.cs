@@ -1,0 +1,22 @@
+using COMPASS.Common.Domain;
+
+namespace COMPASS.Common.Features.Covers;
+
+public interface ICoverStorageService
+{
+    string GetCoverPath(CodexCollection collection, Codex codex);
+
+    string GetThumbnailPath(Codex codex);
+    
+    /// <summary>
+    /// Copies the full res cover to the new collection
+    /// </summary>
+    /// <param name="codex"></param>
+    /// <param name="targetCollection"></param>
+    /// <param name="copy"> perform a copy rather than a move </param>
+    void MoveCodexDataToCollection(Codex codex, CodexCollection targetCollection, bool copy = false);
+    
+    void OnCollectionRenamed(CodexCollection collection);
+
+    void OnCodexDeleted(Codex codex);
+}

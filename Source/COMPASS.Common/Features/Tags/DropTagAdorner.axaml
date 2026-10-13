@@ -1,0 +1,29 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="using:COMPASS.Infra.Avalonia.Controls"
+                    xmlns:converters="using:COMPASS.Infra.Avalonia.Converters"
+                    xmlns:tags="using:COMPASS.Common.Features.Tags"
+                    xmlns:domain="using:COMPASS.Common.Domain">
+
+	<ControlTheme TargetType="tags:DropTagAdorner" x:Key="{x:Type tags:DropTagAdorner}">
+		<Setter Property="Template">
+			<ControlTemplate TargetType="tags:DropTagAdorner">
+				<Border IsHitTestVisible="False" CornerRadius="5"
+						BorderThickness="3" BorderBrush="DeepSkyBlue"
+						x:DataType="domain:Tag">
+					<Border.Background>
+						<SolidColorBrush Color="Black" Opacity="0.8"/>
+					</Border.Background>
+					<WrapPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center"
+							ItemSpacing="5">
+						<TextBlock Text="{TemplateBinding Prefix}" IsVisible="{TemplateBinding Prefix, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+						<controls:Chip Text="{Binding Name}"
+									   Background="{Binding BackgroundColor, Converter={x:Static converters:ColorConverters.ColorToBrush}}"/>
+						<TextBlock Text="{TemplateBinding Suffix}" IsVisible="{TemplateBinding Suffix, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+					</WrapPanel>
+				</Border>
+			</ControlTemplate>
+		</Setter>
+	</ControlTheme>
+
+</ResourceDictionary>

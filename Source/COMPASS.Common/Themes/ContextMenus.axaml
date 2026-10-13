@@ -1,9 +1,9 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:vm ="clr-namespace:COMPASS.Common.ViewModels.Main"
-                    xmlns:view ="clr-namespace:COMPASS.Common.Views.Main"
-                    xmlns:layoutVm ="clr-namespace:COMPASS.Common.ViewModels.Layouts"
-                    xmlns:managers ="clr-namespace:COMPASS.Common.Services.StateManagers"
+                    xmlns:vm ="using:COMPASS.Common.Features.Tabs"
+                    xmlns:view ="using:COMPASS.Common.Features.Tabs"
+                    xmlns:layouts="using:COMPASS.Common.Features.Layouts"
+                    xmlns:managers="using:COMPASS.Common.Features.CodexCollections"
                     xmlns:materialIcons="using:Material.Icons.Avalonia">
     <Design.PreviewWith>
         <StackPanel Orientation="Horizontal">
@@ -15,7 +15,7 @@
     </Design.PreviewWith>
     
     
-    <ContextMenu x:Key="CodexContextMenu" x:DataType="layoutVm:LayoutViewModel">
+    <ContextMenu x:Key="CodexContextMenu" x:DataType="layouts:LayoutViewModel">
         <MenuItem Header="Open Locally" 
                   Command="{Binding SelectedCodex.OpenCodexLocallyCommand}"
                   Icon="{materialIcons:MaterialIconExt Kind=FileOutline}"/>
@@ -82,7 +82,7 @@
                   Icon="{materialIcons:MaterialIconExt Kind=FolderMoveOutline}">
             <MenuItem.Styles>
                 <Style Selector="MenuItem MenuItem">
-                    <Setter Property="Command" Value="{Binding $parent[MenuItem].((layoutVm:LayoutViewModel)DataContext).SelectedCodex.MoveToCollectionCommand}"/>
+                    <Setter Property="Command" Value="{Binding $parent[MenuItem].((layouts:LayoutViewModel)DataContext).SelectedCodex.MoveToCollectionCommand}"/>
                     <Setter Property="CommandParameter" Value="{Binding $self.Header}"/>
                 </Style>
             </MenuItem.Styles>
@@ -99,7 +99,7 @@
                   Icon="{materialIcons:MaterialIconExt Kind=DeleteForever}"/>
     </ContextMenu>
 
-    <ContextMenu x:Key="MultiCodexContextMenu" x:DataType="layoutVm:LayoutViewModel">
+    <ContextMenu x:Key="MultiCodexContextMenu" x:DataType="layouts:LayoutViewModel">
         <MenuItem Header="Open Selection" InputGesture="Enter"
                   Command="{Binding CodexCommands.OpenSelectedCodicesCommand}"
                   CommandParameter="{Binding SelectedCodices}" 
@@ -134,12 +134,12 @@
                   Icon="{materialIcons:MaterialIconExt Kind=FolderMoveOutline}">
             <MenuItem.Styles>
                 <Style Selector="MenuItem MenuItem">
-                    <Setter Property="Command" Value="{Binding $parent[MenuItem].((layoutVm:LayoutViewModel)DataContext).CodexCommands.MoveToCollectionCommand}"/>
+                    <Setter Property="Command" Value="{Binding $parent[MenuItem].((layouts:LayoutViewModel)DataContext).CodexCommands.MoveToCollectionCommand}"/>
                     <Setter Property="CommandParameter">
                         <Setter.Value>
                             <MultiBinding Converter="{StaticResource MultiParamConverter}">
                                 <Binding Path="$self.Header"/>
-                                <Binding Path="$parent[MenuItem].((layoutVm:LayoutViewModel)DataContext).SelectedCodices"/>
+                                <Binding Path="$parent[MenuItem].((layouts:LayoutViewModel)DataContext).SelectedCodices"/>
                             </MultiBinding>
                         </Setter.Value>
                     </Setter>

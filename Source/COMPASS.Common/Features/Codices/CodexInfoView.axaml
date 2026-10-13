@@ -1,0 +1,177 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:vm="using:COMPASS.Common.Features.Codices"
+             xmlns:controls="using:COMPASS.Infra.Avalonia.Controls"
+             xmlns:converters="using:COMPASS.Infra.Avalonia.Converters"
+             xmlns:dragdrop="using:COMPASS.Infra.Avalonia.DragDrop"
+             xmlns:md="using:MarkView.Avalonia"
+             xmlns:tags="using:COMPASS.Common.Features.Tags"
+             mc:Ignorable="d" d:DesignWidth="270" d:DesignHeight="850"
+             x:Class="COMPASS.Common.Features.Codices.CodexInfoView"
+             x:DataType="vm:CodexInfoViewModel">
+  <Border BorderBrush="{StaticResource Separator}" 
+          BorderThickness="3" x:Name="CodexInfoContainer"
+          IsVisible="{Binding ShowInfo}">
+        <Grid RowDefinitions="Auto, Auto, *">
+            <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5" Spacing="10">
+                <materialIcons:MaterialIcon HorizontalAlignment="Center" Kind="BookInformationVariant"/>
+                <TextBlock Text="Book Info" FontSize="20"/>
+            </StackPanel>
+            <Rectangle Grid.Row="1" Height="3" Fill="{StaticResource Separator}"/>
+
+            <ToggleButton Grid.Row="0" ToolTip.Tip="Collapse" Height="35" Width="35" 
+                          HorizontalAlignment="Left" 
+                          IsChecked="{Binding ShowCodexInfo, Mode=TwoWay}" Cursor="Hand">
+                <ToggleButton.Template>
+                    <ControlTemplate>
+                        <materialIcons:MaterialIcon Margin="5"  Kind="ArrowCollapseRight"/>
+                    </ControlTemplate>
+                </ToggleButton.Template>
+            </ToggleButton>
+
+            <ScrollViewer Grid.Row="2" >
+                <StackPanel>
+                    <TextBlock Text="Nothing selected. Select an item to see its details."
+                               MaxWidth="255"
+                               IsVisible="{Binding !HasDisplayedCodex}"
+                               TextWrapping="Wrap" TextAlignment="Center"
+                               Foreground="{StaticResource TextMutedColor}" FontSize="14"
+                               Margin="15" HorizontalAlignment="Center"/>
+                    <Grid DataContext="{Binding DisplayedCodex}"
+                          IsVisible="{Binding #CodexInfoContainer.((vm:CodexInfoViewModel)DataContext).HasDisplayedCodex}"
+                          Name="MainGrid" Focusable="True" Margin="5" Width="270"
+                          ColumnDefinitions="100,170"
+                           RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto">
+                        <Grid.Styles>
+                            <Style Selector="TextBlock">
+                                <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+                                <Setter Property="FontSize" Value="14"/>
+                                <Setter Property="Margin" Value="5"/>
+                                <Setter Property="TextWrapping" Value="Wrap"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                            </Style>
+                            
+                            <Style Selector="TextBlock.Link">
+                                <Setter Property="TextDecorations" Value="Underline"/>
+                            </Style>
+                            
+                            <Style Selector="CheckBox">
+                                <Setter Property="IsHitTestVisible" Value="False"/>
+                            </Style>
+                        </Grid.Styles>
+                        
+                        <Border CornerRadius="5" Grid.ColumnSpan="2"
+                                Width="200" Height="270" Margin="10">
+                            <Border.Background>
+                                <ImageBrush Source="{Binding Cover, Mode=OneWay}"/>
+                            </Border.Background>
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="10"/>
+                            </Border.Effect>
+                        </Border>
+                        <Grid Grid.ColumnSpan="2" Grid.Row="1" ColumnDefinitions="*,Auto">
+                            <TextBlock Text="{Binding Title}"
+                                       FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                            <Panel Grid.Column="1" VerticalAlignment="Top" Margin="5 10 5 0">
+                                <controls:IconButton Command="{Binding FavoriteCodexCommand}" ToolTip.Tip="Favorite"
+                                                     Background="Transparent" Classes="SmallZoomOnHover"
+                                                     Theme="{StaticResource IconOnly}" Icon="HeartOutline" FontSize="16"
+                                                     IsVisible="{Binding !Favorite}" />
+                                <Button Command="{Binding FavoriteCodexCommand}" ToolTip.Tip="Unfavorite"
+                                        Background="Transparent" BorderThickness="0" Padding="0"
+                                        Classes="SmallZoomOnHover"
+                                        IsVisible="{Binding Favorite}">
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <ContentPresenter Content="{TemplateBinding Content}" />
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                    <materialIcons:MaterialIcon Kind="Heart" Width="16" Height="16" Foreground="IndianRed" />
+                                </Button>
+                            </Panel>
+                        </Grid>
+
+                        <Grid Grid.ColumnSpan="2" Grid.Row="2" ColumnDefinitions="Auto,*" Margin="0 0 0 15">
+                            <TextBlock Text="By" Margin="5 0" IsVisible="{Binding !!Authors.Count}"/>
+                            <ItemsControl ItemsSource="{Binding Authors}" Grid.Column="1">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel Orientation="Horizontal" ItemSpacing="5"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Button Classes="BlankButton" Padding="0"
+                                                Command="{Binding #CodexInfoContainer.((vm:CodexInfoViewModel)DataContext).AddAuthorFilterCommand}" CommandParameter="{Binding}">
+                                            <TextBlock Text="{Binding}" Classes="Link" Margin="0"/>
+                                        </Button>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Grid>
+
+                        <TextBlock Text="Publisher:"  Grid.Column="0" Grid.Row="3"/>
+                        <Button Classes="BlankButton" Grid.Column="1" Grid.Row="3"
+                                Command="{Binding #CodexInfoContainer.((vm:CodexInfoViewModel)DataContext).AddPublisherFilterCommand}" CommandParameter="{Binding Publisher}">
+                            <TextBlock Text="{Binding Publisher}" Classes="Link" Margin="5,2"/>
+                        </Button>
+
+                        <TextBlock Text="Version:"  Grid.Column="0" Grid.Row="4"
+                                   IsVisible="{Binding Version, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+                        <TextBlock Text="{Binding Version}"  Grid.Column="1" Grid.Row="4"
+                                   IsVisible="{Binding Version, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+
+                        <TextBlock Text="Release Date:" Grid.Column="0" Grid.Row="5"/>
+                        <TextBlock Text="{Binding ReleaseDateAsString}"
+                                   Grid.Column="1" Grid.Row="5"
+                                   IsVisible="{Binding ReleaseDateAsString, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+                        <TextBlock Text="Unknown" FontStyle="Italic" Foreground="{StaticResource TextMutedColor}"
+                                   Grid.Column="1" Grid.Row="5"
+                                   IsVisible="{Binding ReleaseDateAsString, Converter={x:Static StringConverters.IsNullOrEmpty}}"/>
+
+                        <TextBlock Text="PageCount:"  Grid.Column="0" Grid.Row="6"/>
+                        <TextBlock Text="{Binding PageCount}" Grid.Column="1" Grid.Row="6"/>
+
+                        <TextBlock Text="Hard Copy:" Grid.Column="0" Grid.Row="7"/>
+                        <CheckBox IsChecked="{Binding PhysicallyOwned, Mode=OneWay}" Grid.Column="1" Grid.Row="7" Margin="5"/>
+
+                        <TextBlock Text="Rating:"  Grid.Column="0" Grid.Row="8"/>
+                        <controls:RatingControl Value="{Binding Rating, Mode=OneWay}" IsEnabled="False" Margin="5" Grid.Column="1" Grid.Row="8"/>
+
+                        <ItemsControl x:Name="TagsControl" Grid.Row="9" Grid.ColumnSpan="2" Grid.Column="0"
+                                      HorizontalAlignment="Left" Margin="5"
+                                      ItemsSource="{Binding OrderedTags, Mode=OneWay}"
+                                      Foreground="Black" FontSize="15">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel Orientation="Horizontal"
+                                               ItemSpacing="5" LineSpacing="5"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="tags:TagViewModel">
+                                    <controls:Chip Text="{Binding Name}"
+                                                    Background="{Binding BackgroundColor, Converter={x:Static converters:ColorConverters.ColorToBrush}}"
+                                                    Cursor="Hand"
+                                                    ToolTip.Tip="Click or drag to filter on this tag"
+                                                    dragdrop:DragBehavior.IsDragSource="True"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <TextBlock Text="Description:" Grid.Row="10" Grid.Column="0" />
+                        <Border CornerRadius="3" Grid.Row="11" Grid.ColumnSpan="2" Grid.Column="0"
+                                BorderBrush="{StaticResource LogBorder}" BorderThickness="2">
+                            <md:MarkdownViewer Markdown="{Binding Description}" MinHeight="50"
+                                               FontSize="14" Padding="10 5"
+                                               Background="Transparent"/>
+                        </Border>
+                    </Grid>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+    </Border>
+</UserControl>

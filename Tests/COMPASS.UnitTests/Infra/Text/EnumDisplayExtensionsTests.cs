@@ -1,4 +1,4 @@
-using COMPASS.Common.Models.Enums;
+using COMPASS.Common.Features.Metadata;
 using COMPASS.Infra.Text;
 using System.ComponentModel.DataAnnotations;
 

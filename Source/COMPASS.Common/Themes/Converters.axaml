@@ -1,7 +1,7 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:conv="using:COMPASS.Infra.Avalonia.Converters"
-                    xmlns:commonConv="using:COMPASS.Common.Converters">
+                    xmlns:metadata="using:COMPASS.Common.Features.Metadata">
   <conv:MultiParamConverter x:Key="MultiParamConverter"/>
   <conv:AreEqualConverter Invert="False" x:Key="AreEqualConverter"/>
   <conv:AreEqualConverter Invert="True" x:Key="AreNotEqualConverter"/>
@@ -10,5 +10,5 @@
   <conv:EnumForRadioBtnConverter x:Key="EnumForRadioBtnConverter" />
   <conv:CollectionUnionConverter x:Key="CollectionUnionConverter" />
   <conv:SeverityToColorConverter x:Key="SeverityToColorConverter"/>
-  <commonConv:IsMetadataPropertyEmpty x:Key="IsMetadataPropertyEmpty" />
+  <metadata:IsMetadataPropertyEmpty x:Key="IsMetadataPropertyEmpty" />
 </ResourceDictionary>

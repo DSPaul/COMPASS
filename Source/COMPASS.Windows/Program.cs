@@ -3,11 +3,11 @@ using Avalonia;
 using Avalonia.Svg.Skia;
 using COMPASS.Common;
 using COMPASS.Common.DependencyInjection;
-using COMPASS.Common.Tools;
 using COMPASS.Infra.Application;
 using COMPASS.Infra.DependencyInjection;
 using COMPASS.Infra.Logging;
 using COMPASS.Windows.DependencyInjection;
+using COMPASS.Common.Shell;
 
 namespace COMPASS.Windows;
 

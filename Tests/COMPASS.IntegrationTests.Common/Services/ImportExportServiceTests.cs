@@ -2,14 +2,10 @@ using Autofac;
 using Avalonia.Controls;
 using Avalonia.Headless.NUnit;
 using Avalonia.Platform.Storage;
-using COMPASS.Common.Interfaces.Repos;
-using COMPASS.Common.Interfaces.Storage;
-using COMPASS.Common.Models;
-using COMPASS.Common.Models.Enums;
-using COMPASS.Common.Services.StateManagers;
-using COMPASS.Common.Services.Storage;
-using COMPASS.Common.ViewModels.Main;
-using COMPASS.Common.ViewModels.Modals.Import;
+using COMPASS.Common.Features.CodexCollections;
+using COMPASS.Common.Features.ImportExport;
+using COMPASS.Common.Features.Persistence;
+using COMPASS.Common.Features.Persistence.Repositories;
 using COMPASS.Tests.Common.DataGenerators;
 using COMPASS.Tests.Common.Mocks;
 using SharpCompress.Archives;
@@ -17,7 +13,7 @@ using SharpCompress.Archives.Zip;
 using SharpCompress.Common;
 using SharpCompress.Writers.Zip;
 using System.Text.Json;
-using Constants = COMPASS.Common.Models.Constants;
+using Constants = COMPASS.Common.Domain.Constants;
 
 namespace COMPASS.IntegrationTests.Common.Services
 {

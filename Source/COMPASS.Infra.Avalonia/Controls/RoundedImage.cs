@@ -1,5 +1,4 @@
 using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Media;
 using COMPASS.Infra.DependencyInjection;
 using COMPASS.Infra.Logging;

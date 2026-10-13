@@ -1,4 +1,4 @@
-using COMPASS.Common.Models;
+using COMPASS.Common.Domain;
 
 namespace COMPASS.Tests.Common.DataGenerators;
 

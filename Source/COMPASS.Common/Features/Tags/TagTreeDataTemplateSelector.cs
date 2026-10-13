@@ -1,0 +1,55 @@
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.Templates;
+using Avalonia.Metadata;
+using COMPASS.Infra.Collections;
+using COMPASS.Common.Domain;
+namespace COMPASS.Common.Features.Tags
+{
+
+    //based on https://github.com/AvaloniaUI/Avalonia.Samples/tree/main/src/Avalonia.Samples/DataTemplates/IDataTemplateSample
+
+    public class TagTreeDataTemplateSelector : ITreeDataTemplate
+    {
+        // This Dictionary should store our templates. We mark this as [Content], so we can directly add elements to it later.
+        [Content]
+        public Dictionary<string, ITreeDataTemplate> AvailableTemplates { get; } = [];
+
+        public IDisposable BindChildren(AvaloniaObject target, AvaloniaProperty targetProperty, object item) 
+            => GetTemplate(item).BindChildren(target, targetProperty, item);
+        public Control? Build(object? param) => GetTemplate(param).Build(param);
+
+        // Check if we can accept the provided data
+        public bool Match(object? data) => 
+            data is TreeNode<TagViewModel> || 
+            data is TreeNode<Tag> || 
+            data is TagViewModel ||
+            data is Tag;
+
+        private ITreeDataTemplate GetTemplate(object? param)
+        {
+            bool isGroup;
+            switch (param)
+            {
+                case TreeNode<TagViewModel> node:
+                    isGroup = node.Item.IsGroup;
+                    break;
+                case TreeNode<Tag> node:
+                    isGroup = node.Item.IsGroup;
+                    break;
+                case TagViewModel tag:
+                    isGroup = tag.IsGroup;
+                    break;
+                case Tag tag:
+                    isGroup = tag.IsGroup;
+                    break;
+                default:
+                    throw new Exception($"{nameof(TagTreeDataTemplateSelector)} does not support param of type {param?.GetType().Name}");
+            }
+
+            string key = isGroup ? "GroupTag" : "RegularTag";
+
+            return AvailableTemplates[key];
+        }
+    }
+}

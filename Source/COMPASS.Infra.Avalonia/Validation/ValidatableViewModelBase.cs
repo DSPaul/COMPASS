@@ -8,9 +8,7 @@ using System.ComponentModel;
 namespace COMPASS.Infra.Avalonia.Validation;
 
 /// <summary>
-/// View-model base with touched-tracking validation (INotifyDataErrorInfo).
-/// Extracted from the application's ViewModelBase so wizard-style dialogs can
-/// live in infrastructure without depending on domain state.
+/// Base class for view-models, with touched-tracking validation (INotifyDataErrorInfo).
 /// </summary>
 public abstract class ValidatableViewModelBase : ObservableObject, INotifyDataErrorInfo
 {

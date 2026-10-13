@@ -2,19 +2,25 @@ using Autofac;
 using COMPASS.ApiClients;
 using COMPASS.ApiClients.Compass;
 using COMPASS.ApiClients.GitHub;
-using COMPASS.Common.Interfaces.Repos;
-using COMPASS.Common.Interfaces.Services;
-using COMPASS.Common.Interfaces.Storage;
-using COMPASS.Common.Models.Enums;
-using COMPASS.Common.Repositories;
-using COMPASS.Common.Services;
-using COMPASS.Common.Services.FileSystem;
-using COMPASS.Common.Services.StateManagers;
-using COMPASS.Common.Services.Storage;
-using COMPASS.Common.Sources;
-using COMPASS.Common.Tools.Logging;
-using COMPASS.Common.ViewModels.Layouts;
-using COMPASS.Common.ViewModels.Main;
+using COMPASS.Common.Features.CodexCollections;
+using COMPASS.Common.Features.Codices;
+using COMPASS.Common.Features.Covers;
+using COMPASS.Common.Features.Filtering;
+using COMPASS.Common.Features.ImportExport;
+using COMPASS.Common.Features.Layouts;
+using COMPASS.Common.Features.Logging;
+using COMPASS.Common.Features.Layouts.Card;
+using COMPASS.Common.Features.Layouts.Home;
+using COMPASS.Common.Features.Layouts.List;
+using COMPASS.Common.Features.Layouts.Tile;
+using COMPASS.Common.Features.Metadata;
+using COMPASS.Common.Features.Metadata.Sources;
+using COMPASS.Common.Features.Persistence;
+using COMPASS.Common.Features.Persistence.Repositories;
+using COMPASS.Common.Features.Persistence.Storage;
+using COMPASS.Common.Features.Settings;
+using COMPASS.Common.Features.Tags;
+using COMPASS.Common.Shell;
 using COMPASS.Infra.Avalonia.DependencyInjection;
 using COMPASS.Infra.DependencyInjection;
 using COMPASS.Infra.IO;
@@ -22,6 +28,8 @@ using COMPASS.Infra.Logging;
 using COMPASS.Infra.Notifications;
 using COMPASS.Infra.Preferences;
 using COMPASS.Infra.Web;
+using COMPASS.Common.Features.Notifications;
+using COMPASS.Common.Features.Tabs;
 
 namespace COMPASS.Common.DependencyInjection
 {
@@ -65,9 +73,9 @@ namespace COMPASS.Common.DependencyInjection
             builder.RegisterType<UserFilesStorageService>().As<IUserFilesStorageService>().SingleInstance();
 
             //Operations
-            builder.RegisterType<Operations.CodexCollectionOperations>().AsSelf().SingleInstance();
-            builder.RegisterType<Operations.TagOperations>().AsSelf().SingleInstance();
-            builder.RegisterType<Operations.CodexOperations>().AsSelf().SingleInstance();
+            builder.RegisterType<CodexCollectionOperations>().AsSelf().SingleInstance();
+            builder.RegisterType<TagOperations>().AsSelf().SingleInstance();
+            builder.RegisterType<CodexOperations>().AsSelf().SingleInstance();
 
             // View model factories (all classes marked with [Factory])
             builder.RegisterFactories(typeof(CommonModule).Assembly);
@@ -75,6 +83,7 @@ namespace COMPASS.Common.DependencyInjection
             builder.RegisterFactories(typeof(AvaloniaModule).Assembly);
 
             // ViewModel singletons
+            builder.RegisterType<ActiveTabContext>().AsSelf().As<IActiveTabContext>().SingleInstance();
             builder.RegisterType<TabsViewModel>().AsSelf().SingleInstance();
             builder.RegisterType<MainViewModel>().AsSelf().SingleInstance();
         }

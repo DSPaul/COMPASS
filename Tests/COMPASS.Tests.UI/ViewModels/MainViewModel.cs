@@ -1,11 +1,11 @@
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Input;
-using COMPASS.Common.Services;
-using COMPASS.Common.Views.Windows;
+using COMPASS.Common.Shell;
 using COMPASS.Infra.Logging;
 using COMPASS.Infra.Measuring;
 using COMPASS.Infra.Notifications;
 using COMPASS.Infra.Progress;
+using COMPASS.Common.Features.Notifications;
 
 namespace COMPASS.Tests.UI.ViewModels;
 

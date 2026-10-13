@@ -10,24 +10,27 @@ This means the Model is always the source of truth, and the ViewModel is a proje
 
 ## Key base classes
 
-### `ViewModelBase`
+### `ValidatableViewModelBase`
 
-**File:** `ViewModels/ViewModelBase.cs`
+**File:** `Source/COMPASS.Infra.Avalonia/Validation/ValidatableViewModelBase.cs`
 
-All domain view-models inherit from this. It derives from the generic `ValidatableViewModelBase` (`COMPASS.Infra.Avalonia/Wizard/ValidatableViewModelBase.cs`), which supplies the validation infrastructure; `ViewModelBase` itself only adds the domain shortcut `ActiveCollection`. Generic infra view-models (e.g. `WizardViewModel`) derive from `ValidatableViewModelBase` directly and therefore have no `ActiveCollection`.
+All view-models inherit from this, directly or through `ModelViewModelBase`.
 
-| Feature | Provided by | Description |
-|---|---|---|
-| `INotifyDataErrorInfo` | `ValidatableViewModelBase` | Built-in validation infrastructure with per-property error tracking. |
-| `AddValidation(propertyName, validator)` | `ValidatableViewModelBase` | Registers a validation method for a property. Called automatically when that property changes. |
-| `Validate(propertyName)` | `ValidatableViewModelBase` | Clears previous errors, runs the validator, and if the VM implements `IConfirmable`, updates the confirm button's `CanExecute`. |
-| `ActiveCollection` | `ViewModelBase` | Convenience property to reach the current tab's `CodexCollection`. |
+| Feature | Description |
+|---|---|
+| `INotifyDataErrorInfo` | Built-in validation infrastructure with per-property error tracking. |
+| `AddValidation(propertyName, validator)` | Registers a validation method for a property. Called automatically when that property changes. |
+| `Validate(propertyName)` | Clears previous errors, runs the validator, and if the VM implements `IConfirmable`, updates the confirm button's `CanExecute`. |
+
+### Reaching the active tab
+
+There is no static shortcut to the active tab or collection. View-models that belong to a tab receive their `CollectionTabVM` (or its `CodexCollectionVM`/`FiltersViewModel`) through their factory. Everything else injects `IActiveTabContext` (`Features/Tabs/IActiveTabContext.cs`), which exposes `ActiveTab` and `ActiveCollection`. Only code that opens, closes or switches tabs injects `TabsViewModel`. Views use their `DataContext`.
 
 ### `ModelViewModelBase<TModel>`
 
-**File:** `ViewModels/ModelVMs/ModelViewModelBase.cs`
+**File:** `Source/COMPASS.Infra.Avalonia/Mvvm/ModelViewModelBase.cs`
 
-A specialised base for view-models that wrap exactly one model instance. This is where the core data-flow pattern lives:
+A specialised base for view-models that wrap exactly one model instance. It derives from `ValidatableViewModelBase`. This is where the core data-flow pattern lives:
 
 - Subscribes to the wrapped model's `PropertyChanged`.
 - `OnModelPropertyChanged` forwards every change to the UI: it re-raises `PropertyChanged` on the UI thread for the changed property, then for every registered *derived* property, and finally runs `Validate` for that property.
@@ -86,10 +89,10 @@ ViewModels that need services are **never constructed with `new`** outside their
 
 ```csharp
 [Factory]
-public class CodexViewModelFactory(ILogger logger, CodexOperations codexOperations)
+public class CodexViewModelFactory(ILogger logger, Lazy<CodexOperations> codexOperations, ICoverService coverService)
 {
     public CodexViewModel Create(Codex codex, CodexCollectionVM parentCollectionVm)
-        => new(logger, codexOperations, codex, parentCollectionVm);
+        => new(logger, coverService, codexOperations.Value, codex, parentCollectionVm);
 }
 ```
 
@@ -102,7 +105,7 @@ Rules:
 
 ## Operations classes
 
-Domain logic that needs services but isn't tied to one ViewModel lives in instance operations services in `Operations/` (`CodexOperations` for codex-level actions, `CodexCollectionOperations` for collection-level actions like import/merge, `TagOperations` for tag deletion). They are registered singletons and injected wherever needed — including into factories, which is what makes the factory graph compose.
+Domain logic that needs services but isn't tied to one ViewModel lives in instance operations services colocated with their feature (`Features/Codices/CodexOperations.cs` for codex-level actions, `Features/CodexCollections/CodexCollectionOperations.cs` for collection-level actions like import/merge, `Features/Tags/TagOperations.cs` for tag deletion). They are registered singletons and injected wherever needed — including into factories, which is what makes the factory graph compose.
 
 The organizing rule: **methods act on the object their class is named for** (`CreateNewCodex(collection)` lives in `CodexCollectionOperations`, everything taking a `Codex` lives in `CodexOperations`). Models themselves stay pure and service-free.
 
@@ -112,11 +115,11 @@ Not every ViewModel wraps a single model:
 
 | ViewModel | Reason |
 |---|---|
-| `FilterViewModel` | Filters are immutable value objects — no property changes to forward. Wraps a `Filter` but does not inherit `ModelViewModelBase`. |
-| `FiltersViewModel` | Manages a _collection_ of filters, not a single model instance. Inherits `ViewModelBase` directly. |
-| `MainViewModel`, `TabsViewModel` | Orchestration VMs with no corresponding single model. |
-| `WizardViewModel` | Generic Infra.Avalonia wizard base; derives from `ValidatableViewModelBase`, not `ViewModelBase`. |
-| `SettingsViewModel` | Modal/workflow VM that composes multiple models. |
+| `FilterViewModel` (`Features/Filtering/`) | Filters are immutable value objects — no property changes to forward. Wraps a `Filter` but does not inherit `ModelViewModelBase`. |
+| `FiltersViewModel` (`Features/Filtering/`) | Manages a _collection_ of filters, not a single model instance. Inherits `ValidatableViewModelBase` directly. |
+| `MainViewModel` (`Shell/`), `TabsViewModel` (`Features/Tabs/`) | Orchestration VMs with no corresponding single model. |
+| `WizardViewModel` | Generic Infra.Avalonia wizard base; derives from `ValidatableViewModelBase`. |
+| `SettingsViewModel` (`Features/Settings/`) | Modal/workflow VM that composes multiple models. |
 
 ## Summary of rules
 
