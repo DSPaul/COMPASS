@@ -89,17 +89,19 @@
                     </ListBox.ItemsPanel>
                     <controls:CollapsableTabItem Header="New Tag" Icon="TagPlusOutline" CornerRadius="5,0,0,0">
                         <controls:CollapsableTabItem.Content>
-                            <StackPanel DataContext="{Binding AddTagViewModel}" Margin="10" Spacing="10">
+                            <StackPanel x:Name="AddTagForm" DataContext="{Binding AddTagViewModel}" Margin="10" Spacing="10">
                                 <tags:TagEditBasicView/>
-                                <controls:ConfirmControls Compact="True" CancelIcon="Close"/>
+                                <controls:ConfirmControls Compact="True" CancelIcon="Close"
+                                                          IsDefault="{Binding #AddTagForm.IsKeyboardFocusWithin}"/>
                             </StackPanel>
                         </controls:CollapsableTabItem.Content>
                     </controls:CollapsableTabItem>
                     <controls:CollapsableTabItem Header="New Group" Icon="FolderPlusOutline">
                         <controls:CollapsableTabItem.Content>
-                            <StackPanel DataContext="{Binding AddGroupViewModel}" Margin="10" Spacing="10">
+                            <StackPanel x:Name="AddGroupForm" DataContext="{Binding AddGroupViewModel}" Margin="10" Spacing="10">
                                 <tags:TagEditBasicView/>
-                                <controls:ConfirmControls Compact="True" CancelIcon="Close"/>
+                                <controls:ConfirmControls Compact="True" CancelIcon="Close"
+                                                          IsDefault="{Binding #AddGroupForm.IsKeyboardFocusWithin}"/>
                             </StackPanel>
                         </controls:CollapsableTabItem.Content>
                     </controls:CollapsableTabItem>

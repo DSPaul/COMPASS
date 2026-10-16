@@ -55,6 +55,15 @@ public partial class ConfirmControls : UserControl
         get => GetValue(ConfirmIconProperty);
         set => SetValue(ConfirmIconProperty, value);
     }
+
+    public static readonly StyledProperty<bool> IsDefaultProperty = AvaloniaProperty.Register<ConfirmControls, bool>(
+        nameof(IsDefault), defaultValue: true);
+
+    public bool IsDefault
+    {
+        get => GetValue(IsDefaultProperty);
+        set => SetValue(IsDefaultProperty, value);
+    }
     
     // We override OnPropertyChanged of the base class. That way we can react on property changes
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)

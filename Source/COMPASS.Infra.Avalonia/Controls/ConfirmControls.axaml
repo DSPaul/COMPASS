@@ -10,7 +10,7 @@
              x:DataType="modal:IConfirmable">
     <Grid ColumnDefinitions="* 15 *" VerticalAlignment="Bottom">
         <controls:IconButton Command="{Binding ConfirmCommand}" 
-                             Grid.Column="0" IsDefault="True" 
+                             Grid.Column="0" IsDefault="{Binding $parent[controls:ConfirmControls].IsDefault}"
                              Icon="{Binding $parent[controls:ConfirmControls].ConfirmIcon}" 
                              Content="{Binding $parent[controls:ConfirmControls].ConfirmLabel}"
                              HorizontalContentAlignment="Center"
