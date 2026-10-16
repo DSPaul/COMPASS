@@ -1,52 +1,23 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
     <AvaloniaResource Include="Assets\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <AvaloniaResource Include="Themes\Dark.axaml" />
-    <AvaloniaResource Include="Themes\Light.axaml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Assets\COMPASS.ico" />
-    <Content Include="Assets\COMPASS_Logo.png" />
-    <Resource Include="Assets\COMPASS_Icon.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Content Include="Assets\CoverPlaceholder.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <None Include="..\.editorconfig" Link=".editorconfig" />
     <EmbeddedResource Include="..\..\PRIVACY_POLICY.md" Link="PRIVACY_POLICY.md" />
     <EmbeddedResource Include="..\..\LICENSE" Link="LICENSE" />
-    <Resource Include="Assets\LoadingAnimation.gif">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="11.0.2" />
     <PackageReference Include="Avalonia.Labs.Gif" Version="12.0.2" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.3" />
     <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.3" />
-    <PackageReference Include="CommandLineParser" Version="2.9.1" />
     <PackageReference Include="PdfPig" Version="0.1.16" />
     <PackageReference Include="Magick.NET.AvaloniaMediaImaging" Version="1.1.16" />
-    <PackageReference Include="Magick.NET.SystemDrawing" Version="8.0.28" />
     <PackageReference Include="PDFtoImage" Version="5.2.1" />
     <PackageReference Include="Svg.Controls.Skia.Avalonia" Version="12.0.0.17" />
     <PackageReference Include="HotAvalonia" Version="3.1.5" PrivateAssets="All" Publish="True" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Assets\Fonts\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\COMPASS.Infra.Avalonia\COMPASS.Infra.Avalonia.csproj" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="COMPASS.UnitTests" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Update="Views\Modals\ChooseMetaDataView.axaml.cs">
-      <DependentUpon>ChooseMetadataView.axaml</DependentUpon>
-    </Compile>
   </ItemGroup>
 </Project>
