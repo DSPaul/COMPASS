@@ -79,6 +79,7 @@ public abstract class EditViewModelBase<TViewModel, TModel> : ValidatableViewMod
     protected virtual void Clear()
     {
         WorkingCopy = _createViewModel(_source.Clone());
+        WorkingCopy.Validate();
     }
 
     #endregion
