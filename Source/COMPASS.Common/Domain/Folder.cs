@@ -100,15 +100,23 @@ namespace COMPASS.Common.Domain
                 yield break;
             }
 
+            string directoryIdentity = PathUtils.GetDirectoryIdentity(f.FullPath);
+            if (ancestorIdentities.Contains(directoryIdentity))
+            {
+                logger.Warn($"Skipping '{f.FullPath}': filesystem cycle detected.");
+                yield break;
+            }
+
             //Make copy so each folder only has as list of direct parents, instead of sharing list with whole tree
             var ancestors = new HashSet<string>(ancestorIdentities, PathUtils.PathComparer)
             {
-                PathUtils.GetDirectoryIdentity(f.FullPath)
+                directoryIdentity
             };
 
             foreach (string subFolder in ioService.TryGetDirectories(f.FullPath))
             {
-                if (ancestors.Contains(PathUtils.GetDirectoryIdentity(subFolder)))
+                string subFolderIdentity = PathUtils.GetDirectoryIdentity(subFolder);
+                if (ancestors.Contains(subFolderIdentity) && PathUtils.PathsEqual(subFolder, subFolderIdentity))
                 {
                     logger.Warn($"Skipping '{subFolder}': filesystem cycle detected.");
                     continue;
