@@ -6,7 +6,13 @@ by running `dotnet restore`), and fetches hashes for runtime packs directly
 from the NuGet API.
 
 Usage: python generate_nuget_sources.py
-Writes: nuget-sources.json (next to this script)
+Writes: nuget-sources.json and dotnet-runtime-version.txt (next to this script)
+
+The two files must stay in sync: nuget-sources.json vendors the runtime packs for
+the resolved version, and dotnet-runtime-version.txt lets the Flatpak manifest pin
+`RuntimeFrameworkVersion` to that exact version. Pinning is what keeps the offline
+build working when the SDK shipped by the Flatpak extension is a different patch
+than the version we vendored.
 """
 
 import base64
@@ -21,6 +27,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).parent.parent.parent
 LOCK_FILE = REPO_ROOT / "Source/COMPASS.Linux/packages.lock.json"
 OUTPUT = Path(__file__).parent / "nuget-sources.json"
+RUNTIME_VERSION_OUTPUT = Path(__file__).parent / "dotnet-runtime-version.txt"
 DEST_DIR = "nuget-sources"
 
 # Global NuGet packages cache location
@@ -110,6 +117,13 @@ def generate():
 
     dotnet_runtime_version = _resolve_dotnet_runtime_version()
     print(f"Resolved .NET runtime version: {dotnet_runtime_version}")
+
+    # Persist the version so the Flatpak manifest can pin RuntimeFrameworkVersion
+    # to exactly the version we vendor. Without this the SDK shipped by the Flatpak
+    # extension would request its own (possibly different) runtime pack version and
+    # the offline restore would fail with NU1102.
+    RUNTIME_VERSION_OUTPUT.write_text(f"{dotnet_runtime_version}\n", encoding="utf-8")
+    print(f"Written .NET runtime version to {RUNTIME_VERSION_OUTPUT}")
 
     # Collect all resolved packages from the lock file
     packages = {}
