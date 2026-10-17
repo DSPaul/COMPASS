@@ -1,0 +1,23 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="COMPASS.Common.Shell.LoadingWindow"
+        xmlns:gif="using:Avalonia.Labs.Gif"
+        xmlns:converters="using:COMPASS.Infra.Avalonia.Converters"
+        Height="200" Width="300" WindowDecorations="None"
+        WindowStartupLocation="CenterOwner">
+    <Border Background="{StaticResource WindowBackground}" CornerRadius="5" 
+            BorderThickness="2" BorderBrush="{StaticResource PopupOutline}">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="15"/>
+        </Border.Effect>
+        <Grid RowDefinitions="Auto, *">
+            <TextBlock x:Name="LoadingTextBlock" Text="{Binding $parent[Window].Title}" TextAlignment="Center"
+                       HorizontalAlignment="Center" Margin="20" TextWrapping="Wrap"/>
+            <gif:GifImage Grid.Row="1" Width="100" Height="100" VerticalAlignment="Center"
+                          Source="{converters:GifSource 'avares://COMPASS.Common/Assets/LoadingAnimation.gif'}"/>
+        </Grid>
+    </Border>
+</Window>

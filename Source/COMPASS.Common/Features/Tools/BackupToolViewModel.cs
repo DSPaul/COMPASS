@@ -1,0 +1,149 @@
+using CommunityToolkit.Mvvm.Input;
+using COMPASS.Common.Features.CodexCollections;
+using COMPASS.Common.Features.ImportExport;
+using COMPASS.Common.Shell;
+using COMPASS.Infra.Application;
+using COMPASS.Infra.Avalonia.Files;
+using COMPASS.Infra.Avalonia.Modal;
+using COMPASS.Infra.DependencyInjection;
+using COMPASS.Infra.IO;
+using COMPASS.Infra.Logging;
+using COMPASS.Infra.Measuring;
+using COMPASS.Infra.Notifications;
+using COMPASS.Infra.Progress;
+using SharpCompress.Archives;
+using SharpCompress.Archives.Zip;
+using SharpCompress.Readers;
+using COMPASS.Infra.Avalonia.Validation;
+
+namespace COMPASS.Common.Features.Tools;
+
+public class BackupToolViewModel : ValidatableViewModelBase, IToolViewModel
+{
+    private readonly IApplicationService _applicationService;
+    private readonly IApplicationDataService _applicationDataService;
+    private readonly IFilesService _filesService;
+    private readonly IImportExportService _importExportService;
+    private readonly INotificationService _notificationService;
+    private readonly CollectionManager _collectionManager;
+    private readonly ProgressTrackingManager _progressTrackingManager;
+    private readonly ILogger _logger;
+
+    public BackupToolViewModel(
+        IApplicationService applicationService,
+        IApplicationDataService applicationDataService,
+        IFilesService filesService,
+        IImportExportService importExportService,
+        INotificationService notificationService,
+        CollectionManager collectionManager,
+        ProgressTrackingManager progressTrackingManager,
+        ILogger logger)
+    {
+        _applicationService = applicationService;
+        _applicationDataService = applicationDataService;
+        _filesService = filesService;
+        _importExportService = importExportService;
+        _notificationService = notificationService;
+        _collectionManager = collectionManager;
+        _progressTrackingManager = progressTrackingManager;
+        _logger = logger;
+    }
+    
+    #region IToolViewModel
+    
+    public string Name => "Backup & Restore";    
+    
+    #endregion
+
+    private AsyncRelayCommand? _backupLocalFilesCommand;
+    public AsyncRelayCommand BackupLocalFilesCommand => _backupLocalFilesCommand ??= new(BackupLocalFiles);
+    private async Task BackupLocalFiles()
+    {
+        var saveFile = await _filesService.SaveFileAsync(new()
+        {
+            FileTypeChoices = [_filesService.ZipExtensionFilter]
+        });
+
+        if (saveFile != null)
+        {
+            string targetPath = saveFile.Path.LocalPath;
+            saveFile.Dispose();
+            LoadingWindow loadingWindow = new("Compressing to Zip File");
+            loadingWindow.Show(WindowManager.ActiveWindow);
+
+            //save first
+            _collectionManager.SaveAllCollections();
+
+            //System.IO.Compression reports no progress: indeterminate tracker, loading window stays
+            ProgressTracker backupProgressTracker = new(Quantities.Items());
+
+            await _progressTrackingManager.RunAsync(backupProgressTracker, "Creating backup...",
+                (_, ct) => Task.Run(() => _importExportService.CompressUserDataToZip(targetPath), ct));
+
+            loadingWindow.Close();
+        }
+    }
+
+    private AsyncRelayCommand? _restoreBackupCommand;
+    public AsyncRelayCommand RestoreBackupCommand => _restoreBackupCommand ??= new(RestoreBackup);
+    private async Task RestoreBackup()
+    {
+        var files = await _filesService.OpenFilesAsync(new()
+        {
+            FileTypeFilter = [_filesService.ZipExtensionFilter]
+        });
+
+        if (files.Any())
+        {
+            using var file = files.Single();
+            string targetPath = file.Path.LocalPath;
+            LoadingWindow loadingWindow = new("Restoring Backup");
+            loadingWindow.Show(WindowManager.ActiveWindow);
+
+            await ExtractZip(targetPath);
+            loadingWindow?.Close();
+
+            //Restart the app with the new data
+            var notfication = new Notification("Backup restored", "The backup has been restored. COMPASS will now restart.");
+            await _notificationService.ShowDialog(notfication);
+            _applicationService.Restart(false);
+        }
+    }
+
+    private async Task ExtractZip(string sourcePath)
+    {
+        if (!Path.Exists(sourcePath))
+        {
+            _logger.Warn("Cannot extract sourcePath as it does not exit");
+            return;
+        }
+
+        ProgressTracker restoreProgressTracker = new(Quantities.Items());
+
+        await _progressTrackingManager.RunAsync(restoreProgressTracker, "Restoring backup...",
+            async (track, ct) =>
+            {
+                var options = new ReaderOptions()
+                {
+                    Progress = track
+				};
+                await using var archive = await ZipArchive.OpenAsyncArchive(sourcePath, options, ct);
+                await archive.WriteToDirectoryAsync(_applicationDataService.UserDataPath, progress: track, cancellationToken: ct);
+            });
+    }
+}
+
+[Factory]
+public class BackupToolViewModelFactory(
+    IApplicationService applicationService,
+    IApplicationDataService applicationDataService,
+    IFilesService filesService,
+    IImportExportService importExportService,
+    INotificationService notificationService,
+    CollectionManager collectionManager,
+    ProgressTrackingManager progressTrackingManager,
+    ILogger logger)
+{
+    public BackupToolViewModel Create()
+        => new(applicationService, applicationDataService, filesService, importExportService, notificationService, collectionManager, progressTrackingManager, logger);
+}

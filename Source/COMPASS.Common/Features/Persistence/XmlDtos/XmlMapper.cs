@@ -1,0 +1,414 @@
+using Avalonia.Media;
+using COMPASS.Common.Features.Metadata;
+using COMPASS.Common.Features.Settings;
+using COMPASS.Infra.Collections;
+using COMPASS.Infra.DependencyInjection;
+using COMPASS.Infra.Logging;
+using NuGet.Versioning;
+using System.Collections.ObjectModel;
+using System.Text;
+using COMPASS.Common.Domain;
+
+namespace COMPASS.Common.Features.Persistence.XmlDtos
+{
+    public static class XmlMapper
+    {
+        private static ILogger Logger => field ??= ServiceResolver.Resolve<ILogger>();
+
+        #region Sanitize xml data
+        //based on https://seattlesoftware.wordpress.com/2008/09/11/hexadecimal-value-0-is-an-invalid-character/
+        /// <summary>
+        /// Remove illegal XML characters from a string.
+        /// </summary>
+        private static string Sanitize(this string? str)
+        {
+            if (str is null) return "";
+
+            StringBuilder buffer = new(str.Length);
+            foreach (char c in str.Where(c => IsLegalXmlChar(c)))
+            {
+                buffer.Append(c);
+            }
+            return buffer.ToString();
+        }
+
+        /// <summary>
+        /// Whether a given character is allowed by XML 1.0.
+        /// </summary>
+        private static bool IsLegalXmlChar(int character) => character switch
+        {
+            0x9 => true, // '\t' == 9 
+            0xA => true, // '\n' == 10         
+            0xD => true, // '\r' == 13        
+            (>= 0x20) and (<= 0xD7FF) => true,
+            (>= 0xE000) and (<= 0xFFFD) => true,
+            (>= 0x10000) and (<= 0x10FFFF) => true,
+            _ => false
+        };
+
+        #endregion
+
+        #region Codex
+
+        public static Codex ToModel(this CodexDto dto, CodexCollection collection)
+        {
+            Codex codex = new(collection)
+            {
+                // COMPASS related Metadata
+                Id = dto.ID,
+                GlobalId = dto.GlobalId == Guid.Empty ? Guid.NewGuid() : dto.GlobalId,
+                CoverArtPath = dto.CoverArtPath,
+
+                //Codex related Metadata
+                Title = dto.Title,
+                SortingTitle = dto.SortingTitle,
+                Authors = new(dto.Authors),
+                Publisher = dto.Publisher,
+                Description = dto.Description,
+                ReleaseDate = dto.ReleaseDate,
+                PageCount = dto.PageCount,
+                Version = dto.Version,
+
+                //User related Metadata
+                PhysicallyOwned = dto.PhysicallyOwned,
+                Rating = dto.Rating,
+                Favorite = dto.Favorite,
+
+                //User behaviour metadata
+                DateAdded = dto.DateAdded,
+                LastOpened = dto.LastOpened,
+                OpenedCount = dto.OpenedCount,
+
+                //Sources
+                Sources = new SourceSet()
+                {
+                    SourceURL = dto.SourceURL,
+                    Path = dto.Path,
+                    ISBN = dto.ISBN,
+                },
+                
+                Tags = new(collection.AllTags.Where(tag => dto.TagIDs.Contains(tag.Id)))
+            };
+
+            return codex;
+        }
+
+        public static CodexDto ToDto(this Codex model)
+        {
+            CodexDto dto = new()
+            {
+                // COMPASS related Metadata
+                ID = model.Id,
+                GlobalId = model.GlobalId,
+                CoverArtPath = model.CoverArtPath.Sanitize(),
+
+                //Codex related Metadata
+                Title = model.Title.Sanitize(),
+                SortingTitle = model.UserDefinedSortingTitle.Sanitize(),
+                Authors = model.Authors.Select(author => author.Sanitize()).ToList(),
+                Publisher = model.Publisher.Sanitize(),
+                Description = model.Description.Sanitize(),
+                ReleaseDate = model.ReleaseDate,
+                PageCount = model.PageCount,
+                Version = model.Version,
+
+                //User related Metadata
+                PhysicallyOwned = model.PhysicallyOwned,
+                Rating = model.Rating,
+                Favorite = model.Favorite,
+                TagIDs = model.Tags.Select(t => t.Id).ToList(),
+
+                //User behaviour metadata
+                DateAdded = model.DateAdded,
+                LastOpened = model.LastOpened,
+                OpenedCount = model.OpenedCount,
+
+                //Sources
+                SourceURL = model.Sources.SourceURL.Sanitize(),
+                Path = model.Sources.Path.Sanitize(),
+                ISBN = model.Sources.ISBN.Sanitize(),
+            };
+
+            return dto;
+        }
+
+        #endregion
+
+        #region Preferences
+
+        public static Preferences ToModel(this PreferencesDto dto)
+        {
+            var model = new Preferences()
+            {
+                LastRanVersion = dto.LastRanVersion != null && SemanticVersion.TryParse(dto.LastRanVersion, out var version) ? version : null,
+                OpenCodexPriority = MapCodexPriorities(dto.OpenFilePriorityIDs),
+                ImportableCodexProperties = dto.CodexProperties.ToModels(),
+                ListLayoutPreferences = dto.ListLayoutPreferences,
+                CardLayoutPreferences = dto.CardLayoutPreferences,
+                TileLayoutPreferences = dto.TileLayoutPreferences,
+                HomeLayoutPreferences = dto.HomeLayoutPreferences,
+                AutoLinkFolderTagSameName = dto.AutoLinkFolderTagSameName,
+                UIState = dto.UIState,
+                WindowState = dto.WindowState,
+                UpdatePreferences = dto.UpdatePreferences,
+            };
+            return model;
+        }
+
+        public static PreferencesDto ToDto(this Preferences prefs)
+        {
+            PreferencesDto dto = new()
+            {
+                LastRanVersion = prefs.LastRanVersion?.ToString(),
+                OpenFilePriorityIDs = prefs.OpenCodexPriority.Select(pf => pf.Id).ToList(),
+                CodexProperties = prefs.ImportableCodexProperties.Select(prop => prop.ToDto()).ToList(),
+                ListLayoutPreferences = prefs.ListLayoutPreferences,
+                CardLayoutPreferences = prefs.CardLayoutPreferences,
+                TileLayoutPreferences = prefs.TileLayoutPreferences,
+                HomeLayoutPreferences = prefs.HomeLayoutPreferences,
+                AutoLinkFolderTagSameName = prefs.AutoLinkFolderTagSameName,
+                UIState = prefs.UIState,
+                WindowState = prefs.WindowState,
+                UpdatePreferences = prefs.UpdatePreferences,
+            };
+
+            return dto;
+        }
+
+        /// <summary>
+        /// Map Codex open priority from dto
+        /// </summary>
+        /// <param name="priorityIds"></param>
+        /// <returns></returns>
+        private static ObservableCollection<PreferableFunction<Codex>> MapCodexPriorities(List<int>? priorityIds)
+        {
+            //if preferences doesn't have file priorities, put them in default order
+            if (priorityIds is null)
+            {
+                return new(Preferences.OpenCodexFunctions);
+            }
+
+            return new(Preferences.OpenCodexFunctions.OrderBy(pf =>
+            {
+                //get index in user preference
+                int index = priorityIds.IndexOf(pf.Id);
+
+                //if it was not found in preference, use its default ID
+                if (index < 0)
+                {
+                    return pf.Id;
+                }
+
+                return index;
+            }));
+        }
+
+        /// <summary>
+        /// Map codex metadata properties from dto
+        /// </summary>
+        /// <param name="propertyDtos"></param>
+        /// <returns></returns>
+        private static List<CodexProperty> ToModels(this List<CodexPropertyDto> propertyDtos)
+        {
+#pragma warning disable CS0618 // Type or member "Label" is obsolete
+
+            //In versions 1.6.0 and lower, label was stored instead of name
+            var useLabel = propertyDtos.All(prop => string.IsNullOrEmpty(prop.Name) && !string.IsNullOrEmpty(prop.Label));
+            if (useLabel)
+            {
+                foreach (CodexPropertyDto propDto in propertyDtos)
+                {
+                    var foundProp = SourceMetadata.ImportableProperties.Select(CodexProperty.GetInstance).ToList().Find(p => p?.Label == propDto.Label);
+                    if (foundProp != null)
+                    {
+                        propDto.Name = foundProp.Name;
+                    }
+                }
+            }
+#pragma warning restore CS0618 // Type or member "Label" is obsolete
+
+            var props = new List<CodexProperty>();
+
+            foreach (var propName in SourceMetadata.ImportableProperties)
+            {
+                var defaultProp = CodexProperty.GetInstance(propName);
+                if(defaultProp == null) continue;
+                CodexPropertyDto? propDto = propertyDtos.Find(p => p.Name == defaultProp.Name);
+                // Add Preferences from defaults if they weren't found on the loaded Preferences
+                CodexProperty? prop = propDto is null ? defaultProp : propDto.ToModel();
+                if (prop is not null)
+                {
+                    props.Add(prop);
+                }
+            }
+
+            return props;
+        }
+
+        #region CodexProperty
+        public static CodexProperty? ToModel(this CodexPropertyDto propDto)
+        {
+            var prop = CodexProperty.GetInstance(propDto.Name);
+
+            if (prop == null)
+            {
+                return null;
+            }
+
+            prop.SourcePriority = propDto.SourcePriority;
+            prop.OverwriteMode = propDto.OverwriteMode;
+
+            var defaultSources = CodexProperty.GetDefaultSources(prop.Name);
+            
+            // If a new possible source was not found in the save, add it
+            foreach (var source in defaultSources)
+            {
+                prop.SourcePriority.AddIfMissing(source);
+            }
+
+            // If a possible source was removed (due to a specific metadata fetch breaking
+            // or due to an api change or something), remove it from the sources
+            prop.SourcePriority.RemoveAll(source => !defaultSources.Contains(source));
+            
+            return prop;
+        }
+
+        public static CodexPropertyDto ToDto(this CodexProperty prop)
+        {
+            CodexPropertyDto dto = new()
+            {
+                Name = prop.Name,
+                OverwriteMode = prop.OverwriteMode,
+                SourcePriority = prop.SourcePriority,
+            };
+
+            return dto;
+        }
+
+        #endregion
+
+        #endregion
+
+        #region Tag
+
+        public static Tag ToModel(this TagDto dto, Tag? parentTag = null)
+        {
+            var model = new Tag()
+            {
+                Id = dto.ID,
+                Name = dto.Content,
+                InternalBackgroundColor = dto.BackgroundColor?.ToModel(),
+                IsGroup = dto.IsGroup,
+                Parent = parentTag,
+                LinkedGlobs = new(dto.LinkedGlobs)
+            };
+
+            model.Children.ReplaceRange(dto.Children.Select(child => child.ToModel(model)));
+            return model;
+        }
+
+        public static TagDto ToDto(this Tag model) => new()
+        {
+            ID = model.Id,
+            Content = Sanitize(model.Name),
+            BackgroundColor = model.InternalBackgroundColor?.ToDto(),
+            IsGroup = model.IsGroup,
+            Children = model.Children.Select(ToDto).ToList(),
+            LinkedGlobs = model.LinkedGlobs.ToList()
+        };
+
+        #endregion
+
+        #region Color
+
+        public static Color ToModel(this ColorDto dto) =>
+            Color.FromArgb((byte)dto.A, (byte)dto.R, (byte)dto.G, (byte)dto.B);
+
+
+        public static ColorDto ToDto(this Color model) => new()
+        {
+            A = model.A,
+            R = model.R,
+            G = model.G,
+            B = model.B,
+        };
+
+        #endregion
+
+        #region CollectionInfo
+
+        public static CollectionInfo ToModel(this CollectionInfoDto dto, IList<Tag> allTags, FolderFactory folderFactory)
+        {
+            var collectionInfo = new CollectionInfo()
+            {
+                BanishedPaths = new(dto.BanishedPaths),
+                AutoImportFolders = new(dto.AutoImportFolders.Select(f => f.ToModel(folderFactory))),
+                FiletypePreferences = dto.FiletypePreferences.DistinctBy(x => x.Key)
+                                                             .Where(x => !string.IsNullOrWhiteSpace(x.Key))
+                                                             .ToDictionary(x => x.Key!, x => x.Value),
+            };
+                
+            #region Migrate save data from previous versions
+#pragma warning disable CS0618 // Type or member is obsolete
+            
+            //(1.x -> 2.x) migrate Folder - Tag Links
+            foreach (FolderTagPairDto pair in dto.FolderTagPairs)
+            {
+                allTags.FirstOrDefault(t => t.Id == pair.TagID)?.LinkedGlobs.AddIfMissing(pair.Folder);
+            }
+
+            //(1.6.0 -> 1.7.0) migrate from AutoImportFoldersViewSource to AutoImportFolders 
+            if (dto.AutoImportDirectories.SafeAny() && !dto.AutoImportFolders.Any())
+            {
+                collectionInfo.AutoImportFolders.ReplaceRange(dto.AutoImportDirectories!.Select(dir => folderFactory.Create(dir)));
+            }
+
+#pragma warning restore CS0618 // Type or member is obsolete
+
+            #endregion
+            
+            return collectionInfo;
+        }
+
+        public static CollectionInfoDto ToDto(this CollectionInfo model)
+        {
+            return new CollectionInfoDto()
+            {
+                AutoImportFolders = model.AutoImportFolders.Select(ToDto).ToList(),
+                BanishedPaths = model.BanishedPaths.Select(Sanitize).ToList(),
+                FiletypePreferences = model.FiletypePreferences.Select(x => new KeyValuePairDto<string, bool>(x)).ToList(),
+            };
+        }
+        
+        private static Folder ToModel(this FolderDto dto, FolderFactory folderFactory)
+        {
+            var folder = folderFactory.Create(dto.FullPath);
+            
+            if(!dto.HasAllSubFolders)
+            {
+                var subFolders = dto.SubFolders?.Select(sf => sf.ToModel(folderFactory)) ?? [];
+                try
+                {
+                    folder.SetExplicitSubfolders(subFolders);
+                }
+                catch(Exception ex)
+                {
+                    Logger.Error($"Failed to set explicit subfolders for folder {dto.FullPath}", ex);
+                }
+            }
+            
+            return folder;
+        }
+
+        private static FolderDto ToDto(this Folder model)
+        {
+            return new FolderDto()
+            {
+                HasAllSubFolders = model.HasAllSubFolders,
+                FullPath = Sanitize(model.FullPath),
+                SubFolders = model.HasAllSubFolders ? null : model.SubFolders.Select(ToDto).ToList(),
+            };
+        }
+        #endregion
+    }
+}

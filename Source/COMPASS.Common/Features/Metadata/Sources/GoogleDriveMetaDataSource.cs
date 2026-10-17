@@ -1,0 +1,75 @@
+using COMPASS.Infra.Logging;
+using COMPASS.Infra.Preferences;
+using COMPASS.Infra.Web;
+using HtmlAgilityPack;
+using ImageMagick;
+using System.Diagnostics;
+using COMPASS.Common.Domain;
+
+namespace COMPASS.Common.Features.Metadata.Sources
+{
+    public class GoogleDriveMetadataSource : OnlineMetadataSource
+    {
+        public GoogleDriveMetadataSource(ILogger logger, IPreferencesService preferencesService, IWebService webService, IWebDriverService webDriverService) :
+            base(logger, preferencesService, webService, webDriverService)
+        { }
+        
+        public override MetadataSourceType Type => MetadataSourceType.GoogleDrive;
+        public override string UrlPrefix => "https://drive.google.com/file/";
+
+        public override Task<SourceMetadata> GetMetadata(SourceSet sources, IList<Tag> availableTags, CancellationToken cancellationToken = default)
+        {
+            Debug.Assert(IsValidSource(sources), "Invalid Codex was used in Google drive source");
+            
+            SourceMetadata metaData = new()
+            {
+                Publisher = "Google Drive"
+            };
+
+            return Task.FromResult(metaData);
+        }
+
+        public override async Task<IMagickImage<byte>?> FetchCover(SourceSet sources, CancellationToken cancellationToken = default)
+        {
+            if (String.IsNullOrEmpty(sources.SourceURL)) { return null; }
+            Logger.Info($"Downloading cover from Google Drive");
+            try
+            {
+                //cover art is on store page, redirect there by going to /credits which every book has
+                HtmlDocument? doc = await WebService.ScrapeSite(sources.SourceURL, cancellationToken);
+                HtmlNode? src = doc?.DocumentNode;
+                if (src is null) return null;
+
+                string imgURL = "";
+                if (src.SelectSingleNode("//meta[@property='og:image']") is HtmlNode imgNode)
+                {
+                    imgURL = imgNode.GetAttributeValue("content", String.Empty);
+                    //cut of "=W***-h***-p" from URL that crops the image if it is present
+                    if (imgURL.Contains('=')) imgURL = imgURL.Split('=')[0];
+                }
+
+                else if (src.SelectSingleNode("//link[@id='texmex-thumb']") is HtmlNode linkNode)
+                {
+                    imgURL = linkNode.GetAttributeValue("href", string.Empty);
+                }
+
+                if (!string.IsNullOrEmpty(imgURL))
+                {
+                    return await WebService.DownloadImageAsync(imgURL, cancellationToken: cancellationToken);
+                }
+            }
+            catch(OperationCanceledException)
+            {
+                //To be handled by the caller
+                throw;
+            }
+            catch (Exception ex)
+            {
+                string msg = $"Failed to get cover from {sources.SourceURL}";
+                Logger.Error(msg, ex);
+            }
+
+            return null;
+        }
+    }
+}

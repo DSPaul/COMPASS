@@ -5,50 +5,95 @@ permissions:
   actions: read
 
 on:
-  pull_request:
-    branches: [ main ]
-    paths:
-    - '**.cs'
-    - '**.csproj'
+  workflow_dispatch:
   push:
-    branches: [ dev ]
+    branches: [ avalonia, dev ]
     paths:
     - '**.cs'
     - '**.csproj'
+    - '.github/workflows/*'
+  pull_request:
+    branches: [ master ]
+    paths:
+    - '**.cs'
+    - '**.csproj'
+    - '.github/workflows/*'
 
 env:
-  DOTNET_VERSION: '9.0.x' # The .NET SDK version to use
+  DOTNET_VERSION: '10.0.x' # The .NET SDK version to use
 
 jobs:
-  build-and-test:
-
-    name: build-and-test
+  test-windows:
+    name: test-windows
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v4
-
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v4
+    - name: Setup build environment
+      uses: ./.github/actions/setup-build-environment
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
-    - name: Setup Chrome
-      uses: browser-actions/setup-chrome@v1.5.0
-
-    - name: Install dependencies
-      run: dotnet restore
-      
-    - name: Build
-      run: dotnet build --configuration Release --no-restore
-
     - name: Test
-      run: dotnet test --no-restore -v normal --filter Priority!=2
+      run: |
+        dotnet test Tests/COMPASS.UnitTests --no-restore -v normal
+        dotnet test Tests/COMPASS.IntegrationTests.Common --no-restore -v normal
+        dotnet test Tests/COMPASS.IntegrationTests.Windows --no-restore -v normal
+
+    - name: Smoke test - launch app and verify it survives startup
+      shell: pwsh
+      run: |
+        dotnet publish Source/COMPASS.Windows/COMPASS.Windows.csproj --configuration Release --no-restore -o publish/win-x64
+        $compassProcess = Start-Process -FilePath ".\publish\win-x64\COMPASS.exe" -PassThru
+        Start-Sleep -Seconds 12
+        if ($compassProcess.HasExited) {
+          Write-Output "::error::COMPASS exited within 12s of launch - likely crashed during startup"
+          exit 1
+        }
+        Write-Output "COMPASS was still running after 12s, startup succeeded"
+        Stop-Process -Id $compassProcess.Id -Force
 
     - name: Upload Log Artifact
       if: failure()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
-        name: log-file
-        #using $env{appdata} did't work so use this for now, fine until cross platform
-        path: C:\Users\runneradmin\AppData\Roaming\COMPASS\logs\test.log
+        name: log-file-windows
+        path: C:\Users\runneradmin\AppData\Local\COMPASS\logs
+
+  test-linux:
+    name: test-linux
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Setup build environment
+      uses: ./.github/actions/setup-build-environment
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Test
+      run: |
+        dotnet test Tests/COMPASS.UnitTests --no-restore -v normal
+        dotnet test Tests/COMPASS.IntegrationTests.Common --no-restore -v normal
+        dotnet test Tests/COMPASS.IntegrationTests.Linux --no-restore -v normal
+
+    - name: Smoke test - launch app and verify it survives startup
+      run: |
+        dotnet publish Source/COMPASS.Linux/COMPASS.Linux.csproj --configuration Release --no-restore -o publish/linux-x64
+        timeout 60s xvfb-run -a ./publish/linux-x64/COMPASS &
+        APP_PID=$!
+        sleep 12
+        if ! kill -0 "$APP_PID" 2>/dev/null; then
+          echo "::error::COMPASS terminated within 12s of launch - likely crashed during startup"
+          exit 1
+        fi
+        echo "COMPASS was still running after 12s, startup succeeded"
+
+    - name: Stop smoke test app
+      if: always()
+      run: pkill -f "publish/linux-x64/COMPASS" || true
+
+    - name: Upload Log Artifact
+      if: failure()
+      uses: actions/upload-artifact@v7
+      with:
+        name: log-file-linux
+        path: /home/runner/.local/share/COMPASS/logs

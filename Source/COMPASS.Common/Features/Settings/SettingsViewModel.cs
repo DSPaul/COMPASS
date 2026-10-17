@@ -1,0 +1,409 @@
+using Avalonia.Threading;
+using CommunityToolkit.Mvvm.Input;
+using COMPASS.Common.Features.CodexCollections;
+using COMPASS.Common.Features.ImportExport;
+using COMPASS.Common.Features.Metadata;
+using COMPASS.Common.Features.Tools;
+using COMPASS.Infra.Application;
+using COMPASS.Infra.Avalonia.Files;
+using COMPASS.Infra.Avalonia.Modal;
+using COMPASS.Infra.Collections;
+using COMPASS.Infra.DependencyInjection;
+using COMPASS.Infra.IO;
+using COMPASS.Infra.Logging;
+using COMPASS.Infra.Notifications;
+using COMPASS.Infra.Preferences;
+using COMPASS.Infra.Updates;
+using System.Collections.ObjectModel;
+using COMPASS.Common.Domain;
+using COMPASS.Infra.Avalonia.Validation;
+using COMPASS.Common.Features.Tabs;
+
+namespace COMPASS.Common.Features.Settings
+{
+    public class SettingsViewModel : ValidatableViewModelBase, IModalViewModel, IDisposable
+    {
+        private readonly ILogger _logger;
+        private readonly IApplicationService _applicationService;
+        private readonly IApplicationDataService _applicationDataService;
+        private readonly IIOService _ioService;
+        private readonly IPreferencesService _preferencesService;
+        private readonly IFilesService _filesService;
+        private readonly INotificationService _notificationService;
+        private readonly UpdateManager _updateManager;
+        private readonly ImportFilesViewModelFactory _importFilesViewModelFactory;
+        private readonly IActiveTabContext _activeTabContext;
+
+        private static readonly List<string> TabOrder = ["General", "Import", "Metadata", "Tools", "About", "Legal"];
+
+        public SettingsViewModel(
+            ILogger logger,
+            IApplicationService applicationService,
+            IApplicationDataService applicationDataService,
+            IIOService ioService,
+            IPreferencesService preferencesService,
+            IFilesService filesService,
+            INotificationService notificationService,
+            UpdateManager updateManager,
+            ImportFilesViewModelFactory importFilesViewModelFactory,
+            ToolsViewModelFactory toolsViewModelFactory,
+            CollectionManager collectionManager,
+            IActiveTabContext activeTabContext,
+            string tabToOpen = "")
+        {
+            int tabIndex = TabOrder.FindIndex(t => t.Equals(tabToOpen, StringComparison.OrdinalIgnoreCase));
+            SelectedTabIndex = tabIndex >= 0 ? tabIndex : 0;
+
+            _logger = logger;
+            _applicationService = applicationService;
+            _applicationDataService = applicationDataService;
+            _ioService = ioService;
+            _preferencesService = preferencesService;
+            _notificationService = notificationService;
+            _filesService = filesService;
+            _updateManager = updateManager;
+            _importFilesViewModelFactory = importFilesViewModelFactory;
+            _activeTabContext = activeTabContext;
+            ToolsVM = toolsViewModelFactory.Create();
+
+            SelectedCollectionVm = collectionManager.CollectionVms.SingleOrDefault(vm => vm.Identifier == activeTabContext.ActiveTab?.CollectionVM.Identifier);
+
+            if (SelectedCollectionVm == null)
+            {
+                _logger.Warn("The active collection was not found in the list of all known collections");
+            }
+
+            if (SelectedCollection != null)
+            {
+                BanishedPaths = new(SelectedCollection.Info.BanishedPaths.OrderBy(x => x));
+                BanishedPaths.CollectionChanged += OnBanishedPathsChanged;
+            }
+            else
+            {
+                BanishedPaths = new ObservableCollection<string>();
+            }
+        }
+
+
+        private int _selectedTabIndex;
+        public int SelectedTabIndex
+        {
+            get => _selectedTabIndex;
+            set => SetProperty(ref _selectedTabIndex, value);
+        }
+
+        public static IReadOnlyList<Dependency> Dependencies { get; } =
+        [
+            new("Autofac",                 "https://autofac.org/",                                     "Inversion of Control",   "MIT"),
+            new("Avalonia",                "https://avaloniaui.net/",                                  "UI Framework",           "MIT"),
+            new("CommunityToolkit.Mvvm",   "https://github.com/CommunityToolkit/dotnet",               "Reactivity",             "MIT"),
+            new("FlashCap",                "https://github.com/kekyo/FlashCap",                        "Video Capture",          "Apache 2.0"),
+            new("FuzzySharp",              "https://github.com/JakeBayer/FuzzySharp",                  "Fuzzy Search",           "MIT"),
+            new("Host Grotesk",            "https://fonts.google.com/specimen/Host+Grotesk",           "Font",                   "SIL OFL 1.1"),
+            new("HotAvalonia",             "https://github.com/Kir-Antipov/HotAvalonia",               "Hot Reload",             "MIT"),
+            new("HTML Agility Pack",       "https://github.com/zzzprojects/html-agility-pack",         "HTML Parsing",           "MIT"),
+            new("Magick.NET",              "https://github.com/dlemstra/Magick.NET",                   "Image Manipulation",     "Apache 2.0"),
+            new("MarkView.Avalonia",       "https://github.com/Kryptos-FR/MarkView.Avalonia",          "Markdown Rendering",     "MIT"),
+            new("Material.Icons.Avalonia", "https://github.com/AvaloniaUtils/Material.Icons.Avalonia", "Icons and Controls",     "MIT"),
+            new("OpenCvSharp",             "https://github.com/shimat/opencvsharp",                    "Barcode decoding",       "Apache 2.0"),
+            new("PdfPig",                  "https://github.com/UglyToad/PdfPig",                       "PDF Data Extraction",    "Apache 2.0"),
+            new("PDFtoImage",              "https://github.com/sungaila/PDFtoImage",                   "PDF to Image",           "MIT"),
+            new("Selenium",                "https://github.com/SeleniumHQ/selenium",                   "Website Screenshotting", "Apache 2.0"),
+            new("Serilog",                 "https://github.com/serilog/serilog",                     "Logging",                "Apache 2.0"),
+            new("SharpCompress",           "https://github.com/adamhathcock/sharpcompress",            "Zipping and Unzipping",  "MIT"),
+            new("Svg.Skia",                "https://github.com/wieslawsoltes/Svg.Skia",                "SVG Rendering",          "MIT"),
+        ];
+        
+        
+        private CollectionHandle? _selectedCollectionHandle;
+
+        //TODO show a dropdown in the UI somewhere
+        private CodexCollectionVM? _selectedCollectionVm;
+        public CodexCollectionVM? SelectedCollectionVm
+        {
+            get => _selectedCollectionVm;
+            set
+            {
+                _selectedCollectionHandle?.Dispose();
+                SetProperty(ref _selectedCollectionVm, value);
+                _selectedCollectionHandle = _selectedCollectionVm?.Load();
+            }
+        }
+
+        private CodexCollection? SelectedCollection =>  SelectedCollectionVm?.Collection;
+
+        #region IModalWindow
+
+        public string WindowTitle => "Settings";
+        public Action CloseAction { get; set; } = () => { };
+
+        #endregion
+        
+        #region Load and Save Settings
+
+        private void ApplyPreferences()
+        {
+            if (SelectedCollection == null) return;
+            //Convert list back to dict because dict does not support two-way binding
+            SelectedCollection.Info.FiletypePreferences = FiletypePreferences.ToDictionary(x => x.Key, x => x.Value);
+
+            _preferencesService.SavePreferences();
+        }
+
+        public void Refresh()
+        {
+            if (SelectedCollection == null) return;
+            
+            //Tell the window that the FiletypePreferences dict might have changed so it needs to fetch it again
+            _filetypePreferences = null;
+            OnPropertyChanged(nameof(FiletypePreferences));
+
+            SelectedCollection.Info.AutoImportFolders.CollectionChanged += (_, _) => OnPropertyChanged(nameof(AutoImportFolders));
+            SelectedCollection.Info.BanishedPaths.CollectionChanged += (_, _) => OnPropertyChanged(nameof(BanishedPaths));
+        }
+        #endregion
+
+        #region Tab: General
+
+        public bool PreferOnlineSource
+        {
+            get => _preferencesService.GetPreferences<Preferences>().OpenCodexPriority.First().Id == Preferences.ONLINE_SOURCE_PRIORITY_ID;
+            set
+            {
+                if (value == PreferOnlineSource) return;
+                //If the value changed, we can just switch the order around, because there are only 2 options
+                var preferences = _preferencesService.GetPreferences<Preferences>();
+                preferences.OpenCodexPriority = new(preferences.OpenCodexPriority.Reverse());
+                OnPropertyChanged();
+            }
+        }
+
+        public UIState UIPreferences => _preferencesService.GetPreferences<UIState>();
+
+        #region Manage Data
+
+        #region Data Path 
+
+        public string UserDataPath => _applicationDataService.UserDataPath;
+        public string LogsPath => Path.Combine(IApplicationDataService.ApplicationDataPath, Directories.LOGS);
+
+        public AsyncRelayCommand ChangeDataPathCommand => field ??= new(ChooseNewDataPath);
+        private async Task ChooseNewDataPath()
+        {
+            var folders = await _filesService.OpenFoldersAsync(new()
+            {
+                Title = "Choose a new data location",
+            });
+
+            if (folders.Any())
+            {
+                var folder = folders.Single();
+                string newPath = folder.Path.LocalPath;
+                folder.Dispose();
+                await _applicationDataService.UpdateUserDataPath(newPath);
+
+                OnPropertyChanged(nameof(UserDataPath));
+            }
+        }
+
+        #endregion
+        public AsyncRelayCommand ResetDataPathCommand => field ??= new(ResetDataPath);
+        private async Task ResetDataPath()
+        {
+            await _applicationDataService.ResetUserDataPath();
+            OnPropertyChanged(nameof(UserDataPath));
+        }
+
+        public RelayCommand BrowseLocalFilesCommand => field ??= new(BrowseUserFiles);
+        public void BrowseUserFiles() => _ioService.ShowInExplorer(_applicationDataService.UserDataPath);
+
+        public RelayCommand OpenLogsFolderCommand => field ??= new(BrowseLogFiles);
+        public void BrowseLogFiles() => _ioService.ShowInExplorer(LogsPath);
+
+        #endregion
+
+        #region Update settings
+
+        public bool CheckForUpdatesOnStartup
+        {
+            get => _preferencesService.GetPreferences<UpdatePreferences>().CheckForUpdates;
+            set
+            {
+                if (value == CheckForUpdatesOnStartup) return;
+                _preferencesService.GetPreferences<UpdatePreferences>().CheckForUpdates = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool IncludePrereleaseUpdates
+        {
+            get => _preferencesService.GetPreferences<UpdatePreferences>().IncludePrerelease;
+            set
+            {
+                if (value == IncludePrereleaseUpdates) return;
+                _preferencesService.GetPreferences<UpdatePreferences>().IncludePrerelease = value;
+                OnPropertyChanged();
+            }
+        }
+
+        #endregion
+
+        #endregion
+
+        #region Tab: Import
+
+        //Open folder in explorer
+        public RelayCommand<string> ShowInExplorerCommand => field ??= new(path =>
+        {
+            if (string.IsNullOrEmpty(path)) return;
+
+            try
+            {
+                _ioService.ShowInExplorer(path);
+            }
+            catch(FileNotFoundException ex)
+            {
+                _logger.Debug($"Showing {path} in explorer failed", ex);
+                _notificationService.Notify(new Notification("Path not found", $"{path} could not be found", Severity.Warning));
+            }
+        });
+
+        #region Auto import folders
+        public ObservableCollection<Folder> AutoImportFolders => SelectedCollection != null ? 
+            new(SelectedCollection.Info.AutoImportFolders.OrderBy(f => f.FullPath)) :
+            [];
+
+        //Edit a folder from auto import
+        public AsyncRelayCommand<Folder> EditAutoImportDirectoryCommand => field ??= new(EditAutoImportFolder);
+        private async Task EditAutoImportFolder(Folder? folder)
+        {
+            if (folder is null) return;
+            using var importFolderVM = _importFilesViewModelFactory.Create(targetCollectionId: _activeTabContext.ActiveCollection.Name, autoImport: false);
+            importFolderVM.ExistingFolders = [folder];
+            await importFolderVM.Import();
+            
+            OnPropertyChanged(nameof(AutoImportFolders));
+        }
+        
+        //Remove a folder from auto import;
+        public RelayCommand<Folder> RemoveAutoImportDirectoryCommand => field ??= new(RemoveAutoImportDirectory);
+        private void RemoveAutoImportDirectory(Folder? folder)
+        {
+            if (folder == null) return;
+            SelectedCollection!.Info.AutoImportFolders.Remove(folder);
+            OnPropertyChanged(nameof(AutoImportFolders));
+        }
+
+        //Add a directory from auto import
+        public AsyncRelayCommand<string> AddAutoImportDirectoryCommand => field ??= new(AddAutoImportDirectory);
+        private async Task AddAutoImportDirectory(string? dir)
+        {
+            if (!String.IsNullOrWhiteSpace(dir) && Directory.Exists(dir))
+            {
+                using var importFolderVM = _importFilesViewModelFactory.Create(targetCollectionId: _activeTabContext.ActiveCollection.Name, autoImport: false);
+                importFolderVM.RecursiveDirectories = [dir];
+                await importFolderVM.Import();
+            }
+            await Dispatcher.UIThread.InvokeAsync(() =>
+                OnPropertyChanged(nameof(AutoImportFolders)));
+        }
+        
+        public AsyncRelayCommand PickAutoImportDirectoryCommand => field ??= new(PickAutoImportDirectory);
+
+        private async Task PickAutoImportDirectory() => await AddAutoImportDirectory(await _ioService.PickFolder());
+
+        //File types to import
+        private List<ObservableKeyValuePair<string, bool>>? _filetypePreferences;
+        public List<ObservableKeyValuePair<string, bool>> FiletypePreferences
+            => _filetypePreferences ??= SelectedCollection != null ? 
+                SelectedCollection.Info.FiletypePreferences
+                .Select(x => new ObservableKeyValuePair<string, bool>(x))
+                .OrderBy(x => x.Key)
+                .ToList() : 
+                [];
+
+        public ObservableCollection<string> BanishedPaths { get; }
+
+        public void OnBanishedPathsChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            SelectedCollection?.Info.BanishedPaths.ReplaceRange(BanishedPaths);
+        }
+        
+        #endregion
+
+        #region Link Folders to Tag
+
+        public bool AutoLinkFolderTagSameName
+        {
+            get => _preferencesService.GetPreferences<Preferences>().AutoLinkFolderTagSameName;
+            set
+            {
+                _preferencesService.GetPreferences<Preferences>().AutoLinkFolderTagSameName = value;
+                OnPropertyChanged();
+            }
+        }
+        #endregion
+
+        #endregion
+
+        #region Tab: Metadata
+        public List<CodexProperty> MetadataPreferences => _preferencesService.GetPreferences<Preferences>().ImportableCodexProperties.OrderBy(x => x.Name).ToList();
+        #endregion
+
+        #region Tab: Tools
+        public ToolsViewModel ToolsVM { get; }
+        #endregion
+        
+        #region Tab: About
+        public string Version => "Version: " + _applicationService.Version;
+
+        public AsyncRelayCommand CheckForUpdatesCommand => field ??= new(CheckForUpdates);
+        private async Task CheckForUpdates()
+        {
+            await _updateManager.ExplicitCheckUpdates();
+        }
+        #endregion
+
+        #region Tab: Legal
+        public static string PrivacyPolicyText { get; } = ReadEmbeddedText("COMPASS.Common.PRIVACY_POLICY.md", "Privacy policy could not be loaded.");
+        public static string LicenseText { get; } = ReadEmbeddedText("COMPASS.Common.LICENSE", "License could not be loaded.");
+
+        private static string ReadEmbeddedText(string resourceName, string fallback)
+        {
+            var assembly = typeof(SettingsViewModel).Assembly;
+            using var stream = assembly.GetManifestResourceStream(resourceName);
+            if (stream is null) return fallback;
+            using var reader = new StreamReader(stream);
+            return reader.ReadToEnd();
+        }
+        #endregion
+
+        public void Dispose()
+        {
+            ApplyPreferences();
+            BanishedPaths.CollectionChanged -= OnBanishedPathsChanged;
+            _selectedCollectionHandle?.Dispose();
+            ToolsVM.Dispose();
+        }
+    }
+
+    [Factory]
+    public class SettingsViewModelFactory(
+        ILogger logger,
+        IApplicationService applicationService,
+        IApplicationDataService applicationDataService,
+        IIOService ioService,
+        IPreferencesService preferencesService,
+        IFilesService filesService,
+        INotificationService notificationService,
+        UpdateManager updateManager,
+        ImportFilesViewModelFactory importFilesViewModelFactory,
+        ToolsViewModelFactory toolsViewModelFactory,
+        CollectionManager collectionManager,
+        IActiveTabContext activeTabContext)
+    {
+        public SettingsViewModel Create(string tabToOpen = "")
+            => new(logger, applicationService, applicationDataService, ioService, preferencesService, filesService, notificationService, updateManager,
+                   importFilesViewModelFactory, toolsViewModelFactory, collectionManager, activeTabContext, tabToOpen);
+    }
+}

@@ -1,0 +1,79 @@
+using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
+using Avalonia.Interactivity;
+using COMPASS.Infra.Avalonia.DragDrop;
+using System.Collections;
+
+namespace COMPASS.Infra.Avalonia.Controls;
+
+public partial class PriorityControl : ItemsControl
+{
+    public PriorityControl()
+    {
+        InitializeComponent();
+
+        TemplateApplied += OnTemplateApplied;
+    }
+
+    private void OnTemplateApplied(object? sender, TemplateAppliedEventArgs e)
+    {
+        var innerItemsControl = e.NameScope.Find<ItemsControl>("InnerItemsControl");
+        if (innerItemsControl is null) return;
+
+        var dragManager = new DragManager()
+            .AddHandler(new ReorderDragHandler());
+        DragBehavior.SetDragManager(innerItemsControl, dragManager);
+
+        var dropManager = new DropManager()
+            .AddHandler(new ReorderDropHandler());
+        DropBehavior.SetDropManager(innerItemsControl, dropManager);
+    }
+
+    private void MoveUp(object? sender, RoutedEventArgs e)
+    {
+        if (ItemsSource is not IList items) return;
+
+        var btn = sender as Control;
+        object? toMove = btn?.DataContext;
+        if (toMove is null) return;
+
+        int i = items.IndexOf(toMove);
+        if (i <= 0) return;
+
+        //move the items
+        items.RemoveAt(i);
+        items.Insert(i - 1, toMove);
+        
+        UpdateUI();
+    }
+
+    private void MoveDown(object? sender, RoutedEventArgs e)
+    {
+        if (ItemsSource is not IList items) return;
+
+        var btn = sender as Control;
+        object? toMove = btn?.DataContext;
+        if (toMove is null) return;
+
+        int i = items.IndexOf(toMove);
+        if (i + 1 >= items.Count) return;
+
+        //move the items
+        items.RemoveAt(i);
+        items.Insert(i + 1, toMove);
+        
+        UpdateUI();
+    }
+
+
+    private void UpdateUI()
+    {
+        // Force ItemsControl to refresh
+        var temp = ItemsSource;
+        ItemsSource = null;
+        ItemsSource = temp;
+    }
+    
+    //key to uniquely identify control so drag drop only works within the same control
+    public static int Key { get; set; } = 0;
+}

@@ -1,0 +1,104 @@
+using CommunityToolkit.Mvvm.Input;
+using COMPASS.Common.Features.CodexCollections;
+using COMPASS.Common.Features.Persistence;
+using COMPASS.Infra.Avalonia.Modal;
+using COMPASS.Infra.DependencyInjection;
+using COMPASS.Infra.Logging;
+using COMPASS.Infra.Notifications;
+using COMPASS.Infra.Avalonia.Validation;
+using COMPASS.Common.Features.Tabs;
+
+namespace COMPASS.Common.Features.ImportExport
+{
+    public class AddCodexPanelVM : ValidatableViewModelBase
+    {
+        private readonly ILogger _logger;
+        private readonly IImportExportService _importExportService;
+        private readonly INotificationService _notificationService;
+        private readonly ImportViewModelFactory _importViewModelFactory;
+        private readonly CodexCollectionVMFactory _codexCollectionVMFactory;
+        private readonly ImportCollectionViewModelFactory _importCollectionViewModelFactory;
+        private readonly IActiveTabContext _activeTabContext;
+
+        public AddCodexPanelVM(
+            ILogger logger,
+            IImportExportService importExportService,
+            INotificationService notificationService,
+            ImportViewModelFactory importViewModelFactory,
+            CodexCollectionVMFactory codexCollectionVMFactory,
+            ImportCollectionViewModelFactory importCollectionViewModelFactory,
+            IActiveTabContext activeTabContext)
+        {
+            _activeTabContext = activeTabContext;
+            _logger = logger;
+            _importExportService = importExportService;
+            _notificationService = notificationService;
+            _importViewModelFactory = importViewModelFactory;
+            _codexCollectionVMFactory = codexCollectionVMFactory;
+            _importCollectionViewModelFactory = importCollectionViewModelFactory;
+        }
+
+        private AsyncRelayCommand<ImportSource>? _importCommand;
+        public AsyncRelayCommand<ImportSource> ImportCommand => _importCommand ??= new(Import);
+
+        private async Task Import(ImportSource source)
+        {
+            var importVm = _importViewModelFactory.Create(
+                _activeTabContext.ActiveTab?.CollectionVM.Identifier
+                ?? throw new NoTabException("No tab was found, so no collection to import to"));
+            await importVm.Import(source);
+        }
+
+        private AsyncRelayCommand? _importBooksFromSatchelCommand;
+        public AsyncRelayCommand ImportBooksFromSatchelCommand => _importBooksFromSatchelCommand ??= new(ImportBooksFromSatchel);
+        public async Task ImportBooksFromSatchel()
+        {
+            //satchels store data in xml format
+            var importService = _importExportService;
+            var extractedCollection = await importService.OpenSatchel();
+
+            if (extractedCollection == null)
+            {
+                _logger.Warn("Failed to open file");
+                return;
+            }
+
+            //Create importCollection ready to merge into an existing collection
+            CodexCollectionVM toImportVm = _codexCollectionVMFactory.Create(extractedCollection, StorageStrategy.Xml);
+            
+            var targetCollectionVm = _activeTabContext.ActiveTab!.CollectionVM;
+            var vm = _importCollectionViewModelFactory.Create(toImportVm, targetCollectionVm);
+            //set in advanced mode as a sort of preview
+            vm.AdvancedImport = true;
+            vm.MergeIntoCollection = true;
+
+            if (!vm.ContentSelectorVM.HasCodices)
+            {
+                Notification noItemsFound = new("No items found", $"{extractedCollection.Name[2..]} does not contain items to import");
+                await _notificationService.ShowDialog(noItemsFound);
+                return;
+            }
+
+            //setup for only codices
+            vm.Steps.Clear();
+            vm.Steps.Add(CollectionContentSelectorViewModel.ItemsStep);
+
+            var w = new ModalWindow(vm);
+            w.Show();
+        }
+    }
+
+    [Factory]
+    public class AddCodexPanelVMFactory(
+        ILogger logger,
+        IImportExportService importExportService,
+        INotificationService notificationService,
+        ImportViewModelFactory importViewModelFactory,
+        CodexCollectionVMFactory codexCollectionVMFactory,
+        ImportCollectionViewModelFactory importCollectionViewModelFactory,
+        IActiveTabContext activeTabContext)
+    {
+        public AddCodexPanelVM Create()
+            => new(logger, importExportService, notificationService, importViewModelFactory, codexCollectionVMFactory, importCollectionViewModelFactory, activeTabContext);
+    }
+}

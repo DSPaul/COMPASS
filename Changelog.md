@@ -1,5 +1,27 @@
 # CHANGELOG
-## COMPASS v1.8.10 (23 November 2025)
+
+## COMPASS v2.0.0 (17 October 2026)
+
+### New Features
+
+- Tabs: each tab has its own opened collection with its own layout and active filters
+- Linux compatibility through Flatpak.
+
+### Improvements
+
+- Improved overall UX, almost every screen received improvements ranging from minor tweaks to complete redesigns
+- Major performance improvements when scrolling, filtering, sorting, etc.
+- Significant improvements to code quality & architecture
+
+### Other
+
+- Changed frontend framework from WPF to Avalonia
+- Upgraded to .NET 10
+- Changed licence from GPLv3 to AGPLv3
+- Added privacy policy
+
+
+## COMPASS v1.8.10 (23 November 2025)
 
 ### Improvements
 

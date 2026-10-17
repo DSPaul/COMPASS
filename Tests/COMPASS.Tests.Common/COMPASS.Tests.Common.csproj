@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <AssemblyName>COMPASS.Tests.Common</AssemblyName>
+    <RootNamespace>COMPASS.Tests.Common</RootNamespace>
+    <OutputType>Library</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Source\COMPASS.Common\COMPASS.Common.csproj" />
+  </ItemGroup>
+
+</Project>

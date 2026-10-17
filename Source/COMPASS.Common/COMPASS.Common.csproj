@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <AvaloniaResource Include="Assets\**" />
+    <EmbeddedResource Include="..\..\PRIVACY_POLICY.md" Link="PRIVACY_POLICY.md" />
+    <EmbeddedResource Include="..\..\LICENSE" Link="LICENSE" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Avalonia.Labs.Gif" Version="12.0.2" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.4" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.4" />
+    <PackageReference Include="PdfPig" Version="0.1.16" />
+    <PackageReference Include="Magick.NET.AvaloniaMediaImaging" Version="2.0.0" />
+    <PackageReference Include="PDFtoImage" Version="5.4.0" />
+    <PackageReference Include="Svg.Controls.Skia.Avalonia" Version="12.0.0.17" />
+    <PackageReference Include="HotAvalonia" Version="3.1.5" PrivateAssets="All" Publish="True" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\COMPASS.Infra.Avalonia\COMPASS.Infra.Avalonia.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="COMPASS.UnitTests" />
+  </ItemGroup>
+</Project>

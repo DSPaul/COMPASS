@@ -1,0 +1,175 @@
+using Autofac;
+using Avalonia.Controls;
+using Avalonia.Headless.NUnit;
+using Avalonia.Platform.Storage;
+using COMPASS.Common.Features.CodexCollections;
+using COMPASS.Common.Features.ImportExport;
+using COMPASS.Common.Features.Persistence;
+using COMPASS.Common.Features.Persistence.Repositories;
+using COMPASS.Tests.Common.DataGenerators;
+using COMPASS.Tests.Common.Mocks;
+using SharpCompress.Archives;
+using SharpCompress.Archives.Zip;
+using SharpCompress.Common;
+using SharpCompress.Writers.Zip;
+using System.Text.Json;
+using Constants = COMPASS.Common.Domain.Constants;
+
+namespace COMPASS.IntegrationTests.Common.Services
+{
+    [TestFixture]
+    public class ImportExportServiceTests
+    {
+        private IContainer BuildContainer() => Helpers.SetupContainer(builder =>
+            builder.RegisterType<ImportExportService>().As<IImportExportService>());
+
+        [Test]
+        public async Task OpenSatchel()
+        {
+            //Create info with a version higher than the current one
+            SatchelInfo info = new("1.0.0")
+            {
+                MinCodexInfoVersion = "20.15.0",
+                MinTagsVersion = "1.0.0",
+            };
+
+            string path = Path.GetTempPath() + Guid.NewGuid() + Constants.SatchelExtension;
+            var container = BuildContainer();
+            var storageService = container.Resolve<IImportExportService>();
+            var repo = container.ResolveKeyed<ICodexCollectionRepository>(StorageStrategy.Xml);
+            var satchelLogger = container.Resolve<MockLogger>();
+
+            await using (var zip = await ZipArchive.CreateAsyncArchive())
+            {
+                await zip.AddEntryAsync(Constants.SatchelInfoFileName, GenerateStreamFromString(JsonSerializer.Serialize(info)));
+                await zip.AddEntryAsync("Tags.xml", GenerateStreamFromString("<?xml version=\"1.0\" encoding=\"utf-8\"?><ArrayOfTag />"));
+
+                await using var fileStream1 = File.Create(path);
+                await zip.SaveToAsync(fileStream1, new ZipWriterOptions(CompressionType.None));
+            }
+
+            //Because satchel does not contain a codexInfo file, should work
+            var collection = await storageService.OpenSatchel(path);
+            Assert.That(collection, Is.Not.Null);
+
+            Assert.That(satchelLogger.Errors, Is.Empty, "OpenSatchel logged errors on happy path");
+            Assert.That(satchelLogger.Warnings, Is.Empty, "OpenSatchel logged warnings on happy path");
+            Assert.That(satchelLogger.Fatals, Is.Empty, "OpenSatchel logged fatals on happy path");
+            repo.DeleteCollection(collection.Name);
+
+            //Now add a codex file
+            await using (var zip = await ZipArchive.CreateAsyncArchive())
+            {
+                await zip.AddEntryAsync(Constants.SatchelInfoFileName, GenerateStreamFromString(JsonSerializer.Serialize(info)));
+                await zip.AddEntryAsync("Tags.xml", GenerateStreamFromString("<?xml version=\"1.0\" encoding=\"utf-8\"?><ArrayOfTag />"));
+                await zip.AddEntryAsync("CodexInfo.xml", GenerateStreamFromString("Not important"));
+
+                await using var fileStream2 = File.Create(path);
+                await zip.SaveToAsync(fileStream2, new ZipWriterOptions(CompressionType.None));
+            }
+
+            //Now that the codex file is added, should be null
+            collection = await storageService.OpenSatchel(path);
+            Assert.That(collection, Is.Null);
+
+            Assert.That(satchelLogger.Warnings, Has.Count.EqualTo(1), "Version rejection should log exactly one warning");
+            Assert.That(satchelLogger.Warnings[0], Does.Contain("incompatible"), "Version rejection warning should explain incompatibility");
+            Assert.That(satchelLogger.Errors, Is.Empty, "Version rejection should not log errors");
+            Assert.That(satchelLogger.Fatals, Is.Empty, "Version rejection should not log fatals");
+
+            File.Delete(path);
+        }
+
+        [AvaloniaTest]
+        public async Task ExportCollection()
+        {
+            var window = new Window();
+            window.Show();
+
+            //Setup
+            var container = BuildContainer();
+            string testCollectionId = "__SatchelExport";
+            var testCollection = CollectionGenerator.GetCompleteCollection(testCollectionId);
+            var importExportService = container.Resolve<IImportExportService>();
+            var exportLogger = container.Resolve<MockLogger>();
+
+            //Export
+            var filePath = Path.GetTempPath() + Guid.NewGuid().ToString() + Constants.SatchelExtension;
+            var targetFile = await GetStorageFileFromPath(filePath, window);
+            Assert.That(targetFile, Is.Not.Null, "Could not get target file for satchel export");
+            await importExportService.ExportCollection(testCollection, targetFile, false, false);
+            await Task.Delay(100);
+
+            //Assert export succesfull
+            var fileInfo = new FileInfo(filePath);
+            Assert.That(fileInfo.Length, Is.GreaterThan(0), "Exported satchel file is empty");
+
+            Assert.That(exportLogger.Errors, Is.Empty, "ExportCollection logged errors");
+            Assert.That(exportLogger.Warnings, Is.Empty, "ExportCollection logged warnings");
+            Assert.That(exportLogger.Fatals, Is.Empty, "ExportCollection logged fatals");
+
+            CodexCollectionVM? deserializedCollectionVm = null;
+            CodexCollectionVM? importedCollection = null;
+            try
+            {
+                //Deserialize Satchel
+                var deserializedCollection = await importExportService.OpenSatchel(filePath);
+                Assert.That(deserializedCollection, Is.Not.Null);
+
+                Assert.That(exportLogger.Errors, Is.Empty, "OpenSatchel of exported collection logged errors");
+                Assert.That(exportLogger.Warnings, Is.Empty, "OpenSatchel of exported collection logged warnings");
+                Assert.That(exportLogger.Fatals, Is.Empty, "OpenSatchel of exported collection logged fatals");
+                deserializedCollectionVm = container.Resolve<CodexCollectionVMFactory>().Create(deserializedCollection, StorageStrategy.Xml);
+                ImportCollectionViewModel importViewModel = container.Resolve<ImportCollectionViewModelFactory>().Create(deserializedCollectionVm);
+
+                Assert.That(importViewModel.ContentSelectorVM.HasCodices, "deserialized satchel has no Codices");
+                Assert.That(importViewModel.ContentSelectorVM.HasTags, "deserialized satchel has no Tags");
+                Assert.That(deserializedCollection.AllCodices, Has.Count.EqualTo(testCollection.AllCodices.Count));
+                Assert.That(deserializedCollection.AllTags, Has.Count.EqualTo(testCollection.AllTags.Count));
+
+                //Complete import to new Collection
+                importViewModel.CollectionName = "Imported_Satchel"; //cannot use a protect __ name because it is an illegal name
+                importViewModel.MergeIntoCollection = false;
+                await importViewModel.Finish();
+
+                importedCollection = container.Resolve<CollectionManager>().GetCollectionVM("Imported_Satchel");
+                Assert.That(importedCollection, Is.Not.Null, "Imported collection not found after import");
+                Assert.That(importedCollection.Collection.AllCodices, Has.Count.EqualTo(deserializedCollection.AllCodices.Count));
+                Assert.That(importedCollection.Collection.AllTags, Has.Count.EqualTo(deserializedCollection.AllTags.Count));
+
+                Assert.That(exportLogger.Errors, Is.Empty, "Import Finish logged errors");
+                Assert.That(exportLogger.Warnings, Is.Empty, "Import Finish logged warnings");
+                Assert.That(exportLogger.Fatals, Is.Empty, "Import Finish logged fatals");
+            }
+            finally
+            {
+                //Cleanup
+                importedCollection?.DeleteCollection();
+                deserializedCollectionVm?.DeleteCollection();
+                File.Delete(filePath);
+                window.Close();
+            }
+        }
+
+        public static Stream GenerateStreamFromString(string s)
+        {
+            var stream = new MemoryStream();
+            var writer = new StreamWriter(stream);
+            writer.Write(s);
+            writer.Flush();
+            stream.Position = 0;
+            return stream;
+        }
+
+        public static async Task<IStorageFile> GetStorageFileFromPath(string path, Window window)
+        {
+            IStorageProvider storageProvider = window.StorageProvider;
+
+            File.Create(path).Close();
+            Assert.That(File.Exists(path));
+            var storagefile = await storageProvider.TryGetFileFromPathAsync(path);
+
+            return storagefile!;
+        }
+    }
+}

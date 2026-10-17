@@ -1,0 +1,362 @@
+# COMPASS - Architecture Overview
+
+This document is a high-level map of every major feature and system in COMPASS.
+
+---
+
+## Table of Contents
+
+1. [Solution Structure](#1-solution-structure)
+2. [Core Domain Models](#2-core-domain-models)
+3. [Tag System](#3-tag-system)
+4. [Filtering & Sorting](#4-filtering--sorting)
+5. [Metadata & Cover Art](#5-metadata--cover-art)
+6. [Import Pipeline](#6-import-pipeline)
+7. [Satchel - Import / Export](#7-satchel--import--export)
+8. [Layout System](#8-layout-system)
+9. [Collection Management](#9-collection-management)
+10. [Tabs](#10-tabs)
+11. [Storage & Persistence](#11-storage--persistence)
+12. [Preferences & Settings](#12-preferences--settings)
+13. [Tools](#13-tools)
+14. [Update System](#14-update-system)
+15. [API Clients](#15-api-clients)
+16. [UI Infrastructure](#16-ui-infrastructure)
+17. [Progress Reporting & Background Tasks](#17-progress-reporting--background-tasks)
+
+## 1. Solution Structure
+
+| Project | Purpose |
+|---|---|
+| `COMPASS.Infra` | Platform-agnostic code infrastructure with no UI or domain logic, grouped by feature: `Collections`, `Resilience`, `Logging`, `Measuring`, `Notifications`, `Progress`, `Updates`, `Objects`, `Text`, `IO`, `Xml`, `Web`, `DependencyInjection`. The generic MVVM selection view-models live in `Selection/`. |
+| `COMPASS.Infra.Avalonia` | Avalonia-specific UI kit, grouped by feature: `Controls`, `Behaviors`, `Converters`, `DragDrop`, `VisualTree`, `Threading`, `Collections`, `Markdown`, `Mvvm`, `Selection`, `Wizard`, `Camera`, `Barcode`, `Application`, `Files`. App-specific skin (themes) and domain views stay in `COMPASS.Common`. |
+| `COMPASS.ApiClients` | Typed HTTP API clients for all external services (GitHub, COMPASS backend). Each API lives in its own sub-folder with owned request/response models and an interface for mocking. HTTP client lifetimes and DI registrations are managed by `ApiClientsModule`. |
+| `COMPASS.Common` | All domain/application logic, grouped by feature under `Features/<Name>/` (`Codices`, `CodexCollections`, `Tags`, `Filtering`, `Metadata`, `Covers`, `ImportExport`, `Layouts`, `Settings`, `Tools`, `Tabs`, `Logging`, `Persistence`, `ISBN`, `Notifications`). Core domain models shared by most features (`Codex`, `Tag`, `CodexCollection`, `CollectionInfo`, `Folder`, `SourceSet`, `Constants`) live in `Domain/`. Besides that, the app shell that hosts the features (`Shell/`: main window and view, left dock, progress, crash handling), the composition root (`App.axaml`, `DependencyInjection/`), `Themes/` and `Assets/` stay at the top level. Control themes for feature-specific controls (e.g. the drag & drop adorners) live next to the control in its feature and are merged through a dictionary in `Themes/` (`Themes/Adorners.axaml`). Platform-agnostic. |
+| `COMPASS.Windows` | Windows entry point & platform service implementations (update service, IO, shell open). |
+| `COMPASS.Linux` | Linux entry point & platform service implementations. |
+| `COMPASS.Tests.*` | Test projects (unit, integration, UI). |
+
+Dependency injection is handled through `ServiceResolver` (`COMPASS.Infra/DependencyInjection/`, a thin static wrapper around whatever DI container each platform registers). Each project owns its registrations in an Autofac module:
+
+| Module | Location | Registers |
+|---|---|---|
+| `InfraModule` | `COMPASS.Infra/DependencyInjection/` | `ScopedForwardingLogger` decorator, `ProgressTrackingManager`, `UpdateManager`, `ConnectivityManager`/`ConnectivityHandler`, `WebService`, `WebDriverService`, named HTTP clients |
+| `AvaloniaModule` | `COMPASS.Infra.Avalonia/DependencyInjection/` | `ApplicationService`, `FilesService`, `CameraService`, `BarcodeDecoderService` |
+| `ApiClientsModule` | `COMPASS.ApiClients/` | Typed API clients |
+| `CommonModule` | `COMPASS.Common/DependencyInjection/` | Domain services; loads the three modules above and runs `RegisterFactories` for the Common, Infra and Infra.Avalonia assemblies |
+| `WindowsModule` / `LinuxModule` | `COMPASS.Windows/DependencyInjection/`, `COMPASS.Linux/DependencyInjection/` | Platform implementations (`IOService`, `IUIService`, `IUpdateService`, …) |
+
+The platform entry points (`Program.cs`) only register `CommonModule` and their own platform module. View-model creation, lifetimes, and the `ServiceResolver` boundaries are documented in [MVVM.md](MVVM.md).
+
+```mermaid
+graph TD;
+    ApiClients-->Infra;
+    Infra-->Infra.Avalonia;
+    Infra.Avalonia-->Common;
+    Common-->Windows; 
+    Common-->Linux;
+    Common-->Tests.Common;
+    Common-->Tests.UI;
+    Tests.Common-->UnitTests;
+    Tests.Common-->IntegrationTests.Common;
+    Tests.Common-->IntegrationTests.Windows;
+    Tests.Common-->IntegrationTests.Linux;
+    Windows-->IntegrationTests.Windows;
+    Linux-->IntegrationTests.Linux;
+```
+
+## 2. Core Domain Models
+
+**Key files:** `Source/COMPASS.Common/Features/Codices/`, `Features/CodexCollections/`, `Features/Tags/` (VMs, operations and views per feature; the models `Codex`, `Tag`, `CodexCollection`, `CollectionInfo`, `Folder` and `SourceSet` live in `Domain/`)
+
+| Model | Description |
+|---|---|
+| `Codex` | A single item in the collection (book, PDF, URL, etc.). Holds all metadata (title, authors, publisher, release date, rating, tags, sources) plus paths to its cover art and thumbnail. Identified within a collection by an `int Id` and globally by a `Guid GlobalId`. |
+| `CodexCollection` | A named, self-contained library. Owns `Tag`s and `Codex`'s and a `CollectionInfo` object for per-collection settings. |
+| `CollectionInfo` | Per-collection configuration: folders to auto-import, banished file paths, and per-filetype import preferences. |
+| `SourceSet` | Attached to a `Codex`; records every source the item can be found at (local file path, URL, ISBN, etc.). |
+| `Tag` | Hierarchical label with a name, optional color (inherits from parent when unset), and a tree of child `Tag` objects. |
+| `Folder` | Represents a file-system folder that can be linked to auto-import and to tags. Recursively exposes sub-folders. |
+
+## 3. Tag System
+
+**Key files:** `Source/COMPASS.Common/Features/Tags/` (`Tag.cs`, `TagsPanelVM.cs`, `TagEditViewModel.cs`, `TagsSidePanel.axaml`)
+
+Tags form a tree. Each `Tag` has:
+- An `Id` (unique within its collection)
+- A `Name` and computed `LongName` (`Grandparent > Parent > Name`)
+- An optional `InternalBackgroundColor`; if `null`, the tag inherits the parent's color
+- A `Children` collection of nested tags
+
+The Tags side panel lets users browse and toggle tags to filter the current view. Tags can be edited (create / rename / recolor / reparent / delete) via `TagEditViewModel`. A `TagFilter` can be added to the filter bar from the tag panel.
+
+The `FolderTagLink` feature (stored in `CollectionInfo`) automatically applies a specific tag to all items imported from a given folder.
+
+## 4. Filtering & Sorting
+
+**Key files:** `Source/COMPASS.Common/Features/Filtering/` (`Filters/`, `FilterService.cs`, `IFilterService.cs`, `FiltersViewModel.cs`, `FiltersSidePanel.axaml`, `FilterViewModelFactory.cs`)
+
+The actual filtering and sorting logic lives in `FilterService` (behind `IFilterService`, registered in `CommonModule`), keeping it reusable and testable without a view-model. It exposes two operations:
+
+- `FilterCodices(codexVms, filtersState)` — applies a `FiltersState` to a codex list and returns the matches.
+- `SortCodices(codexVms, sortProperty, sortDirection)` — sorts a codex list in place.
+
+`FiltersViewModel` is the thin UI layer on top. It maintains two independent filter lists, **Included** (must match) and **Excluded** (must not match), each a collection of `Filter` objects. It serialises them to a `FiltersState` (`GetFiltersState()`) and hands it to `FilterService.FilterCodices`; the result is exposed as the single `FilteredCodices` view (included minus excluded). Filtering re-runs whenever the filter lists or the underlying codex data change, and sorting is re-applied on the same service whenever `SortProperty` or `SortDirection` changes.
+
+Each `Filter` subclass targets a specific property:
+
+| Filter | What it checks |
+|---|---|
+| `TagFilter` | Codex has a specific tag |
+| `AuthorFilter` | Author name matches |
+| `PublisherFilter` | Publisher matches |
+| `SearchFilter` | Full-text search across several fields |
+| `MinimumRatingFilter` | Rating is at or above a threshold |
+| `StartReleaseDateFilter` / `StopReleaseDateFilter` | Release date range |
+| `FileExtensionFilter` | File extension matches |
+| `OnlineSourceFilter` / `OfflineSourceFilter` | Has online / offline source |
+| `DomainFilter` | URL domain matches |
+| `FavoriteFilter` | Item is marked as a favourite |
+| `HasBrokenPathFilter` | Local file path no longer exists |
+| `NotEmptyFilter` | A given property is not empty |
+| `PhysicalSourceFilter` | Has a physical (non-digital) source |
+
+Filters can be dragged from the filters side panel or from the tag/metadata panels into the include or exclude drop zones. A `FiltersState` (two plain `List<Filter>`) can be serialised to persist a tab's filter state.
+
+### Tag filter semantics
+
+Tag filters are special-cased in `FilterService`. For **included** tag filters, tags within the same tag *group* are combined with **OR** while different groups are combined with **AND**, and a tag also matches any parent or child tags. For **excluded** tag filters, any codex carrying the tag *or any of its descendants* is removed.
+
+---
+
+## 5. Metadata & Cover Art
+
+**Key files:** `Source/COMPASS.Common/Features/Metadata/` (`Sources/`, `Properties/`, `MetadataSourceType.cs`, `MetadataOverwriteMode.cs`), `Features/Covers/` (`CoverService.cs`, `CoverStorageService.cs`)
+
+### Metadata Sources
+
+Every source implements `MetaDataSource` and is identified by a `MetaDataSourceType` flag:
+
+| Source | Type |
+|---|---|
+| `FileMetaDataSource` | Reads file-system attributes |
+| `PdfMetaDataSource` | Reads embedded PDF metadata |
+| `ImageMetaDataSource` | Reads EXIF/image metadata |
+| `ISBNMetaDataSource` | Looks up book data by ISBN via an external API |
+| `GmBinderMetaDataSource` | Scrapes GM Binder pages |
+| `HomebreweryMetaDataSource` | Scrapes Homebrewery pages |
+| `GoogleDriveMetaDataSource` | Reads Google Drive file metadata |
+| `GenericOnlineMetaDataSource` | Falls back to Open Graph / page title for any URL |
+
+Metadata sources are registered keyed by `MetaDataSourceType` and resolved via `IIndex<MetaDataSourceType, MetaDataSource>`, so new sources only need a registration line — see [MVVM.md](MVVM.md) for the factory/DI conventions.
+
+### CodexProperty & Overwrite Rules
+
+`CodexProperty` (in `Features/Metadata/Properties/`) represents a single importable field (title, author, rating, cover, etc.). Each property carries a `MetaDataOverwriteMode`:
+- **Always** - overwrite any existing value
+- **IfEmpty** - only write if the field is currently blank
+- **Never** - never overwrite
+- **Ask** - prompt the user (`ChooseMetaDataViewModel`)
+
+The order of source types to try is stored in `CodexProperty.SourcePriority`, which the user can reorder in settings.
+
+### Cover Art
+
+`CoverService` iterates the source priority list, calls `MetaDataSource.FetchCover`, and hands the result to `CoverStorageService`, which saves both a full-resolution cover and a 200 px thumbnail (stored under the app data directory, named by `GlobalId`).
+
+## 6. Import Pipeline
+
+**Key files:** `Source/COMPASS.Common/Features/ImportExport/` (import base VMs, all import wizards, `AddCodexPanelVM`, `ExportCollectionViewModel`, `ImportExportService.cs`, `SatchelInfo.cs`; ISBN scanning lives in `Features/ISBN/`)
+
+The Add Codex side panel (`AddCodexPanelVM`) is the main entry point for adding items. It dispatches to `ImportViewModel.Import(ImportSource)`. The import sources cover:
+- Individual files / drag-drop
+- A folder (via `ImportFolderWizardVm` - walks the directory, filters by `CollectionInfo.FiletypePreferences`, respects `BanishedPaths`)
+- A URL
+- A barcode scan (`Features/ISBN/ISBNScannerViewModel` / `ISBNScannerView`, using `ICameraService` and `IBarcodeDecoderService` from `COMPASS.Infra.Avalonia`; ISBN-specific validation lives alongside in `Features/ISBN/`)
+- A Satchel file (delegates to `ImportExportService`)
+
+After creating a bare `Codex`, the pipeline calls `CoverService.FetchAndApplyCover` and then runs each enabled `MetaDataSource` in priority order to fill in as many fields as possible.
+
+Auto-import (`CollectionInfo.AutoImportFolders`) re-runs the folder import on startup for every registered folder, automatically picking up new files.
+
+## 7. Satchel - Import / Export
+
+**Key files:** `Source/COMPASS.Common/Features/ImportExport/ImportExportService.cs`, `Features/ImportExport/SatchelInfo.cs`, `Docs/Satchels.md`
+
+A `.satchel` file is a renamed ZIP archive. See [`Satchels.md`](Satchels.md) for the full format specification.
+
+`ImportExportService` handles both directions:
+- **Export** (`ExportCollectionViewModel`): serialises selected codices, tags, collection info, cover art, thumbnails, and optionally the physical files into a ZIP.
+- **Import** (`ImportCollectionViewModel`): reads and version-checks `SatchelInfo.json`, deserialises the XML files, and merges into the target `CodexCollection`.
+
+## 8. Layout System
+
+**Key files:** `Source/COMPASS.Common/Features/Layouts/` (one sub-folder per layout: `Card/`, `Home/`, `List/`, `Tile/`, each with view + view-model + preferences; shared `LayoutViewModel`, `CodexLayoutView`, `LayoutCustomization`, `Layout`, `CodexLayout` at the root)
+
+COMPASS supports four layouts, each with its own view and view-model pair:
+
+| Layout | ViewModel | View |
+|---|---|---|
+| Home | `HomeLayoutViewModel` | `HomeLayout.axaml` |
+| List | `ListLayoutViewModel` | `ListLayout.axaml` |
+| Card | `CardLayoutViewModel` | `CardLayout.axaml` |
+| Tile | `TileLayoutViewModel` | `TileLayout.axaml` |
+
+All layouts extend `LayoutViewModel`, which holds the filtered codex list from `FiltersViewModel` and exposes the active sorting configuration.
+
+Each layout has a corresponding `*LayoutPreferences` model that persists user choices (visible columns, card size, etc.) via `Preferences`.
+
+## 9. Collection Management
+
+**Key files:** `Source/COMPASS.Common/Features/CodexCollections/` (`CollectionManager.cs`, `CodexCollectionVM.cs`), `Features/Persistence/Repositories/CodexCollectionXmlRepository.cs`
+
+`CollectionManager` is an instance singleton registry of all discovered collections. On startup it calls `DiscoverCollections()`, which scans the user data directory for collection folders and creates a `CodexCollectionVM` for each.
+
+`CodexCollectionVM` wraps a `CodexCollection` and manages its lifecycle: loading from / saving to the repository, and providing the `FiltersViewModel` and layout view-models for the tab that shows it.
+
+Data access goes through `ICodexCollectionRepository`. The default implementation (`CodexCollectionXmlRepository`) serialises to XML using `XmlService`. A `CodexCollectionMemRepository` (in-memory) is used in tests and for temporary collections like those extracted from a satchel.
+
+## 10. Tabs
+
+**Key files:** `Source/COMPASS.Common/Features/Tabs/` (`TabsViewModel.cs`, `CollectionTabVM.cs`, `IActiveTabContext.cs`, `TabStrip.axaml`)
+
+`TabsViewModel` is a singleton that manages a list of open `CollectionTabVM` instances. Each tab is independently bound to a collection and carries its own `FiltersViewModel`, so filters set in one tab do not affect another.
+
+Closed tabs are pushed onto a `Stack<TabState>`, allowing re-open ("undo close tab"). A `TabState` stores the collection identifier and the serialised `FiltersState` so the exact filter state is restored.
+
+## 11. Storage & Persistence
+
+**Key files:** `Source/COMPASS.Common/Features/Persistence/` (`Storage/` for `ApplicationDataService`/`UserFilesStorageService`, `Repositories/`, `XmlDtos/`), `COMPASS.Infra/IO/`, `COMPASS.Infra/Xml/`, `COMPASS.Infra.Avalonia/Files/`
+
+| Service / Interface | Responsibility |
+|---|---|
+| `IApplicationDataService` (`Infra/IO`) / `ApplicationDataService` (Common) | Resolves the root user-data path. Supports a redirect file (`data_location.redirect`) so users can point COMPASS at a cloud-synced folder. |
+| `IUserFilesStorageService` / `UserFilesStorageService` | CRUD for collection folders (create, rename, delete, enumerate). |
+| `ICoverStorageService` / `CoverStorageService` | Save, load, and delete cover art and thumbnails on disk. |
+| `IImportExportService` / `ImportExportService` | Read and write `.satchel` archives. |
+| `XmlService` (`Infra/Xml`) | Thin wrapper around `System.Xml.Serialization` used by the XML repository. |
+| `IIOService` (`Infra/IO`) / `IOServiceBase` (`Infra.Avalonia/Files`) | File copy/move/delete operations. Platform subclasses `IOService` live in `COMPASS.Windows/Services` and `COMPASS.Linux/Services`. |
+| `IFilesService` / `FilesService` (`Infra.Avalonia/Files`) | Open/save file & folder pickers. |
+
+The `StorageStrategy` enum (`Features/Persistence/StorageStrategies.cs`) (`Xml` or `Memory`) determines which `ICodexCollectionRepository` implementation is used when constructing a `CodexCollectionVM`.
+
+## 12. Preferences & Settings
+
+**Key files:** `Source/COMPASS.Common/Features/Settings/` (`Preferences.cs`, `PreferencesService.cs`, `SettingsViewModel.cs`, `UIState.cs`)
+
+`Preferences` is the single serialised settings object. Notable sections:
+
+| Property | Purpose |
+|---|---|
+| `OpenCodexPriority` | Ordered list of strategies for opening an item (online first or local first). |
+| `ImportableCodexProperties` | List of `CodexProperty` objects, each carrying its `MetaDataOverwriteMode` and `SourcePriority`. |
+| `*LayoutPreferences` | Per-layout UI settings. |
+| `UIState` | Transient UI state that should survive a restart (e.g. last active layout). |
+| `AutoLinkFolderTagSameName` | Whether folders with the same name as a tag are automatically linked. |
+
+`PreferencesService` (Common) implements the generic `IPreferencesService` from `COMPASS.Infra/Preferences/`. It is a singleton that lazily loads `Preferences` from disk (XML, via `PreferencesDto`) and exposes typed sections through `GetPreferences<T>()`, where `T : IPreferences`. This lets Infra code (e.g. `UpdateManager` reading `UpdatePreferences`) use preferences without depending on the domain `Preferences` class.
+
+## 13. Tools
+
+**Key files:** `Source/COMPASS.Common/Features/Tools/` (`ToolsViewModel.cs`, `BackupToolViewModel.cs`, `BrokenFileRefsToolViewModel.cs`, `IToolViewModel.cs`)
+
+Tools are surfaced from the main menu. Each tool implements `IToolViewModel` and is registered in `ToolsViewModel`.
+
+| Tool | ViewModel | Description |
+|---|---|---|
+| Backup & Restore | `BackupToolViewModel` | Zips the entire user-data directory to a file, or restores from a backup ZIP. |
+| Broken File References | `BrokenFileRefsToolViewModel` | Scans all codices for local file paths that no longer exist and offers bulk-fix options. |
+
+## 14. Update System
+
+**Key files:** `Source/COMPASS.Infra/Updates/` (`UpdateManager.cs`, `UpdateServiceBase.cs`, `IUpdateService.cs`, `UpdatePreferences.cs`), `COMPASS.Windows/Services/UpdateService.cs`, `COMPASS.Linux/Services/UpdateService.cs`, `Docs/Updates.md`
+
+COMPASS checks the `DSPAUL/COMPASS` GitHub releases (`Constants.GITHUB_REPO_NAME` in Common, supplied to the Infra base class through the abstract `UpdateServiceBase.RepoName`) for versions newer than the running one. `UpdateManager` runs the check on startup and then on a 6-hour timer. It calls `IUpdateService.CheckForUpdates(includePrerelease)` and hands the results to `IUpdateService.OnUpdatesFound()`, which downloads the installer in the background (verifying its SHA256), shows a modal "Update Available" dialog with the changelog, and on confirmation calls `IUpdateService.HandleUpdate()`.
+
+The shared logic lives in `UpdateServiceBase`; the concrete install behaviour is platform-specific and registered per platform: Windows launches the Inno Setup installer (`COMPASS_Setup_{version}.exe`) with `/SILENT` and shuts down the app, while Linux just opens the release page in the browser. Checking is governed by `UpdatePreferences` (`CheckForUpdates`, `IncludePrerelease`, `NotifiedUpdates`), and a title-bar Update button appears while an update is available. See [`Updates.md`](Updates.md) for the full description.
+
+## 15. API Clients
+
+**Key files:** `Source/COMPASS.ApiClients/`
+
+All external HTTP integrations live in the `COMPASS.ApiClients` project. Each API gets its own sub-folder containing:
+
+- A **typed client** class (e.g. `CompassApiClient`, `GitHubApiClient`) with one method per endpoint.
+- A **`Models/`** folder with request/response DTOs owned by that integration.
+- A public **interface** (e.g. `ICompassApiClient`, `IGitHubApiClient`) so consumers can depend on the abstraction and tests can inject mocks.
+
+HTTP client lifetimes are managed via `IHttpClientFactory`. Named clients and their default headers are configured once in `ApiClientsModule` (located in `COMPASS.ApiClients/DependencyInjection/`), which is loaded by `CommonModule`.
+
+| Client | Interface | Endpoints |
+|---|---|---|
+| `CompassApiClient` | `ICompassApiClient` | `POST /submit/crash` — submits an anonymous crash report |
+| `GitHubApiClient` | `IGitHubApiClient` | `GET /repos/{owner}/{repo}/releases` — fetches release list |
+
+## 16. UI Infrastructure
+
+**Key files:** `Source/COMPASS.Infra.Avalonia/Modal/` (`WindowManager.cs`, `ModalWindow.axaml`), `COMPASS.Common/Shell/ModalDialogs.cs`, `Features/Notifications/NotificationService.cs`, `Features/Logging/` (`SerilogLogger.cs`, `LogsPanelSink.cs`), `Shell/CrashHandler.cs`, `COMPASS.Infra/Web/`
+
+| Component | Description |
+|---|---|
+| `WindowManager` (`Infra.Avalonia/Modal`) | Tracks the main top-level `Window` so services can show dialogs without a direct reference. Also pauses/resumes `ConnectivityManager` on window focus changes. |
+| `ModalWindow` (`Infra.Avalonia/Modal`) | Generic modal host for any `IModalViewModel`. It contains no domain templates; the view-model → view mappings for COMPASS dialogs are registered at startup by `ModalDialogs.Register()` (called from `App.Initialize`). Any host app that shows modals must call it. |
+| `NotificationService` | Shows toast notifications and modal dialogs using `NotificationWindow` and `ModalWindow`. Implements `INotificationService` from `Infra/Notifications`. |
+| `SerilogLogger` + `LogsPanelSink` | `SerilogLogger` is the Serilog pipeline behind the Infra `ILogger` interface (rolling log file); `LogsPanelSink` feeds the in-app Logs side panel. |
+| `CrashHandler` | Hooks `AppDomain.UnhandledException` and `TaskScheduler.UnobservedTaskException`, logs the crash, and sends an opt-in crash report via `ICompassApiClient`. |
+| `WebDriverService` (`Infra/Web`) | Creates Selenium `WebDrivers` used by online metadata sources that require JavaScript rendering. |
+| `ConnectivityManager` / `ConnectivityHandler` (`Infra/Web`) | Tracks online/offline state; the handler is attached to named HTTP clients and updates the state from request outcomes. |
+| Reusable UI kit (`COMPASS.Infra.Avalonia`) | Generic controls (`Controls/`), converters, drag & drop (`DragDrop/`), MVVM bases (`Mvvm/`, incl. `ModelViewModelBase` and `EditViewModelBase`), validation (`Validation/`, incl. `ValidatableViewModelBase`), wizards (`Wizard/`), camera capture (`Camera/`), item selectors (`Selection/`). Their control themes and resource keys are still defined in `COMPASS.Common/Themes`. |
+## 17. Progress Reporting & Background Tasks
+
+**Key files:** `COMPASS.Infra/Progress/` (`ProgressTracker.cs`, `IProgressReport.cs`, `UiSynchronizationContext.cs`, `ProgressTrackingManager.cs`), `COMPASS.Infra/Measuring/` (`Quantity.cs`, `Quantities.cs`, `Unit.cs`), `COMPASS.Infra/Logging/` (`LoggerScope.cs`, `ScopedForwardingLogger.cs`), `Shell/ProgressViewModel.cs`, `App.axaml.cs` (registers the UI context), `Shell/MainView.axaml` (bottom bar), `Shell/ProgressWindow.axaml(.cs)`
+
+Long-running work (metadata fetch, cover fetch, auto-import, satchel import/export, backup/restore, data-folder copy) runs as plain `async`/`await` at the call site and reports through a `ProgressTracker`. 
+
+### Building blocks
+
+| Type | Role |
+|---|---|
+| `ProgressTracker` | Per-operation state: `Total`, `Progress`, `StatusMessage`, and a capped `MessageLog` (`MaxLogEntries`, default 500). Derives `Fraction` (`null` while the total is unknown), `Percentage`, `IsIndeterminate`, and `IsComplete`. Thread-safe (`Lock`-protected) and marshals notifications and log appends to the UI thread via the registered `UiSynchronizationContext` (see below), so it works no matter which thread constructs it or reports to it — `ConfigureAwait(false)` and `Parallel.ForEachAsync` reporters included. Implements `ILogger`, so it can be a log sink directly (`Info`/`Warn`/`Error` append to `MessageLog`; `Debug` is suppressed as too verbose for the UI). Also implements `IProgress<ProgressReport>` (SharpCompress), so a tracker can be passed straight into SharpCompress `ReaderOptions`/`ZipWriterOptions` as `Progress = tracker` for byte-level zip progress. |
+| `UiSynchronizationContext` | Static holder for the app-wide UI `SynchronizationContext`, registered once in `App.OnFrameworkInitializationCompleted` (which runs on the UI thread on every platform). `ProgressTracker` resolves its marshal target through here, falling back to the ambient context when nothing is registered (keeps unit tests synchronous). This is what frees call sites from any thread affinity: trackers may be constructed on pool threads (e.g. the import pipeline after `ConfigureAwait(false)`) and still notify safely. |
+| `IProgressReport` / `ProgressReports` | The vocabulary for reporting: `XOutOfY(value, total)`, `Percentage(fraction)` (0–1), `Status(message)`, `Log(entry)`, `Increment` (shared singleton, safe for `Parallel.ForEachAsync`), `Completed`. Inner services accept `IProgress<IProgressReport>?` so callers can pass a tracker without coupling to it. |
+| `Quantity` / `Quantities` / `Unit` | The unit of what is being counted, used for display formatting. `Quantities.Items(name)` for counted work (metadata, covers) — also used without a total for indeterminate work (backup compression, auto-import scan); `Quantities.FileSize` for byte-based work (satchel import/export via SharpCompress); `Quantities.Items("Files")` for the data-folder copy. |
+| `ProgressTrackingManager` | Singleton registry (registered in `InfraModule`). `RunAsync(tracker, title, work)` tracks the operation, installs the tracker as the ambient logger (see below), invokes `work(tracker, ct)`, and untracks in a `finally`. `Track`/`Untrack`/`GetSnapshot` manage `TrackedOperation`s; `TrackingChanged` notifies the UI. Each operation owns a `CancellationTokenSource` linked to a global one, so `TrackedOperation.Cancel()` stops one task while `CancelAll()` stops everything. |
+| `TrackedOperation` | One entry in the registry: `Tracker` + `Title` + `CancellationToken` + `Cancel()`. `ProgressWindow` binds to a single instance of this. |
+| `LoggerScope` + `ScopedForwardingLogger` | `LoggerScope` is an `AsyncLocal<ILogger?>` ambient slot — it flows across `await`, `Task.Run`, and `Parallel.ForEachAsync` bodies. `RunAsync` installs the tracker via `LoggerScope.Use(tracker)`. The injected `ILogger` is decorated with `ScopedForwardingLogger` (see `InfraModule`), which forwards every log to the permanent Serilog pipeline **and**, when a scope is active, into the tracker's `MessageLog` (`Info` stays scope-local; `Debug`/`Warn`/`Error`/`Fatal` go to both). Service code therefore needs no progress plumbing: plain `logger.Info(...)` calls inside a tracked operation automatically appear in the progress UI. Always pair `Use` with `using`/`Dispose` so the scope never leaks into unrelated work. |
+
+### Call-site pattern
+
+```csharp
+ProgressTracker progressTracker = new(Quantities.Items()) { Total = codices.Count };
+
+try
+{
+    await progressTrackingManager.RunAsync(progressTracker, "Getting metadata...",
+        async (tracker, ct) =>
+        {
+            await Parallel.ForEachAsync(codices, new ParallelOptions { CancellationToken = ct },
+                async (codex, ct) =>
+                {
+                    try { await GetMetadata(codex, ct); }
+                    finally { tracker.Report(ProgressReports.Increment); }
+                });
+        });
+}
+catch (OperationCanceledException)
+{
+    logger.Info("Fetching metadata has been cancelled");
+}
+```
+
+Notes:
+- Leave `Total` unset for indeterminate work (backup compression, auto-import scan) — the UI shows a spinner via `IsIndeterminate` until a total is reported.
+- Leaf services take `IProgress<IProgressReport>? progress = null, CancellationToken ct = default` (e.g. `WebService.DownloadFileAsync` reports `XOutOfY`; `IOService.CopyDataAsync` reports `XOutOfY(0, n)` then `Increment` per file). Cancellation is cooperative: honour the passed token and let `OperationCanceledException` propagate to the `RunAsync` caller, which logs the cancellation.
+- Call sites have no thread affinity: the tracker resolves its marshal target from the registered `UiSynchronizationContext`, so construction and reporting from pool threads (import pipeline, `Parallel.ForEachAsync` workers) is safe.
+
+### UI wiring
+
+| Component | Description |
+|---|---|
+| `ProgressViewModel` | UI mirror of the manager, owned by `MainViewModel` (exposed as `TasksVM`). Maintains `TrackedOperations`, derives `PrimaryOperation` (the most recent), and exposes `HasActivity`, `DisplayText` (`Title` plus `StatusMessage` when set), `Percentage`, `IsIndeterminate`, `CancelPrimaryCommand`, and `CancelAllCommand`. Subscribes to `TrackingChanged` and each tracker's `PropertyChanged`, marshalling refreshes via `Dispatcher.UIThread`. |
+| Bottom bar (`MainView.axaml`) | Binds to `MainViewModel.TasksVM`: visible while `HasActivity`, shows `DisplayText`, a progress bar (`Percentage` / `IsIndeterminate`), and a cancel button (`CancelPrimaryCommand`). |
+| `ProgressWindow` | Detail view bound to one `TrackedOperation`: `Title`, `Tracker.StatusMessage`, `Tracker.Percentage`, `Tracker.IsIndeterminate`, and the severity-coloured `Tracker.MessageLog` (auto-scrolls on new entries). Close only hides the window; the dedicated cancel button calls `TrackedOperation.Cancel()`. |

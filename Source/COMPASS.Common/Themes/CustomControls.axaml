@@ -1,0 +1,476 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="using:System"
+                    xmlns:materialIcons="using:Material.Icons.Avalonia"
+                    xmlns:converters="using:COMPASS.Infra.Avalonia.Converters"
+                    xmlns:customControls="using:COMPASS.Common.Controls"
+                    xmlns:controls="using:COMPASS.Infra.Avalonia.Controls"
+                    xmlns:filtering="clr-namespace:COMPASS.Common.Features.Filtering" >
+    
+    <!--Icon Button-->
+    <ControlTheme TargetType="controls:IconButton" x:Key="IconOnly">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="CornerRadius" Value="5" />
+        <Setter Property="IconSize" Value="{Binding $self.FontSize}"/>
+        <Style Selector="^[Background=Transparent] /template/ materialIcons|MaterialIcon">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{StaticResource TextMutedColor}" />
+            <Style Selector="^:pointerover">
+                <Setter Property="Foreground" Value="{StaticResource TextColor}" />
+            </Style>
+        </Style>
+        <Setter Property="Template">
+            <ControlTemplate TargetType="controls:IconButton">
+                <Border Padding="{TemplateBinding Padding}"
+                        Background="{TemplateBinding Background}"
+                        CornerRadius="{TemplateBinding CornerRadius}">
+                    <materialIcons:MaterialIcon
+                        IconSize="{TemplateBinding IconSize}"
+                        Kind="{TemplateBinding Icon}"
+                        Foreground="{TemplateBinding Foreground}"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        IsVisible="{TemplateBinding IsVisible}">
+                    </materialIcons:MaterialIcon>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+
+    <!--Icon Button With text-->
+    <ControlTheme TargetType="controls:IconButton" x:Key="{x:Type controls:IconButton}">
+        <Setter Property="Padding" Value="5" />
+        <Setter Property="CornerRadius" Value="7" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <!-- <Setter Property="Background" Value="{StaticResource ButtonBackground}" /> -->
+        <Setter Property="Background" Value="{StaticResource ButtonBackground}" />
+        <Setter Property="BorderBrush" Value="{StaticResource AccentColorMuted}" />
+        <Setter Property="IconSize" Value="{Binding $self.FontSize}"/>
+
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Panel>
+                    <Border x:Name="OuterBorder"
+                            Width="{TemplateBinding Width}"
+                            Background="{TemplateBinding Background}"
+                            BorderThickness="2"
+                            CornerRadius="{TemplateBinding CornerRadius}"
+                            HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                            Padding="{TemplateBinding Padding}">
+                        <Grid HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                              VerticalAlignment="{TemplateBinding VerticalAlignment}"
+                              Background="Transparent">
+                            <!-- We DONT use column spacing here but margins on the items in the columns so that only an icon or only text isn't of center-->
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto" SharedSizeGroup="ButtonIcon" />
+                                <ColumnDefinition Width="*" SharedSizeGroup="ButtonText" />
+                            </Grid.ColumnDefinitions>
+                            <materialIcons:MaterialIcon Margin="5,0"
+                                                        IconSize="{TemplateBinding IconSize}"
+                                                        IsVisible="{TemplateBinding Icon, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                                        Kind="{TemplateBinding Icon}" />
+                            <ContentPresenter Grid.Column="1" Margin="5,0"
+                                              IsVisible="{TemplateBinding Content, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                              VerticalAlignment="{TemplateBinding VerticalAlignment}"
+                                              Content="{TemplateBinding Content}" />
+                        </Grid>
+                    </Border>
+
+                    <!-- Is default indicator -->
+                    <!-- <materialIcons:MaterialIcon Height="10" Margin="3" Kind="KeyboardReturn" -->
+                    <!--                             IsHitTestVisible="False" -->
+                    <!--                             HorizontalAlignment="Right" VerticalAlignment="Top"> -->
+                    <!--     <materialIcons:MaterialIcon.IsVisible> -->
+                    <!--         <MultiBinding Converter="{x:Static BoolConverters.And}"> -->
+                    <!--             <TemplateBinding Property="IsEffectivelyEnabled"/>  -->
+                    <!--             <TemplateBinding Property="IsDefault"/> -->
+                    <!--         </MultiBinding> -->
+                    <!--     </materialIcons:MaterialIcon.IsVisible> -->
+                    <!-- </materialIcons:MaterialIcon> -->
+                </Panel>
+            </ControlTemplate>
+        </Setter>
+
+        <Style Selector="^:pointerover /template/ Border#OuterBorder">
+            <Setter Property="Background" Value="{StaticResource ButtonHover}" />
+        </Style>
+
+        <Style Selector="^:disabled /template/ Border#OuterBorder">
+            <Setter Property="Opacity" Value="0.7" />
+        </Style>
+
+        <Style Selector="^.Outline">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="2" />
+
+            <Style Selector="^ /template/ Border#OuterBorder">
+                <Setter Property="BorderBrush" Value="Transparent" />
+            </Style>
+
+            <Style Selector="^:pointerover /template/ Border#OuterBorder">
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="BorderBrush" Value="{TemplateBinding BorderBrush}" />
+            </Style>
+            <Style Selector="^:pressed /template/ Border#OuterBorder">
+                <Setter Property="Background" Value="{TemplateBinding BorderBrush}" />
+            </Style>
+        </Style>
+    </ControlTheme>
+
+    <!--Custom TabItems-->
+    <ControlTheme TargetType="controls:CollapsableTabItem"
+                  x:Key="{x:Type controls:CollapsableTabItem}">
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Template">
+            <ControlTemplate TargetType="controls:CollapsableTabItem">
+                <Border x:Name="PART_Border" CornerRadius="5,0,0,5" Margin="2,2,0,2"
+                        Background="{TemplateBinding Background}"
+                        ToolTip.Tip="{TemplateBinding Header, Mode=OneWay}">
+                    <Panel>
+                        <StackPanel Orientation="Horizontal" Margin="10" Spacing="10">
+                            <ContentControl Content="{TemplateBinding Icon}"
+                                            HorizontalAlignment="Center"/>
+                            <TextBlock Text="{TemplateBinding Header, Mode=OneWay}" 
+                                       IsVisible="{TemplateBinding HideHeader, Converter={x:Static BoolConverters.Not}}"/>
+                        </StackPanel>
+                        <Ellipse
+                            Fill="{TemplateBinding AttentionSeverity, Converter={StaticResource SeverityToColorConverter}}"
+                            Width="10" Height="10" VerticalAlignment="Top"
+                            HorizontalAlignment="Right" Margin="5"
+                            IsVisible="{TemplateBinding ShowAttention}" />
+                    </Panel>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+        <Style Selector="^:pointerover">
+            <Setter Property="Background" Value="{StaticResource TabFocus}" />
+        </Style>
+        <Style Selector="^:selected">
+            <Setter Property="Background" Value="{StaticResource TabFocus}" />
+        </Style>
+        <!-- Adjust corner radius and margin based on TabStripPlacement -->
+        <!-- :left is the default set in the template (5,0,0,5) -->
+        <Style Selector="^:right /template/ Border#PART_Border">
+            <Setter Property="CornerRadius" Value="0,5,5,0" />
+            <Setter Property="Margin" Value="0,2,2,2" />
+        </Style>
+        <Style Selector="^:top /template/ Border#PART_Border">
+            <Setter Property="CornerRadius" Value="5,5,0,0" />
+            <Setter Property="Margin" Value="2,2,2,0" />
+        </Style>
+        <Style Selector="^:bottom /template/ Border#PART_Border">
+            <Setter Property="CornerRadius" Value="0,0,5,5" />
+            <Setter Property="Margin" Value="2,0,2,2" />
+        </Style>
+    </ControlTheme>
+    
+    <!--Include/Exclude selector-->
+    <ControlTheme TargetType="filtering:FilterModeSelector"
+                  x:Key="{x:Type filtering:FilterModeSelector}">
+        <Setter Property="Template">
+            <ControlTemplate TargetType="filtering:FilterModeSelector">
+                <Border Classes="RadioBtnStrip"
+                        HorizontalAlignment="Stretch">
+                    <Grid ColumnSpacing="3" ColumnDefinitions="*, *"
+                          HorizontalAlignment="Stretch">
+                        <RadioButton Grid.Column="0" GroupName="IncludeGroup"
+                                     Content="Include"
+                                     IsChecked="{TemplateBinding Include, Mode=TwoWay}"
+                                     Background="{StaticResource AcceptFill}"/>
+                        <RadioButton Grid.Column="1" GroupName="IncludeGroup"
+                                     Content="Exclude"
+                                     Background="OrangeRed"/>
+                    </Grid>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+    
+    <!--RatingControl-->
+    <ControlTheme x:Key="{x:Type controls:RatingControl}" TargetType="controls:RatingControl">
+        <!--Every TemplatedControl needs to have a ControlTemplate applied. In this setter we define it.-->
+        <Setter Property="Template">
+            <ControlTemplate>
+
+                <!--We wrap our content inside a DataValidationErrors-control, so error messages are displayed properly-->
+                <DataValidationErrors>
+                    <DataValidationErrors.Styles>
+                        <!--This Style is for a Path which has the Class "star" applied.-->
+                        <Style Selector="Path.star">
+                            <Setter Property="Data"
+                                    Value="M 3.9687501,0 5.1351364,2.3633569 7.7432556,2.7423389 5.8560028,4.5819556 6.3015226,7.1795363 3.96875,5.953125 1.6359772,7.1795361 2.0814972,4.5819556 0.19424448,2.7423387 2.8023636,2.3633569 Z" />
+                            <Setter Property="Width" Value="{StaticResource FontSizeLarge}" />
+                            <Setter Property="Height" Value="{StaticResource FontSizeLarge}" />
+                            <Setter Property="Fill" Value="{StaticResource RatingControlUnselectedBrush}" />
+                            <Setter Property="Stretch" Value="Uniform" />
+                        </Style>
+
+                        <Style Selector="Path.selected">
+                            <Setter Property="Fill" Value="{StaticResource RatingControlSelectedBrush}" />
+                        </Style>
+
+                        <Style Selector="Path.star:pointerover">
+                            <Setter Property="RenderTransform" Value="scale(1.1)" />
+                        </Style>
+
+                    </DataValidationErrors.Styles>
+                    <!--This is our stars-presenter. Make sure to set the name, so the control can be found.-->
+                    <Grid ColumnDefinitions="*, Auto">
+                        <ItemsControl x:Name="PART_StarsPresenter"
+                                      ItemsSource="{TemplateBinding Stars}">
+                            <!--We want to have the stars drawn horizontally. Therefore we change the ItemsPanel accordingly-->
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal" Spacing="3" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+
+                            <!--Items is an array if integer. Let's add a Path as the DataTemplate-->
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Path Classes="star">
+                                        <!--We enable or disable classes through a boolean value. We use our IsSmallerOrEqualConverter to do so. -->
+                                        <Classes.selected>
+                                            <MultiBinding Converter="{StaticResource IsSmallerOrEqualConverter}">
+                                                <!--This is our dataContext, so the number of this item-->
+                                                <Binding />
+                                                <!--This is the binding to the RatingControls current value-->
+                                                <Binding
+                                                    RelativeSource="{RelativeSource AncestorType=controls:RatingControl}"
+                                                    Path="Value" />
+                                            </MultiBinding>
+                                        </Classes.selected>
+                                    </Path>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <controls:IconButton Grid.Column="1" Margin="2,0"
+                                             Name="PART_Clear"
+                                             IsVisible="{TemplateBinding ShowClear}"
+                                             Theme="{StaticResource IconOnly}"
+                                             ToolTip.Tip="Clear rating"
+                                             Icon="Clear"/>
+                    </Grid>
+                </DataValidationErrors>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+
+    <!-- Explainer -->
+    <ControlTheme x:Key="{x:Type controls:Explainer}" TargetType="controls:Explainer">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <materialIcons:MaterialIcon Kind="{TemplateBinding Icon}" ToolTip.ShowDelay="0"
+                                            Foreground="{TemplateBinding Foreground}"
+                                            ToolTip.Tip="{TemplateBinding Content}"/>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+
+    <!-- Chip -->
+    <ControlTheme x:Key="{x:Type controls:Chip}" TargetType="controls:Chip">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border CornerRadius="5" HorizontalAlignment="Left"
+                        Background="{TemplateBinding Background, Converter={x:Static converters:ColorConverters.AddTransparency}, ConverterParameter=0.7}">
+                    <TextBlock Text="{TemplateBinding Text}" Margin="7,2" FontSize="14" Foreground="{StaticResource TextColor}" />
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+
+    <!-- Group Chip -->
+    <ControlTheme x:Key="GroupChip" TargetType="controls:Chip">
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <StackPanel Orientation="Vertical" Background="Transparent"
+                            HorizontalAlignment="{TemplateBinding HorizontalAlignment}">
+                    <TextBlock
+                        Text="{TemplateBinding Text, Converter={x:Static converters:StringConverters.ToUpperConverter}}"
+                        Foreground="{StaticResource TextMutedColor}"
+                        FontSize="15" FontWeight="Bold" />
+                    <Rectangle
+                        Fill="{TemplateBinding Background}"
+                        Height="2" HorizontalAlignment="Stretch"
+                        VerticalAlignment="Bottom" />
+                </StackPanel>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+    
+    <!-- Removable Chip -->
+    <ControlTheme x:Key="Removable" TargetType="controls:Chip">
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="Cursor" Value="Hand"/>
+        <Style Selector="^ /template/ Border:pointerover > StackPanel">
+            <Style Selector="^ > TextBlock">
+                <Setter Property="TextDecorations" Value="Strikethrough" />
+            </Style>
+            <Style Selector="^ > materialIcons|MaterialIcon">
+                <Setter Property="IsVisible" Value="True" />
+            </Style>
+        </Style>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border CornerRadius="5" Margin="2,3"
+                        Background="{TemplateBinding Background, Converter={x:Static converters:ColorConverters.AddTransparency}, ConverterParameter=0.7}">
+                    <StackPanel Orientation="Horizontal" Margin="7,2">
+                        <TextBlock Text="{TemplateBinding Name}" FontSize="14" Margin="2,0" Foreground="{StaticResource TextColor}" />
+                        <materialIcons:MaterialIcon Kind="Close" IconSize="10" IsVisible="False" VerticalAlignment="Center" Margin="0,1" />
+                    </StackPanel>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+    
+    <!-- ImprovedComboBox -->
+    <ControlTheme x:Key="{x:Type controls:ImprovedComboBox}" TargetType="controls:ImprovedComboBox">
+        <Setter Property="BorderBrush" Value="LightGray"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="5"/>
+        
+        <Setter Property="Template">
+            <ControlTemplate TargetType="controls:ImprovedComboBox">
+                <Border BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="{TemplateBinding CornerRadius}"
+                        Background="{DynamicResource TextControlBackground}">
+                    <Grid RowDefinitions="Auto *" ColumnDefinitions="* Auto">
+                        <controls:StretchingWrapPanel Grid.Row="0" Grid.Column="0">
+                            <ItemsControl ItemsSource="{TemplateBinding SelectedItems, Mode=OneWay}" VerticalAlignment="Center"
+                                          IsVisible="{TemplateBinding SelectionMode, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:Static SelectionMode.Multiple}}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Button Command="{Binding $parent[controls:ImprovedComboBox].RemoveItemCommand}"
+                                                CommandParameter="{Binding}"
+                                                Classes="BlankButton">
+                                            <controls:Chip Theme="{StaticResource Removable}" Margin="2,0"
+                                                           Background="LightSlateGray" Name="{Binding $self.DataContext}"/>
+                                        </Button>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <TextBox Name="PART_Input" 
+                                     MinWidth="100"
+                                     Background="Transparent"
+                                     PlaceholderText="{TemplateBinding PlaceholderText}"
+                                     Text="{TemplateBinding Text, Mode=TwoWay}" 
+                                     HorizontalAlignment="Stretch"
+                                     BorderThickness="0">
+                                <!-- Disable Focussed styling, outer control with highlight this -->
+                                <TextBox.Resources>
+                                    <SolidColorBrush x:Key="TextControlBackgroundFocused">Transparent</SolidColorBrush>
+                                    <SolidColorBrush x:Key="TextControlBackgroundPointerOver">Transparent</SolidColorBrush>
+                                    <Thickness x:Key="TextControlBorderThemeThicknessFocused">0</Thickness>
+                                </TextBox.Resources>
+                            </TextBox>
+                        </controls:StretchingWrapPanel>
+                        <controls:IconButton Name="PART_Chevron"
+                                             Grid.Row="0" Grid.Column="1"
+                                             Theme="{StaticResource IconOnly}"
+                                             Margin="5"
+                                             Icon="ChevronDown"/>
+                        <Popup Name="PART_SuggestionPopup" 
+                               Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                               IsLightDismissEnabled="True"
+                               MinWidth="{Binding Bounds.Width, RelativeSource={RelativeSource TemplatedParent}}"
+                               MaxHeight="300">
+                            <ListBox Name="PART_Suggestions"
+                                     ItemsSource="{TemplateBinding SuggestedItems}"
+                                     HorizontalAlignment="Stretch">
+                            </ListBox>
+                        </Popup>
+                    </Grid>
+                </Border>
+
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+    
+    <!-- CheckableContainer -->
+    <ControlTheme x:Key="{x:Type controls:CheckableContainer}" TargetType="controls:CheckableContainer">
+        <Setter Property="Template">
+            <ControlTemplate TargetType="controls:CheckableContainer">
+                <Border x:Name="OuterBorder" BorderThickness="2" CornerRadius="5"
+                        BorderBrush="{StaticResource ButtonBackground}">
+                    <StackPanel>
+                        <CheckBox Classes="Filled"
+                                  HorizontalAlignment="Stretch"
+                                  Content="{TemplateBinding Header}"
+                                  IsChecked="{TemplateBinding IsChecked, Mode=TwoWay}"
+                                  Margin="-2,-2,-2,0"/>
+                        <ContentPresenter x:Name="PART_ContentPresenter"
+                                          Content="{TemplateBinding Content}"
+                                          ContentTemplate="{TemplateBinding ContentTemplate}"
+                                          Margin="10"
+                                          IsEnabled="{TemplateBinding IsChecked}"/>
+                    </StackPanel>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+
+        <Style Selector="^:checked /template/ Border#OuterBorder">
+            <Setter Property="BorderBrush" Value="{StaticResource AccentColorMuted}"/>
+        </Style>
+
+        <Style Selector="^:not(:checked) /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Opacity" Value="0.5"/>
+        </Style>
+    </ControlTheme>
+
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <StackPanel Spacing="10">
+                <controls:ImprovedComboBox PlaceholderText="Create item"/>
+                <ComboBox IsEditable="True" HorizontalAlignment="Stretch"></ComboBox>
+                
+                <filtering:FilterModeSelector />
+
+                <StackPanel Orientation="Horizontal">
+                    <controls:IconButton Icon="About" Theme="{StaticResource IconOnly}" />
+                    <controls:IconButton Icon="Search" IsDefault="True"
+                                         Theme="{StaticResource IconOnly}" />
+                </StackPanel>
+                <controls:IconButton Icon="About" Content="About" Background="DimGray" />
+                <controls:IconButton Icon="Achievement" Content="Outlined button" Classes="Outline" />
+                <controls:IconButton Content="Icon btn without icon" />
+                <ListBox Background="{StaticResource ButtonBackground}">
+                    <ListBox.Styles>
+                        <Style Selector="controls|CollapsableTabItem">
+                            <Setter Property="HideHeader" Value="True"/>
+                        </Style>
+                    </ListBox.Styles>
+                    <controls:CollapsableTabItem Header="Tags"
+                                                 Icon="{materialIcons:MaterialIconExt Kind=Tags, IconSize=25}" />
+                    <controls:CollapsableTabItem Header="Filters"
+                                                 Icon="{materialIcons:MaterialIconExt Kind=Filter, IconSize=25}" />
+                </ListBox>
+
+                <ListBox Background="{StaticResource ButtonBackground}">
+                    <controls:CollapsableTabItem Header="Tags" CornerRadius="5,5,0,0"
+                                                 Icon="{materialIcons:MaterialIconExt Kind=Tags, IconSize=25}" />
+                    <controls:CollapsableTabItem Header="Filters" CornerRadius="0,5,0,0"
+                                                 Icon="{materialIcons:MaterialIconExt Kind=Filter, IconSize=25}" />
+                </ListBox>
+               
+
+                <controls:RatingControl Value="0" NumberOfStars="5" />
+                <controls:RatingControl Value="2" NumberOfStars="5" />
+                <controls:RatingControl Value="6" NumberOfStars="6" />
+
+                <controls:Chip Text="This is a chip" Background="Green" />
+                <controls:Chip Theme="{StaticResource GroupChip}" Text="This is a chip" Background="Green" />
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+</ResourceDictionary>

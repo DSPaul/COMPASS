@@ -1,0 +1,21 @@
+using Avalonia.Controls;
+using Avalonia.Interactivity;
+
+namespace COMPASS.Common.Features.Tags;
+
+public partial class TagEditBasicView : UserControl
+{
+    public TagEditBasicView()
+    {
+        InitializeComponent();
+    }
+
+    private void TagNameTextBox_OnLoaded(object? sender, RoutedEventArgs e)
+    {
+        if (sender is TextBox textBox && textBox.IsEffectivelyVisible)
+        {
+            textBox.Focus();
+            textBox.CaretIndex = textBox.Text?.Length ?? 0;
+        }
+    }
+}
