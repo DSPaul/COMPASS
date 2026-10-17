@@ -15,7 +15,7 @@
 
     <Grid Name="MainGrid" Focusable="True" Margin="5,10" 
           ColumnDefinitions="auto,auto,*" 
-          RowDefinitions="auto,*,auto">
+          RowDefinitions="*,auto">
 
         <Grid.Styles>
             <Style Selector="TextBlock">
@@ -28,11 +28,7 @@
             </Style>
         </Grid.Styles>
         
-        <TextBlock Grid.Column="0" Grid.Row="0"
-                   Text="Cover/Preview:"
-                   HorizontalAlignment="Center"
-                   Classes="Categorizer" />
-        <Panel Grid.Column="0" Grid.Row="1" Margin="10">
+        <Panel Grid.Column="0" Grid.Row="0" Margin="10">
             <Image Width="300"
                    IsVisible="{Binding !ShowLoading}" Source="{Binding WorkingCopy.Cover, Mode=OneWay}" />
             <gif:GifImage Width="150" Height="150"
@@ -40,7 +36,7 @@
                           Source="{converters:GifSource 'avares://COMPASS.Common/Assets/LoadingAnimation.gif'}"/>
         </Panel>
 
-        <UniformGrid Grid.Column="0" Grid.Row="2"
+        <UniformGrid Grid.Column="0" Grid.Row="1"
                      Columns="2" HorizontalAlignment="Center">
             <UniformGrid.Styles>
                 <Style Selector="controls|IconButton">
@@ -56,10 +52,10 @@
                                  Command="{Binding ChooseCoverCommand}" />
         </UniformGrid>
 
-        <Rectangle Grid.Column="1" Grid.Row="0" Grid.RowSpan="3"
+        <Rectangle Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"
                    Fill="{StaticResource Separator}" Width="3" Margin="10,0" />
 
-        <TabControl Grid.Column="2" Grid.Row="0" Grid.RowSpan="2"
+        <TabControl Grid.Column="2" Grid.Row="0"
                     Background="{x:Null}" BorderThickness="0,1,0,0"
                     Padding="0,5">
             <TabControl.Styles>
@@ -216,45 +212,47 @@
 
                     <Rectangle Grid.Column="1" Fill="{StaticResource Separator}" Width="3" Margin="10,0" />
 
-                    <!-- Tags selection sidepanel -->
-                    <ScrollViewer Grid.Column="2" MaxHeight="360" MaxWidth="300">
-                        <StackPanel>
-                            <TreeView MinWidth="200"
-                                      BorderBrush="{x:Null}" Background="Transparent"
-                                      Classes="NoSelection"
-                                      ItemsSource="{Binding AllTagsAsTreeNodes}">
-                                <TreeView.ItemTemplate>
-                                    <tags:TagTreeDataTemplateSelector>
-                                        <TreeDataTemplate x:Key="RegularTag" DataType="tags:CheckableTagTreeNode"
-                                                          ItemsSource="{Binding Children}">
-                                            <Border CornerRadius="5" Margin="0,3" HorizontalAlignment="Left"
-                                                    Background="{Binding Item.BackgroundColor, Converter={x:Static converters:ColorConverters.ColorToTransparentBrush}, ConverterParameter=0.7}">
-                                                <CheckBox Margin="5,0,0,0"
-                                                          Command="{Binding $parent[TreeView].((vm:CodexEditViewModel)DataContext).TagCheckCommand}"
-                                                          CommandParameter="{Binding $self.IsChecked}"
-                                                          IsChecked="{Binding IsChecked}"
-                                                          Content="{Binding Item.Name}" />
-                                            </Border>
-                                        </TreeDataTemplate>
-                                        <TreeDataTemplate x:Key="GroupTag" x:DataType="tags:CheckableTagTreeNode"
-                                                          ItemsSource="{Binding Children}">
-                                            <controls:Chip Theme="{StaticResource GroupChip}" Text="{Binding Item.Name}"
-                                                           HorizontalAlignment="Stretch" Margin="0,3,20,3"
-                                                           Background="{Binding Item.BackgroundColor, Converter={x:Static converters:ColorConverters.ColorToTransparentBrush}, ConverterParameter=0.7}" />
-                                        </TreeDataTemplate>
-                                    </tags:TagTreeDataTemplateSelector>
-                                </TreeView.ItemTemplate>
-                                <TreeView.Styles>
-                                    <Style Selector="TreeViewItem" x:DataType="interface:IExpandable">
-                                        <Setter Property="IsExpanded" Value="{Binding Expanded}" />
-                                    </Style>
-                                </TreeView.Styles>
-                            </TreeView>
-                            <controls:IconButton Command="{Binding QuickCreateTagCommand}"
-                                                 Margin="20,5" Classes="Outline"
-                                                 Icon="TagAdd" Content="Quick new tag..." />
-                        </StackPanel>
-                    </ScrollViewer>
+                    <!-- Decorator ensures that the tag tree doesn't push the window height -->
+                    <controls:HeightNeutralDecorator Grid.Column="2" MaxWidth="300">
+                        <ScrollViewer>
+                            <StackPanel>
+                                <TreeView MinWidth="200"
+                                          BorderBrush="{x:Null}" Background="Transparent"
+                                          Classes="NoSelection"
+                                          ItemsSource="{Binding AllTagsAsTreeNodes}">
+                                    <TreeView.ItemTemplate>
+                                        <tags:TagTreeDataTemplateSelector>
+                                            <TreeDataTemplate x:Key="RegularTag" DataType="tags:CheckableTagTreeNode"
+                                                              ItemsSource="{Binding Children}">
+                                                <Border CornerRadius="5" Margin="0,3" HorizontalAlignment="Left"
+                                                        Background="{Binding Item.BackgroundColor, Converter={x:Static converters:ColorConverters.ColorToTransparentBrush}, ConverterParameter=0.7}">
+                                                    <CheckBox Margin="5,0,0,0"
+                                                              Command="{Binding $parent[TreeView].((vm:CodexEditViewModel)DataContext).TagCheckCommand}"
+                                                              CommandParameter="{Binding $self.IsChecked}"
+                                                              IsChecked="{Binding IsChecked}"
+                                                              Content="{Binding Item.Name}" />
+                                                </Border>
+                                            </TreeDataTemplate>
+                                            <TreeDataTemplate x:Key="GroupTag" x:DataType="tags:CheckableTagTreeNode"
+                                                              ItemsSource="{Binding Children}">
+                                                <controls:Chip Theme="{StaticResource GroupChip}" Text="{Binding Item.Name}"
+                                                               HorizontalAlignment="Stretch" Margin="0,3,20,3"
+                                                               Background="{Binding Item.BackgroundColor, Converter={x:Static converters:ColorConverters.ColorToTransparentBrush}, ConverterParameter=0.7}" />
+                                            </TreeDataTemplate>
+                                        </tags:TagTreeDataTemplateSelector>
+                                    </TreeView.ItemTemplate>
+                                    <TreeView.Styles>
+                                        <Style Selector="TreeViewItem" x:DataType="interface:IExpandable">
+                                            <Setter Property="IsExpanded" Value="{Binding Expanded}" />
+                                        </Style>
+                                    </TreeView.Styles>
+                                </TreeView>
+                                <controls:IconButton Command="{Binding QuickCreateTagCommand}"
+                                                     Margin="20,5" Classes="Outline"
+                                                     Icon="TagAdd" Content="Quick new tag..." />
+                            </StackPanel>
+                        </ScrollViewer>
+                    </controls:HeightNeutralDecorator>
                 </Grid>
             </TabItem>
 
@@ -358,7 +356,7 @@
         </TabControl>
 
         <!--#region Confirmation Buttons -->
-        <Grid Grid.Row="2" Grid.Column="2"
+        <Grid Grid.Row="1" Grid.Column="2"
               ColumnDefinitions="Auto * Auto">
             <controls:IconButton Grid.Column="0"
                                  Content="Remove" Icon="Delete"
