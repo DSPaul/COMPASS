@@ -64,7 +64,7 @@ namespace COMPASS.Common.Features.Metadata.Sources
 
             if (driver == null) { return null; }
 
-            WebDriverWait wait = new(driver, TimeSpan.FromSeconds(5));
+            WebDriverWait wait = new(driver, TimeSpan.FromSeconds(10));
             wait.IgnoreExceptionTypes([typeof(NoSuchElementException)]);
 
             try
