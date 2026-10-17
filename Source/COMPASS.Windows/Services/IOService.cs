@@ -1,0 +1,23 @@
+using COMPASS.Infra.Avalonia.Files;
+using COMPASS.Infra.Logging;
+using System.Diagnostics;
+
+namespace COMPASS.Windows.Services;
+
+public class IOService(IFilesService filesService, ILogger logger) : IOServiceBase(filesService, logger)
+{
+    public override void ShowInExplorer(string filePath)
+    {
+        if (!Path.Exists(filePath))
+        {
+            throw new FileNotFoundException("File not found", filePath);
+        }
+
+        ProcessStartInfo startInfo = new()
+        {
+            Arguments = $"/select,\"{filePath}\"",
+            FileName = "explorer.exe"
+        };
+        Process.Start(startInfo);
+    }
+}

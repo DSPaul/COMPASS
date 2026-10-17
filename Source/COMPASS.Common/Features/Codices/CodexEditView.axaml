@@ -1,0 +1,370 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:COMPASS.Common.Features.Codices"
+             xmlns:interface="using:COMPASS.Infra.Collections"
+             xmlns:controls="using:COMPASS.Infra.Avalonia.Controls"
+             xmlns:converters="using:COMPASS.Infra.Avalonia.Converters"
+             xmlns:gif="using:Avalonia.Labs.Gif"
+             xmlns:tags="using:COMPASS.Common.Features.Tags"
+             mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="500"
+             x:Class="COMPASS.Common.Features.Codices.CodexEditView"
+             x:DataType="vm:CodexEditViewModel"
+             MinWidth="1200" MinHeight="500" Margin="10">
+
+    <Grid Name="MainGrid" Focusable="True" Margin="5,10" 
+          ColumnDefinitions="auto,auto,*" 
+          RowDefinitions="*,auto">
+
+        <Grid.Styles>
+            <Style Selector="TextBlock">
+                <Setter Property="Margin" Value="3,0" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+            </Style>
+            <Style Selector="TextBox">
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="VerticalContentAlignment" Value="Center" />
+            </Style>
+        </Grid.Styles>
+        
+        <Panel Grid.Column="0" Grid.Row="0" Margin="10">
+            <Image Width="300"
+                   IsVisible="{Binding !ShowLoading}" Source="{Binding WorkingCopy.Cover, Mode=OneWay}" />
+            <gif:GifImage Width="150" Height="150"
+                          IsVisible="{Binding ShowLoading}"
+                          Source="{converters:GifSource 'avares://COMPASS.Common/Assets/LoadingAnimation.gif'}"/>
+        </Panel>
+
+        <UniformGrid Grid.Column="0" Grid.Row="1"
+                     Columns="2" HorizontalAlignment="Center">
+            <UniformGrid.Styles>
+                <Style Selector="controls|IconButton">
+                    <Setter Property="HorizontalAlignment" Value="Stretch" />
+                    <Setter Property="Margin" Value="5 0" />
+                </Style>
+            </UniformGrid.Styles>
+            <controls:IconButton Content="Renew" Icon="ImageSyncOutline"
+                                 ToolTip.Tip="Renews the thumbnail for this item, overwriting the current one."
+                                 Command="{Binding FetchCoverCommand}" />
+            <controls:IconButton Content="Browse..." Icon="BookImage"
+                                 ToolTip.Tip="Choose an image to use as cover/preview for this item."
+                                 Command="{Binding ChooseCoverCommand}" />
+        </UniformGrid>
+
+        <Rectangle Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"
+                   Fill="{StaticResource Separator}" Width="3" Margin="10,0" />
+
+        <TabControl Grid.Column="2" Grid.Row="0"
+                    Background="{x:Null}" BorderThickness="0,1,0,0"
+                    Padding="0,5">
+            <TabControl.Styles>
+                <Style Selector="TabItem">
+                    <Setter Property="BorderThickness" Value="0" />
+                    <Setter Property="CornerRadius" Value="3,3,0,0" />
+                    <Setter Property="VerticalAlignment" Value="Bottom" />
+                    <Setter Property="MaxWidth" Value="300" />
+                    <Setter Property="FontSize" Value="14" />
+                    <Setter Property="Padding" Value="10,5" />
+                    <Setter Property="MinHeight" Value="0" />
+                    <!-- <Style Selector="^:pointerover /template/ Border#LayoutRoot"> -->
+                    <!--     <Setter Property="Background" Value="{StaticResource TabFocus}" /> -->
+                    <!-- </Style> -->
+                    <!-- <Style Selector="^:selected /template/ Border#LayoutRoot"> -->
+                    <!--     <Setter Property="Background" Value="{StaticResource TabFocus}" /> -->
+                    <!-- </Style> -->
+                </Style>
+                <Style Selector="TabControl">
+                    <Setter Property="Template">
+                        <ControlTemplate TargetType="TabControl">
+                            <Border BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="{TemplateBinding CornerRadius}"
+                                    Background="{TemplateBinding Background}"
+                                    HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                                    VerticalAlignment="{TemplateBinding VerticalAlignment}">
+                                <Grid RowDefinitions="Auto, Auto, *">
+                                    <ItemsPresenter Name="PART_ItemsPresenter"
+                                                    ItemsPanel="{TemplateBinding ItemsPanel}" />
+                                    <Rectangle Grid.Row="1" Height="3" Fill="{StaticResource TabFocus}"
+                                               Margin="0,-2, 0, 0" />
+                                    <ContentPresenter Name="PART_SelectedContentHost"
+                                                      Grid.Row="2"
+                                                      Margin="{TemplateBinding Padding}"
+                                                      HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                      VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                      Content="{TemplateBinding SelectedContent}"
+                                                      ContentTemplate="{TemplateBinding SelectedContentTemplate}" />
+                                </Grid>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter>
+                </Style>
+            </TabControl.Styles>
+
+            <TabItem Header="General">
+                <Grid ColumnDefinitions="*, Auto, Auto">
+                    <ScrollViewer Grid.Column="0" HorizontalScrollBarVisibility="Disabled">
+                        <StackPanel Name="MainProperties" >
+                            <!-- Title -->
+                            <TextBlock Margin="3,10,3,3"
+                                       Text="Title:" />
+                            <TextBox Padding="5,0"
+                                     Text="{Binding WorkingCopy.Title, UpdateSourceTrigger=PropertyChanged}" />
+
+                            <!-- Sorting Title -->
+                            <TextBlock Margin="3,10,3,3"
+                                       Text="Sorting Title:" />
+                            <Grid ColumnDefinitions="*, Auto" HorizontalAlignment="Stretch">
+                                <TextBox
+                                    Text="{Binding WorkingCopy.SortingTitle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                    Padding="5,0" HorizontalAlignment="Stretch" />
+                                <controls:Explainer Content="{Binding WorkingCopy.ZeroPaddingExplainer}"
+                                                    IsVisible="{Binding WorkingCopy.SortingTitleContainsNumbers}"
+                                                    Grid.Column="1" Margin="6, 0" />
+                            </Grid>
+
+                            <!-- Authors -->
+                            <TextBlock Margin="3,10,3,3"
+                                       Text="Authors:" />
+                            <controls:ImprovedComboBox ItemsSource="{Binding AuthorList}"
+                                                       SelectionMode="Multiple"
+                                                       SelectedItems="{Binding WorkingCopy.Authors, Mode=TwoWay}"
+                                                       PlaceholderText="Add author" CanCreate="True"/>
+
+                            <!-- Publisher -->
+                            <TextBlock Margin="3,10,3,3"
+                                       Text="Publisher:" />
+                            <controls:ImprovedComboBox ItemsSource="{Binding PublisherOptions}"
+                                                       SelectionMode="Single"
+                                                       SelectedItem="{Binding WorkingCopy.Publisher, Mode=TwoWay}"
+                                                       CanCreate="True"/>
+
+                            <!-- Smaller properties -->
+                            <Grid Margin="0,10" RowSpacing="5"
+                                  ColumnDefinitions="*, *, 0.5*, *, 1.5*"
+                                  RowDefinitions="Auto, Auto, Auto">
+
+                                <!-- Version -->
+                                <TextBlock Grid.Row="0" Grid.Column="0"
+                                           Text="Version:" />
+                                <TextBox Grid.Row="0" Grid.Column="1"
+                                         Text="{Binding WorkingCopy.Version, Mode=TwoWay}" Margin="5,0" />
+
+                                <!--Page count -->
+                                <TextBlock Grid.Row="1" Grid.Column="0"
+                                           Text="Page count:" />
+
+                                <TextBox Grid.Row="1" Grid.Column="1"
+                                         Text="{Binding WorkingCopy.PageCount}"
+                                         MinWidth="30" Margin="5" />
+
+                                <!-- Hard Copy -->
+                                <TextBlock Grid.Row="2" Grid.Column="0" Margin="3,0"
+                                           Text="Hard Copy:" />
+                                <CheckBox Grid.Row="2" Grid.Column="1" Margin="3,0"
+                                          IsChecked="{Binding WorkingCopy.PhysicallyOwned, Mode=TwoWay}" />
+
+                                <!-- Release Date -->
+                                <TextBlock Grid.Row="0" Grid.Column="3"
+                                           Text="Release Date:" />
+                                <CalendarDatePicker Grid.Row="0" Grid.Column="4" Width="140"
+                                                    SelectedDate="{Binding WorkingCopy.ReleaseDate}" />
+
+                                <!-- Rating -->
+                                <TextBlock Grid.Row="1" Grid.Column="3"
+                                           Text="Rating:" />
+                                <controls:RatingControl Grid.Column="4" Grid.Row="1" Margin="5"
+                                                        Value="{Binding WorkingCopy.Rating, Mode=TwoWay}"
+                                                        CanClear="True"/>
+
+                                <!-- Favorite -->
+                                <TextBlock Grid.Row="2" Grid.Column="3" Margin="3,0"
+                                           Text="Favorite:" />
+                                <CheckBox Grid.Row="2" Grid.Column="4" Margin="3,0"
+                                          IsChecked="{Binding WorkingCopy.Favorite, Mode=TwoWay}" VerticalAlignment="Bottom" />
+
+                            </Grid>
+
+                            <!-- Tags -->
+                            <Grid ColumnDefinitions="Auto, *">
+                                <TextBlock Grid.Column="0" Text="Tags:" />
+                                <ItemsControl Grid.Column="1"
+                                              ItemsSource="{Binding WorkingCopy.OrderedTags}"
+                                              Background="{x:Null}" BorderBrush="{x:Null}"
+                                              VerticalAlignment="Center">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel Orientation="Horizontal" />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate DataType="tags:TagViewModel">
+                                            <controls:Chip
+                                                Background="{Binding BackgroundColor, Converter={x:Static converters:ColorConverters.ColorToBrush}}"
+                                                Text="{Binding Name}" Margin="2" />
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Grid>
+                        </StackPanel>
+                    </ScrollViewer>
+
+                    <Rectangle Grid.Column="1" Fill="{StaticResource Separator}" Width="3" Margin="10,0" />
+
+                    <!-- Decorator ensures that the tag tree doesn't push the window height -->
+                    <controls:HeightNeutralDecorator Grid.Column="2" MaxWidth="300">
+                        <ScrollViewer>
+                            <StackPanel>
+                                <TreeView MinWidth="200"
+                                          BorderBrush="{x:Null}" Background="Transparent"
+                                          Classes="NoSelection"
+                                          ItemsSource="{Binding AllTagsAsTreeNodes}">
+                                    <TreeView.ItemTemplate>
+                                        <tags:TagTreeDataTemplateSelector>
+                                            <TreeDataTemplate x:Key="RegularTag" DataType="tags:CheckableTagTreeNode"
+                                                              ItemsSource="{Binding Children}">
+                                                <Border CornerRadius="5" Margin="0,3" HorizontalAlignment="Left"
+                                                        Background="{Binding Item.BackgroundColor, Converter={x:Static converters:ColorConverters.ColorToTransparentBrush}, ConverterParameter=0.7}">
+                                                    <CheckBox Margin="5,0,0,0"
+                                                              Command="{Binding $parent[TreeView].((vm:CodexEditViewModel)DataContext).TagCheckCommand}"
+                                                              CommandParameter="{Binding $self.IsChecked}"
+                                                              IsChecked="{Binding IsChecked}"
+                                                              Content="{Binding Item.Name}" />
+                                                </Border>
+                                            </TreeDataTemplate>
+                                            <TreeDataTemplate x:Key="GroupTag" x:DataType="tags:CheckableTagTreeNode"
+                                                              ItemsSource="{Binding Children}">
+                                                <controls:Chip Theme="{StaticResource GroupChip}" Text="{Binding Item.Name}"
+                                                               HorizontalAlignment="Stretch" Margin="0,3,20,3"
+                                                               Background="{Binding Item.BackgroundColor, Converter={x:Static converters:ColorConverters.ColorToTransparentBrush}, ConverterParameter=0.7}" />
+                                            </TreeDataTemplate>
+                                        </tags:TagTreeDataTemplateSelector>
+                                    </TreeView.ItemTemplate>
+                                    <TreeView.Styles>
+                                        <Style Selector="TreeViewItem" x:DataType="interface:IExpandable">
+                                            <Setter Property="IsExpanded" Value="{Binding Expanded}" />
+                                        </Style>
+                                    </TreeView.Styles>
+                                </TreeView>
+                                <controls:IconButton Command="{Binding QuickCreateTagCommand}"
+                                                     Margin="20,5" Classes="Outline"
+                                                     Icon="TagAdd" Content="Quick new tag..." />
+                            </StackPanel>
+                        </ScrollViewer>
+                    </controls:HeightNeutralDecorator>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Description">
+                <TextBox Text="{Binding WorkingCopy.Description, Mode=TwoWay}" MinHeight="250"
+                         AcceptsReturn="True" TextWrapping="Wrap" VerticalAlignment="Stretch"
+                         VerticalContentAlignment="Top"/>
+            </TabItem>
+
+            <TabItem Header="Sources">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="auto" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                    </Grid.RowDefinitions>
+
+                    <!-- Path -->
+                    <TextBlock Grid.Row="0" Grid.Column="0"
+                               Text="Path:" />
+                    <TextBox Grid.Row="0" Grid.Column="1"
+                             Text="{Binding WorkingCopy.Sources.Path, Mode=TwoWay}"
+                             TextWrapping="Wrap" Padding="3" Margin="10" />
+                    <controls:IconButton Grid.Row="0" Grid.Column="2"
+                                         Command="{Binding BrowsePathCommand}"
+                                         Icon="FolderOpen" Height="32"
+                                         ToolTip.Tip="Choose a new Path..." />
+
+                    <!-- URL -->
+                    <TextBlock Grid.Row="1" Grid.Column="0"
+                               Text="Source URL:" />
+                    <TextBox Grid.Row="1" Grid.Column="1"
+                             Text="{Binding WorkingCopy.Sources.SourceURL, Mode=TwoWay}"
+                             TextWrapping="Wrap" Padding="3" Margin="10" />
+                    <controls:IconButton Grid.Row="1" Grid.Column="2"
+                                         Command="{Binding BrowseURLCommand}"
+                                         Icon="Compass" Height="32" 
+                                         ToolTip.Tip="Open URL in Browser" />
+
+                    <!-- ISBN -->
+                    <TextBlock Grid.Row="2" Grid.Column="0"
+                               Text="ISBN:" />
+                    <TextBox Grid.Row="2" Grid.Column="1"
+                             Text="{Binding WorkingCopy.Sources.ISBN, Mode=TwoWay}"
+                             TextWrapping="Wrap" Padding="3" Margin="10" />
+                    <controls:IconButton Grid.Row="2" Grid.Column="2"
+                                         Command="{Binding BrowseISBNCommand}"
+                                         Icon="Library" Height="32"
+                                         ToolTip.Tip="Show on OpenLibrary.org" />
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Advanced">
+                <Grid RowDefinitions="Auto, Auto, Auto"
+                      RowSpacing="5" Margin="0 5"
+                      ColumnDefinitions="*, *, 0.3*, *, *">
+
+                    <!-- Date Added -->
+                    <TextBlock Grid.Row="0" Grid.Column="0"
+                               Text="Date Added:" />
+                    <CalendarDatePicker Grid.Row="0" Grid.Column="1"
+                                        SelectedDate="{Binding WorkingCopy.DateAdded, Mode=OneWay}" />
+
+                    <!-- Last opened -->
+                    <TextBlock Grid.Row="0" Grid.Column="3"
+                               Text="Last Opened:" />
+                    <CalendarDatePicker
+                        SelectedDate="{Binding WorkingCopy.LastOpened, Mode=OneWay, TargetNullValue={x:Null}, FallbackValue={x:Null}}"
+                        Grid.Column="4" Grid.Row="0" />
+
+                    <!-- ID -->
+                    <TextBlock Grid.Row="1" Grid.Column="0"
+                               Text="Local Id:" />
+                    <TextBlock Grid.Row="1" Grid.Column="1"
+                               MinWidth="30" Margin="5"
+                               Text="{Binding WorkingCopy.Id}" />
+
+                    <!-- Times opened -->
+                    <TextBlock Grid.Row="1" Grid.Column="3"
+                               Text="Times Opened:" />
+                    <TextBlock Grid.Row="1" Grid.Column="4"
+                               Text="{Binding WorkingCopy.OpenedCount}"
+                               MinWidth="30" Margin="5" />
+
+                    <!-- ID -->
+                    <TextBlock Grid.Row="2" Grid.Column="0"
+                               Text="Global Id:" />
+                    <TextBlock Grid.Row="2" Grid.Column="1"
+                               MinWidth="30" Margin="5"
+                               Text="{Binding WorkingCopy.GlobalId}" />
+                </Grid>
+            </TabItem>
+        </TabControl>
+
+        <!--#region Confirmation Buttons -->
+        <Grid Grid.Row="1" Grid.Column="2"
+              ColumnDefinitions="Auto * Auto">
+            <controls:IconButton Grid.Column="0"
+                                 Content="Remove" Icon="Delete"
+                                 Command="{Binding DeleteCodexCommand}" Margin="5"
+                                 ToolTip.Tip="Removes this item from COMPASS"
+                                 Background="{StaticResource CancelFill}" />
+            <controls:ConfirmControls Grid.Column="2" />
+        </Grid>
+        <!--#endregion-->
+    </Grid>
+</UserControl>

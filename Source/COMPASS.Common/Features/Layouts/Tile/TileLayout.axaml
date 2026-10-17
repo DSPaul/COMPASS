@@ -1,0 +1,97 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:modelVm="using:COMPASS.Common.Features.Codices"
+             xmlns:behav="using:COMPASS.Infra.Avalonia.Behaviors"
+             xmlns:dragdrop="using:COMPASS.Infra.Avalonia.DragDrop"
+             xmlns:controls="using:COMPASS.Infra.Avalonia.Controls"
+             xmlns:layouts="using:COMPASS.Common.Features.Layouts.Tile"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:DataType="layouts:TileLayoutViewModel"
+             x:Class="COMPASS.Common.Features.Layouts.Tile.TileLayout">
+
+    <ListBox x:Name="TileLayoutListBox"
+             Background="Transparent"
+             ItemsSource="{Binding FilteredCodexVms}"
+             Margin="10,0" SelectionMode="Multiple"
+             SelectedItem="{Binding SelectedCodex, Mode=OneWayToSource}"
+             KeyDown="ListBox_KeyDown"
+             behav:ContextMenuSelector.SingleSelectContextMenu="{StaticResource CodexContextMenu}"
+             behav:ContextMenuSelector.MultiSelectContextMenu="{StaticResource MultiCodexContextMenu}"
+             SelectionChanged="SelectedCodicesChanged">
+
+        <ListBox.ItemContainerTheme>
+            <ControlTheme TargetType="ListBoxItem">
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="BorderBrush" Value="Transparent" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="ClipToBounds" Value="False" />
+                <Style Selector="^:selected">
+                    <Setter Property="BorderBrush" Value="{StaticResource AccentColorMuted}" />
+                </Style>
+            </ControlTheme>
+        </ListBox.ItemContainerTheme>
+        <ListBox.ItemsPanel>
+            <ItemsPanelTemplate>
+                <controls:WrapGrid HorizontalContentAlignment="Center" />
+            </ItemsPanelTemplate>
+        </ListBox.ItemsPanel>
+        <ListBox.ItemTemplate>
+            <DataTemplate DataType="modelVm:CodexViewModel">
+                <Grid VerticalAlignment="Top"
+                      RowDefinitions="Auto, Auto"
+                      DoubleTapped="Codex_DoubleTapped"
+                      Background="Transparent"
+                      Classes="ZoomOnHover"
+                      dragdrop:DropBehavior.IsDropTarget="True"
+                      dragdrop:DropBehavior.DropManager="{Binding DropManager}">
+                    <Panel Margin="{Binding $parent[ListBox].((layouts:TileLayoutViewModel)DataContext).Preferences.TilePanelMargin}" Grid.Row="0"
+                           Width="{Binding $parent[ListBox].((layouts:TileLayoutViewModel)DataContext).Preferences.TileWidth}"
+                           Height="{Binding $parent[ListBox].((layouts:TileLayoutViewModel)DataContext).Preferences.TileHeight}">
+                        <Border CornerRadius="5" BorderThickness="3"
+                                VerticalAlignment="Center" HorizontalAlignment="Center"
+                                BorderBrush="{Binding BorderBrush, RelativeSource={RelativeSource AncestorType=ListBoxItem}}">
+                            <Border.Effect>
+                                <DropShadowDirectionEffect BlurRadius="15" />
+                            </Border.Effect>
+                            <controls:RoundedImage Source="{Binding Thumbnail^, Mode=OneWay}" CornerRadius="3" />
+                        </Border>
+                    </Panel>
+                    <Panel Grid.Row="1" Margin="0,5"
+                           Width="{Binding $parent[ListBox].((layouts:TileLayoutViewModel)DataContext).Preferences.TileWidth}"
+                           IsVisible="{Binding $parent[ListBox].((layouts:TileLayoutViewModel)DataContext).Preferences.ShowExtraData}">
+                        <Panel.Styles>
+                            <Style Selector="TextBlock">
+                                <Setter Property="TextWrapping" Value="Wrap" />
+                                <Setter Property="FontSize" Value="14" />
+                                <Setter Property="Foreground" Value="{StaticResource TextMutedColor}" />
+                                <Setter Property="HorizontalAlignment" Value="Center" />
+                                <Setter Property="VerticalAlignment" Value="Center" />
+                                <Setter Property="TextTrimming" Value="WordEllipsis" />
+                                <Setter Property="Height" Value="40" />
+                                <Setter Property="IsVisible" Value="False" />
+                            </Style>
+                        </Panel.Styles>
+                        <TextBlock Text="{Binding Title}"
+                                   IsVisible="{Binding $parent[ListBox].((layouts:TileLayoutViewModel)DataContext).Preferences.DisplayedData, 
+                                    Converter={x:Static ObjectConverters.Equal}, 
+                                    ConverterParameter={x:Static layouts:TileLayoutPreferences+DataOption.Title}}" />
+                        <TextBlock Text="{Binding AuthorsAsString}"
+                                   IsVisible="{Binding $parent[ListBox].((layouts:TileLayoutViewModel)DataContext).Preferences.DisplayedData, 
+                                    Converter={x:Static ObjectConverters.Equal}, 
+                                    ConverterParameter={x:Static layouts:TileLayoutPreferences+DataOption.Author}}" />
+                        <TextBlock Text="{Binding Publisher}"
+                                   IsVisible="{Binding $parent[ListBox].((layouts:TileLayoutViewModel)DataContext).Preferences.DisplayedData, 
+                                    Converter={x:Static ObjectConverters.Equal}, 
+                                    ConverterParameter={x:Static layouts:TileLayoutPreferences+DataOption.Publisher}}" />
+                        <controls:RatingControl Value="{Binding Rating}" HorizontalAlignment="Center" Margin="0,0,0,5" Height="20"
+                                                IsVisible="{Binding $parent[ListBox].((layouts:TileLayoutViewModel)DataContext).Preferences.DisplayedData, 
+                                          Converter={x:Static ObjectConverters.Equal}, 
+                                          ConverterParameter={x:Static layouts:TileLayoutPreferences+DataOption.Rating}}" />
+                    </Panel>
+                </Grid>
+            </DataTemplate>
+        </ListBox.ItemTemplate>
+    </ListBox>
+</UserControl>

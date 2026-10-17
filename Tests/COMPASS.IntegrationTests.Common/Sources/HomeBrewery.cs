@@ -1,0 +1,53 @@
+using Autofac.Features.Indexed;
+using COMPASS.Common.Features.Metadata;
+using COMPASS.Common.Features.Metadata.Sources;
+using COMPASS.Infra.DependencyInjection;
+using COMPASS.Common.Domain;
+
+namespace COMPASS.IntegrationTests.Common.Sources;
+
+[TestFixture]
+public class HomeBrewery
+{
+    private const string TEST_URL = @"https://homebrewery.naturalcrit.com/share/FegJIEB2KUUo";
+
+    [Test]
+    public async Task GetMetadataFromHomeBrewery()
+    {
+        SourceSet sources = new()
+        {
+            SourceURL = TEST_URL
+        };
+
+        var collection = new CodexCollection("TEST_COLLECTION");
+        var source = ServiceResolver.Resolve<IIndex<string, MetadataSource>>()[MetadataSourceType.Homebrewery.ToString()];
+
+        SourceMetadata response = await source.GetMetadata(sources, collection.AllTags);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(response, Is.Not.Null);
+            Assert.That(string.IsNullOrEmpty(response.Title), Is.False);
+            Assert.That(string.IsNullOrEmpty(response.Description), Is.False);
+            Assert.That(response.ReleaseDate, Is.Not.Null);
+            Assert.That(response.PageCount, Is.EqualTo(1));
+        });
+    }
+
+    [Test]
+    public async Task GetCoverFromHomeBrewery()
+    {
+        //Setup
+        var source = ServiceResolver.Resolve<IIndex<string, MetadataSource>>()[MetadataSourceType.Homebrewery.ToString()];
+        var sources = new SourceSet()
+        {
+            SourceURL = TEST_URL
+        };
+
+        //Fetch the cover
+        var cover = await source!.FetchCover(sources);
+
+        //see if it worked
+        Assert.That(cover, Is.Not.Null, "Failed to fetch cover");
+    }
+}

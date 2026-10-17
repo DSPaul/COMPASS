@@ -1,0 +1,172 @@
+using Autofac.Features.Indexed;
+using CommunityToolkit.Mvvm.Input;
+using COMPASS.Common.Features.CodexCollections;
+using COMPASS.Common.Features.Codices;
+using COMPASS.Common.Features.Metadata;
+using COMPASS.Common.Features.Metadata.Sources;
+using COMPASS.Infra.Avalonia.Modal;
+using COMPASS.Infra.DependencyInjection;
+using COMPASS.Infra.Logging;
+using COMPASS.Infra.Web;
+using COMPASS.Common.Domain;
+using COMPASS.Infra.Avalonia.Validation;
+using COMPASS.Common.Features.Tabs;
+
+namespace COMPASS.Common.Features.ImportExport
+{
+    public class ImportURLViewModel : ValidatableViewModelBase, IModalViewModel, IConfirmable
+    {       
+        private readonly CodexEditViewModelFactory _codexEditViewModelFactory;
+        private readonly CodexCollectionOperations _codexCollectionOperations;
+        private readonly ConnectivityManager _connectivityManager;
+        private readonly IIndex<string, MetadataSource> _metaDataSources;
+        private readonly ILogger _logger;
+        private readonly IActiveTabContext _activeTabContext;
+        private readonly OnlineMetadataSource? _metadataSource;
+
+        public ImportURLViewModel(ILogger logger, CodexEditViewModelFactory codexEditViewModelFactory, CodexCollectionOperations codexCollectionOperations, ConnectivityManager connectivityManager, IIndex<string, MetadataSource> metaDataSources,
+            IActiveTabContext activeTabContext, ImportSource importSource)
+        {
+            _logger = logger;
+            _activeTabContext = activeTabContext;
+            _codexEditViewModelFactory = codexEditViewModelFactory;
+            _codexCollectionOperations = codexCollectionOperations;
+            _connectivityManager = connectivityManager;
+            _metaDataSources = metaDataSources;
+
+            //TODO: Name should be a property of the metadatasource itself
+            SourceName = importSource switch
+            {
+                ImportSource.GmBinder => "GM Binder",
+                ImportSource.Homebrewery => "Homebrewery",
+                ImportSource.GoogleDrive => "Google Drive",
+                _ => "Any URL"
+            };
+
+            //TODO importSource should probably be simpified to categories File, Folder, URL, ISBN, etc
+            //with optional metadatasource to narrow it down, rather than these almost identical enums
+            var associatedMetadataSource = importSource switch
+            {
+                ImportSource.GmBinder => MetadataSourceType.GmBinder,
+                ImportSource.Homebrewery => MetadataSourceType.Homebrewery,
+                ImportSource.GoogleDrive => MetadataSourceType.GoogleDrive,
+                _ => MetadataSourceType.GenericURL
+            };
+
+            var metadataSource = _metaDataSources.TryGetValue(associatedMetadataSource.ToString(), out MetadataSource? source)
+                ? source as OnlineMetadataSource
+                : null;
+            _metadataSource = metadataSource;
+
+            ExampleURL = metadataSource?.UrlPrefix ?? "";
+            ShowValidateDisableCheckbox = importSource == ImportSource.Homebrewery;
+        }
+
+        //configuration props
+        public string SourceName { get; } = "";
+        public string ExampleURL { get; init; } = "";
+        public bool ShowValidateDisableCheckbox { get; init; } = false;
+
+        //State props
+        public bool ValidateURL { get; set; } = true;
+        public bool ShowEditWhenDone { get; set; } = false;
+
+        public string InputURL
+        {
+            get;
+            set
+            {
+                SetProperty(ref field, value);
+                Validate(nameof(InputURL));
+            }
+        } = "";
+
+        private string _importError = "";
+        public string ImportError
+        {
+            get => _importError;
+            set => SetProperty(ref _importError, value);
+        }
+
+        #region IConfirmable
+        
+        private RelayCommand? _cancelCommand;
+        public IRelayCommand CancelCommand => _cancelCommand ??= new(CloseAction);
+        
+        private AsyncRelayCommand? _submitUrlCommand;
+        public IRelayCommand ConfirmCommand => _submitUrlCommand ??= new(SubmitURL, () => !HasErrors);
+        private async Task SubmitURL()
+        {
+            SourceSet sourceSet = new();
+
+            //file:// Uri's are valid but are converted to local path
+            bool isLocalFile = InputURL.StartsWith("file://", StringComparison.OrdinalIgnoreCase);
+            if (isLocalFile)
+            {
+                if (!Uri.TryCreate(InputURL, UriKind.Absolute, out Uri? fileUri))
+                {
+                    ImportError = $"'{InputURL}' was malformatted";
+                    return;
+                }
+                sourceSet.Path = fileUri.LocalPath;
+            }
+            else
+            {
+                sourceSet.SourceURL = InputURL;
+                if (ValidateURL && _metadataSource?.IsValidSource(sourceSet) == false)
+                {
+                    ImportError = $"'{InputURL}' is not a valid URL for {SourceName}";
+                    return;
+                }
+                if (!await _connectivityManager.CheckConnection())
+                {
+                    ImportError = "You need to be connected to the internet to import an online source.";
+                    return;
+                }
+            }
+
+            CloseAction();
+
+            await _codexCollectionOperations.CreateCodicesAsync([sourceSet]);
+
+            if (ShowEditWhenDone)
+            {
+                Codex? addedCodex = _activeTabContext.ActiveCollection.AllCodices
+                    .OrderByDescending(c => c.DateAdded)
+                    .FirstOrDefault(c => c.Sources == sourceSet);
+                if(addedCodex != null)
+                {
+                    CodexEditViewModel vm = _codexEditViewModelFactory.Create(addedCodex);
+                    await WindowManager.OpenModal(vm);
+                }
+                else
+                {
+                    _logger.Warn($"Could not find codex with source URL '{InputURL}' after import. Cannot open edit modal.");
+                }
+            }
+        }
+
+        
+        #endregion
+        
+        #region IModelViewModel
+
+        public string WindowTitle => $"Import an item from {SourceName}";
+        public Action CloseAction { get; set; } = () => { };
+
+        #endregion
+    }
+
+    [Factory]
+    public class ImportURLViewModelFactory(
+        ILogger logger, 
+        CodexEditViewModelFactory codexEditViewModelFactory, 
+        CodexCollectionOperations codexCollectionOperations, 
+        ConnectivityManager connectivityManager, 
+        IIndex<string, MetadataSource> metaDataSources,
+        IActiveTabContext activeTabContext)
+    {
+        public ImportURLViewModel Create(ImportSource importSource)
+            => new(logger, codexEditViewModelFactory, codexCollectionOperations, connectivityManager, metaDataSources, activeTabContext, importSource);
+    }
+}

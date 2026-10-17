@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <AssemblyName>COMPASS</AssemblyName>
+    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <ApplicationIcon>..\COMPASS.Common\Assets\COMPASS.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup Label="Avalonia">
+    <AvaloniaUseCompiledBindingsByDefault>True</AvaloniaUseCompiledBindingsByDefault>
+    <AvaloniaXamlReportImportance>Normal</AvaloniaXamlReportImportance>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia.Desktop" Version="12.1.4" />
+    <PackageReference Include="Avalonia.Markup.Xaml.Loader" Version="12.1.4" PrivateAssets="All" />
+    <PackageReference Include="HotAvalonia" Version="3.1.5" PrivateAssets="All" Publish="True" />
+    <PackageReference Include="OpenCvSharp5.runtime.win.slim" Version="5.0.0.20261012" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <HotAvaloniaMode>Balanced</HotAvaloniaMode>
+    <HotAvaloniaHotkey>F11</HotAvaloniaHotkey>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\COMPASS.Common\COMPASS.Common.csproj" />
+  </ItemGroup>
+</Project>

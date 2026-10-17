@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <AssemblyName>COMPASS</AssemblyName>
+    <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
+    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia.Desktop" Version="12.1.4" />
+    <PackageReference Include="HotAvalonia" Version="3.1.5" PrivateAssets="All" />
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="4.153.1" />
+    <PackageReference Include="OpenCvSharp5.official.runtime.linux-x64.slim" Version="5.0.0.20261012" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\COMPASS.Common\COMPASS.Common.csproj" />
+    <ProjectReference Include="..\COMPASS.Infra\COMPASS.Infra.csproj" />
+  </ItemGroup>
+</Project>

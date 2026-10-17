@@ -1,0 +1,19 @@
+namespace COMPASS.Infra.Notifications
+{
+    [Flags]
+    public enum NotificationAction
+    {
+        /// <summary>
+        /// Continues the operation
+        /// </summary>
+        Confirm = 1,
+        /// <summary>
+        /// Breaks of the operations
+        /// </summary>
+        Cancel = 2,
+        /// <summary>
+        /// Continues with some option refused
+        /// </summary>
+        Decline = 4
+    }
+}

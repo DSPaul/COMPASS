@@ -1,0 +1,9 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Drag and drop adorners, each defined next to its control in its feature -->
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceInclude Source="avares://COMPASS.Common/Features/Filtering/DropFilterAdorner.axaml"/>
+        <ResourceInclude Source="avares://COMPASS.Common/Features/ImportExport/FileDropAdorner.axaml"/>
+        <ResourceInclude Source="avares://COMPASS.Common/Features/Tags/DropTagAdorner.axaml"/>
+    </ResourceDictionary.MergedDictionaries>
+</ResourceDictionary>

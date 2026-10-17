@@ -1,0 +1,493 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="using:COMPASS.Infra.Avalonia.Controls"
+             xmlns:vm="using:COMPASS.Common.Features.Settings"
+             xmlns:domain="using:COMPASS.Common.Domain"
+             xmlns:enums="using:COMPASS.Common.Features.Metadata"
+
+             xmlns:tools="using:COMPASS.Common.Features.Tools"
+             xmlns:md="using:MarkView.Avalonia"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="COMPASS.Common.Features.Settings.SettingsView"
+             x:DataType="vm:SettingsViewModel"
+             MinWidth="1000" MinHeight="500">
+    <UserControl.Styles>
+        <Style Selector="TabItem">
+            <Setter Property="CornerRadius" Value="5" />
+            <Setter Property="Margin" Value="5" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="Padding" Value="0,0,8,0" />
+        </Style>
+        <Style Selector="TabControl /template/ ContentPresenter">
+            <Setter Property="Padding" Value="15" />
+            <Setter Property="Background" Value="{StaticResource WindowBackground}"/>
+        </Style>
+        <Style Selector="TabControl /template/ ItemsPresenter#PART_ItemsPresenter > WrapPanel">
+            <Setter Property="Margin" Value="0 10" />
+            <Setter Property="ItemWidth" Value="150" />
+        </Style>
+
+        <Style Selector="TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style Selector="TextBlock.SectionTitle">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Foreground" Value="{StaticResource TextMutedColor}" />
+            <Setter Property="FontWeight" Value="Light" />
+            <Setter Property="FontSize" Value="20" />
+        </Style>
+        <Style Selector="Rectangle.SeparatorStyle">
+            <Setter Property="Fill" Value="{StaticResource DarkUIElementBackground}" />
+            <Setter Property="Width" Value="10000" />
+            <Setter Property="Height" Value="3" />
+            <Setter Property="Margin" Value="0,10" />
+        </Style>
+        <Style Selector="Border.SettingsRow">
+            <Setter Property="CornerRadius" Value="5" />
+            <Setter Property="Padding" Value="10,5" />
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <Style Selector="Border.SettingsRow:pointerover">
+            <Setter Property="Background" Value="{StaticResource ListHover}" />
+        </Style>
+    </UserControl.Styles>
+    <TabControl TabStripPlacement="Left"
+            BorderThickness="0"
+            Padding="0"
+            SelectedIndex="{Binding SelectedTabIndex}"
+                Background="{StaticResource Layer2}"
+                BorderBrush="{StaticResource Layer2}">
+        <TabControl.Styles>
+            <Style Selector="Border.SettingsContainer">
+                <Setter Property="BorderThickness" Value="2" />
+                <Setter Property="CornerRadius" Value="5" />
+                <Setter Property="Padding" Value="20" />
+                <Setter Property="BorderBrush" Value="{StaticResource DarkUIElementBackground}" />
+            </Style>
+            <Style Selector="GroupBox">
+                <Setter Property="BorderThickness" Value="2" />
+                <Setter Property="CornerRadius" Value="5" />
+                <Setter Property="Padding" Value="15" />
+                <Setter Property="BorderBrush" Value="{StaticResource DarkUIElementBackground}" />
+            </Style>
+            <Style Selector="GroupBox /template/ ContentPresenter#PART_HeaderPresenter">
+                <Setter Property="FontWeight" Value="Light" />
+                <Setter Property="Margin" Value="10 0" />
+            </Style>
+        </TabControl.Styles>
+        <TabControl.Resources>
+            <x:Double x:Key="TabItemMinHeight"> 48 </x:Double>
+            <x:Double x:Key="GroupBoxHeaderFontSize">20</x:Double>
+            <StaticResource x:Key="GroupBoxHeaderForeground" ResourceKey="TextMutedColor"/>
+        </TabControl.Resources>
+        <TabItem Header="General">
+            <ScrollViewer>	
+                <StackPanel Orientation="Vertical" Spacing="20">
+                    <GroupBox Header="Behaviour">
+                        <StackPanel Spacing="5">
+                            <Border Classes="SettingsRow">
+                                <Grid ColumnDefinitions="* Auto">
+                                    <StackPanel Grid.Column="0" Orientation="Horizontal">
+                                        <TextBlock Text="On double click:" TextWrapping="Wrap" />
+                                    </StackPanel>
+                                    <Border Grid.Column="1" Classes="RadioBtnStrip">
+                                        <StackPanel Orientation="Horizontal" Spacing="5">
+                                            <RadioButton GroupName="OpenPref"
+                                                         Content="Prefer website"
+                                                         IsChecked="{Binding PreferOnlineSource}"
+                                                         Background="{StaticResource AccentColorMuted}" />
+                                            <RadioButton GroupName="OpenPref"
+                                                         Content="Prefer local file"
+                                                         IsChecked="{Binding !PreferOnlineSource, Mode=OneWay}"
+                                                         Background="{StaticResource AccentColorMuted}" />
+                                        </StackPanel>
+                                    </Border>
+                                </Grid>
+                            </Border>
+
+                            <Border Classes="SettingsRow">
+                                <Grid ColumnDefinitions="* Auto">
+                                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="5">
+                                        <TextBlock Text="Treat tags and folders with the same name as linked"/>
+                                        <controls:Explainer Content="When a folder is linked to a tag, all future files that are imported from that folder will automatically be assigned that tag."/>
+                                    </StackPanel>
+                                    <CheckBox Grid.Column="1" Classes="Toggle"
+                                              HorizontalAlignment="Right"
+                                              IsChecked="{Binding AutoLinkFolderTagSameName}"/>
+                                </Grid>
+                            </Border>
+
+                            <Border Classes="SettingsRow">
+                                <Grid ColumnDefinitions="* Auto">
+                                    <TextBlock Grid.Column="0" Text="Hide the info panel when nothing is selected"/>
+                                    <CheckBox Grid.Column="1" Classes="Toggle"
+                                              HorizontalAlignment="Right"
+                                              IsChecked="{Binding UIPreferences.AutoHideCodexInfoPanel}"/>
+                                </Grid>
+                            </Border>
+                        </StackPanel>
+                    </GroupBox>
+                
+                    <GroupBox Header="Updates">
+                        <StackPanel Spacing="5">
+                            <Border Classes="SettingsRow">
+                                <Grid ColumnDefinitions="* Auto">
+                                    <TextBlock Grid.Column="0" Text="Check for updates on startup"/>
+                                    <CheckBox Grid.Column="1" Classes="Toggle"
+                                              HorizontalAlignment="Right"
+                                              IsChecked="{Binding CheckForUpdatesOnStartup}"/>
+                                </Grid>
+                            </Border>
+                            <Border Classes="SettingsRow">
+                                <Grid ColumnDefinitions="* Auto">
+                                    <TextBlock Grid.Column="0" Text="Include prerelease updates"/>
+                                    <CheckBox Grid.Column="1" Classes="Toggle"
+                                              HorizontalAlignment="Right"
+                                              IsChecked="{Binding IncludePrereleaseUpdates}"/>
+                                </Grid>
+                            </Border>
+                        </StackPanel>
+                    </GroupBox>
+
+                    <GroupBox Header="Manage Local Data">
+                        <StackPanel>
+                            <TextBlock Text="User data location:" Margin="0,10,0,5"/>
+                            <Grid  ColumnDefinitions="*,auto,auto, auto" ColumnSpacing="10">
+                                <TextBox IsReadOnly="True" Grid.Column="0" TextWrapping="Wrap"
+                                         Text="{Binding UserDataPath, Mode=OneWay}"/>
+                                <controls:IconButton Grid.Column="1" Theme="{StaticResource IconOnly}"
+                                                     IconSize="20"
+                                                     ToolTip.Tip="Show in explorer..." Icon="FolderOpen"
+                                                     Command="{Binding BrowseLocalFilesCommand}"/>
+                                <controls:IconButton Grid.Column="2" Theme="{StaticResource IconOnly}" 
+                                                     IconSize="20"
+                                                     ToolTip.Tip="Change data path..." Icon="FolderEdit" 
+                                                     Command="{Binding ChangeDataPathCommand}"/>
+                                <controls:IconButton Grid.Column="3" Theme="{StaticResource IconOnly}"  
+                                                     IconSize="20"
+                                                     ToolTip.Tip="Restore to default..." Icon="FolderRefresh"
+                                                     Command="{Binding ResetDataPathCommand}"/>
+                            </Grid>
+                            <TextBlock Text="Logs location:" Margin="0,10,0,5"/>
+                            <Grid ColumnDefinitions="*,auto" ColumnSpacing="10">
+                                <TextBox IsReadOnly="True" Grid.Column="0" TextWrapping="Wrap"
+                                         Text="{Binding LogsPath, Mode=OneWay}"/>
+                                <controls:IconButton Grid.Column="1" Theme="{StaticResource IconOnly}"
+                                                     IconSize="20"
+                                                     ToolTip.Tip="Show in explorer..." Icon="FolderOpen"
+                                                     Command="{Binding OpenLogsFolderCommand}"/>
+                            </Grid>
+                        </StackPanel>
+                    </GroupBox>
+                </StackPanel>
+            </ScrollViewer>
+        </TabItem>
+        <TabItem Header="Import">
+            <ScrollViewer>
+                <StackPanel>
+                    <GroupBox>
+                        <GroupBox.Header>
+                            <StackPanel Orientation="Horizontal" Spacing="5">
+                                <TextBlock Text="Automatic Import" Classes="SectionTitle" />
+                                <controls:Explainer VerticalAlignment="Center"
+                                                    Content="These folders will periodically be checked for files that have not yet been imported, and import them automatically." />
+                            </StackPanel>
+                        </GroupBox.Header>
+                        <StackPanel Spacing="10">
+                            <StackPanel.Styles>
+                                <Style Selector="Expander">
+                                    <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                                    <Setter Property="BorderThickness" Value="10"/>
+                                </Style>
+                            </StackPanel.Styles>
+
+                            <!--Auto import folders-->
+                            <Expander Header="Folders to Check">
+                                <StackPanel> 
+                                    <ScrollViewer MaxHeight="250">
+                                        <ItemsControl ItemsSource="{Binding AutoImportFolders}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Border BorderBrush="{StaticResource AccentColorMuted}"
+                                                            BorderThickness="1" CornerRadius="5" Padding="5"
+                                                            Margin="10,5">
+                                                        <Grid ColumnDefinitions="*,auto,auto,auto">
+
+                                                            <TreeView Classes="NoSelection" VerticalAlignment="Center">
+                                                                <TreeViewItem ItemsSource="{Binding SubFolders}">
+                                                                    <TreeViewItem.Header>
+                                                                        <TextBlock Text="{Binding FullPath}"
+                                                                                   TextWrapping="Wrap" Margin="5" />
+                                                                    </TreeViewItem.Header>
+                                                                    <TreeViewItem.DataTemplates>
+                                                                        <TreeDataTemplate DataType="domain:Folder"
+                                                                            ItemsSource="{Binding SubFolders}">
+                                                                            <TextBlock
+                                                                                Text="{Binding Name, Mode=OneWay}"
+                                                                                TextWrapping="Wrap" Margin="5" />
+                                                                        </TreeDataTemplate>
+                                                                    </TreeViewItem.DataTemplates>
+                                                                </TreeViewItem>
+                                                            </TreeView>
+
+                                                            <controls:IconButton Grid.Column="1" Margin="5"
+                                                                                 Theme="{StaticResource IconOnly}"
+                                                                                 Icon="FolderOpen"
+                                                                                 ToolTip.Tip="Show In Explorer"
+                                                                                 Command="{Binding $parent[TabItem].((vm:SettingsViewModel)DataContext).ShowInExplorerCommand}"
+                                                                                 CommandParameter="{Binding FullPath}" />
+                                                            <controls:IconButton
+                                                                Grid.Column="2" Margin="5"
+                                                                Theme="{StaticResource IconOnly}"
+                                                                Icon="Edit" ToolTip.Tip="Edit"
+                                                                Command="{Binding $parent[TabItem].((vm:SettingsViewModel)DataContext).EditAutoImportDirectoryCommand}"
+                                                                CommandParameter="{Binding}" />
+                                                            <controls:IconButton
+                                                                Grid.Column="3" Margin="5"
+                                                                Theme="{StaticResource IconOnly}"
+                                                                Icon="Delete" ToolTip.Tip="Remove From Auto Import"
+                                                                Command="{Binding $parent[TabItem].((vm:SettingsViewModel)DataContext).RemoveAutoImportDirectoryCommand}"
+                                                                CommandParameter="{Binding}" />
+                                                        </Grid>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </ScrollViewer>
+                                    <Grid Margin="10" ColumnDefinitions="*,auto,auto,*" ColumnSpacing="10">
+                                        <TextBox x:Name="NewAutoImportFolderTextBox" PlaceholderText="Path/to/folder/to/add"
+                                                 Margin="0" BorderThickness="1" Padding="10 0"
+                                                 VerticalAlignment="Center" VerticalContentAlignment="Center" />
+                                        <controls:IconButton Icon="Plus" Grid.Column="1" Padding="0"
+                                                             VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+                                                             Width="32" HorizontalContentAlignment="Center"
+                                                             Background="{StaticResource AccentColorMuted}"
+                                                             IsDefault="{Binding #NewAutoImportFolderTextBox.IsFocused}"
+                                                             Command="{Binding AddAutoImportDirectoryCommand}"
+                                                             ToolTip.Tip="Add Folder"
+                                                             CommandParameter="{Binding #NewAutoImportFolderTextBox.Text}" />
+                                        <TextBlock Text="OR" Grid.Column="2" VerticalAlignment="Center" Margin="5 0" />
+                                        <controls:IconButton Content="Select a Folder..."
+                                                             ToolTip.Tip="Select Folder To Add" Grid.Column="3"
+                                                             Padding="3,0" Icon="FolderPlus"
+                                                             HorizontalAlignment="Stretch"
+                                                             HorizontalContentAlignment="Center"
+                                                             VerticalAlignment="Stretch"
+                                                             Background="{StaticResource AccentColorMuted}"
+                                                             Command="{Binding PickAutoImportDirectoryCommand}" />
+                                    </Grid>
+                                </StackPanel>
+                            </Expander>
+
+                            <!--File Types-->
+                            <Expander Header="File Types to import"
+                                      IsVisible="{Binding !!FiletypePreferences.Count}">
+                                <ItemsControl ItemsSource="{Binding FiletypePreferences}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <UniformGrid Columns="6" />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <CheckBox Content="{Binding Key}" IsChecked="{Binding Value, Mode=TwoWay}"
+                                                      Margin="15 5" />
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Expander>
+
+                            <!--Banished Files-->
+                            <Expander IsVisible="{Binding !!BanishedPaths.Count}">
+                                <Expander.Header>
+                                    <StackPanel Orientation="Horizontal" Spacing="5">
+                                        <TextBlock Text="Banished files"/>
+                                        <controls:Explainer>
+                                            These files will be excluded from future imports, supports glob syntax.
+                                            e.g. *.tmp, *draft*, **/excluded/**
+                                        </controls:Explainer>
+                                    </StackPanel>
+                                </Expander.Header>
+                                <controls:StringListControl Items="{Binding BanishedPaths}" MaxHeight="400"/>
+                            </Expander>
+                        </StackPanel>
+                    </GroupBox>
+                </StackPanel>
+            </ScrollViewer>
+        </TabItem>
+        <TabItem Header="Metadata">
+            <ScrollViewer>
+                <StackPanel Spacing="20">
+                    <GroupBox>
+                        <GroupBox.Header>
+                            <StackPanel Orientation="Horizontal" Spacing="5">
+                                <TextBlock Text="Link Folders to Tags" Classes="SectionTitle"/>
+                                <controls:Explainer Margin="0,6"
+                                                    Content="When a folder is linked to a tag, all future files that are imported from that folder will automatically be assigned that tag."/>
+                            </StackPanel>
+                        </GroupBox.Header>
+                        <Border Classes="SettingsRow">
+                            <Grid ColumnDefinitions="* Auto">
+                                <TextBlock Grid.Column="0" Text="Treat tags and folders with the same name as linked"/>
+                                <CheckBox Grid.Column="1"
+                                          Classes="Toggle" HorizontalAlignment="Right"
+                                          IsChecked="{Binding AutoLinkFolderTagSameName}"/>
+                            </Grid>
+                        </Border>
+                    </GroupBox>
+            
+                    <GroupBox Header="Source Priority Preferences">
+                        <StackPanel Spacing="5">
+                            <Grid ColumnDefinitions="*, 2*, 2*" RowDefinitions="Auto,Auto,Auto">
+
+                                <TextBlock Text="Property" Grid.Row="0" Grid.Column="0"/>
+                                
+                                <StackPanel Orientation="Horizontal" Spacing="5" 
+                                            Grid.Row="0" Grid.Column="1">
+                                    <TextBlock Text="Source Priority" />
+                                    <controls:Explainer Content="If multiple sources provide metadata for a given property, the value from the topmost source will be used."/>
+                                </StackPanel>
+                                
+                                <TextBlock Text="Overwrite existing metadata" Margin="10,0,0,0" 
+                                           Grid.Row="0" Grid.Column="2"/>
+            
+                                <Rectangle Classes="SeparatorStyle" Grid.ColumnSpan="3" 
+                                           Grid.Row="1" Grid.Column="0"/>
+            
+                                <ItemsControl Grid.Row="2" Grid.ColumnSpan="3" Grid.Column="0"
+                                              ItemsSource="{Binding MetadataPreferences}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid RowDefinitions="auto,auto" ColumnDefinitions="*,2*,2*" ColumnSpacing="5">
+                                                <TextBlock Text="{Binding Label}" VerticalAlignment="Top"/>
+                                                <controls:PriorityControl Grid.Row="0" Grid.Column="1"
+                                                                          ItemsSource="{Binding SourcePriority, Mode=OneWay}"/>
+                                                <StackPanel Margin="10,0,20,0" Grid.Row="0" Grid.Column="2">
+                                                    <RadioButton Content="Never"
+                                                                 IsChecked="{Binding OverwriteMode, Converter={StaticResource EnumForRadioBtnConverter},
+                                                                 ConverterParameter={x:Static enums:MetadataOverwriteMode.Never}}" />
+                                                    <RadioButton Content="If existing metadata is empty"
+                                                                 IsChecked="{Binding OverwriteMode, Converter={StaticResource EnumForRadioBtnConverter},
+                                                                 ConverterParameter={x:Static enums:MetadataOverwriteMode.IfEmpty}}" />
+                                                    <RadioButton Content="Ask every time"
+                                                                 IsChecked="{Binding OverwriteMode, Converter={StaticResource EnumForRadioBtnConverter},
+                                                                 ConverterParameter={x:Static enums:MetadataOverwriteMode.Ask}}" />
+                                                    <RadioButton Content="Always"
+                                                                 IsChecked="{Binding OverwriteMode, Converter={StaticResource EnumForRadioBtnConverter},
+                                                                 ConverterParameter={x:Static enums:MetadataOverwriteMode.Always}}" />
+                                                </StackPanel>
+                                                <Rectangle Classes="SeparatorStyle" Grid.ColumnSpan="3"
+                                                           Grid.Column="0" Grid.Row="1"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Grid>
+                        </StackPanel>
+                    </GroupBox>
+                </StackPanel>
+            </ScrollViewer>
+        </TabItem>
+        <TabItem Header="Tools">
+            <tools:ToolsView DataContext="{Binding ToolsVM}"/>
+        </TabItem>
+        <TabItem Header="About">
+            <ScrollViewer>
+                <StackPanel Orientation="Vertical" Spacing="20">
+                    <Border Classes="SettingsContainer">
+                        <UniformGrid Rows="1">
+                            <Svg Path="/Assets/COMPASS_Logo.svg" Width="200" HorizontalAlignment="Center"/>
+                            <TextBlock Text="{Binding Version}" HorizontalAlignment="Center"/>
+                            <controls:IconButton Content="Check for Updates" Command="{Binding CheckForUpdatesCommand}"
+                                                 Icon="Autorenew" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Author: Paul De Smul" HorizontalAlignment="Center"/>
+                        </UniformGrid>
+                    </Border>
+                    <GroupBox Header="Links">
+                        <UniformGrid Columns="2">
+                            <StackPanel Orientation="Horizontal" Spacing="5">
+                                <TextBlock VerticalAlignment="Center" Text="Source Code:"/>
+                                <HyperlinkButton NavigateUri="https://github.com/DSPaul/COMPASS" 
+                                                 Content="github.com/DSPaul/COMPASS"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="5">
+                                <TextBlock VerticalAlignment="Center" Text="Buy Me a Drink:"/>
+                                <HyperlinkButton NavigateUri="https://ko-fi.com/pauldesmul" 
+                                                 Content="ko-fi.com/pauldesmul"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="5">
+                                <TextBlock VerticalAlignment="Center" Text="Join the Discord:"/>
+                                <HyperlinkButton NavigateUri="https://discord.gg/HawGMJgS9Y" 
+                                                 Content="discord.gg/HawGMJgS9Y"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="5">
+                                <TextBlock VerticalAlignment="Center" Text="Join the Subreddit:"/>
+                                <HyperlinkButton NavigateUri="https://www.reddit.com/r/compassapp/" 
+                                                 Content="reddit.com/r/compassapp"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="5">
+                                <TextBlock VerticalAlignment="Center" Text="Project Website:"/>
+                                <HyperlinkButton NavigateUri="https://www.compassapp.info" 
+                                                 Content="compassapp.info"/>
+                            </StackPanel>
+                        </UniformGrid>
+                    </GroupBox>
+                    <GroupBox Header="Dependencies">
+                        <StackPanel Spacing="5">
+                            <TextBlock Text="COMPASS could not exist without the following open source projects:" />
+                            <ItemsControl ItemsSource="{x:Static vm:SettingsViewModel.Dependencies}"
+                                          Margin="0,5,0,0">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Columns="4" ColumnSpacing="12" RowSpacing="12" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:Dependency">
+                                        <Border Background="{StaticResource Layer2}"
+                                                CornerRadius="6"
+                                                Padding="12,8">
+                                            <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" 
+                                                  ColumnSpacing="5" RowSpacing="5">
+                                                <HyperlinkButton Grid.Row="0" Grid.Column="0"
+                                                                 NavigateUri="{Binding Link}"
+                                                                 Content="{Binding Name}"
+                                                                 FontWeight="SemiBold"/>
+                                                <TextBlock Grid.Row="0" Grid.Column="1"
+                                                           Text="{Binding License}"
+                                                           FontSize="12" 
+                                                           Foreground="{StaticResource TextMutedColor}"/>
+                                                <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                                                           Text="{Binding Description}"/>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </GroupBox>
+                </StackPanel>
+            </ScrollViewer>
+        </TabItem>
+        <TabItem Header="Legal">
+            <ScrollViewer>
+                <StackPanel Orientation="Vertical" Spacing="20">
+                    <Expander HorizontalAlignment="Stretch">
+                        <Expander.Header>
+                            <TextBlock Text="Privacy Policy"/>
+                        </Expander.Header>
+                        <md:MarkdownViewer Markdown="{x:Static vm:SettingsViewModel.PrivacyPolicyText}" />
+                    </Expander>
+                    <Expander HorizontalAlignment="Stretch">
+                        <Expander.Header>
+                            <TextBlock Text="License (AGPL-3.0)"/>
+                        </Expander.Header>
+                        <md:MarkdownViewer Markdown="{x:Static vm:SettingsViewModel.LicenseText}" />
+                    </Expander>
+                </StackPanel>
+            </ScrollViewer>
+        </TabItem>
+    </TabControl>
+</UserControl>

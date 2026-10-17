@@ -1,0 +1,256 @@
+using CommunityToolkit.Mvvm.Input;
+using COMPASS.Common.Features.CodexCollections;
+using COMPASS.Infra.Avalonia.Mvvm;
+using COMPASS.Infra.Collections;
+using COMPASS.Infra.DependencyInjection;
+using COMPASS.Infra.IO;
+using COMPASS.Infra.Notifications;
+using System.Collections.ObjectModel;
+using Notification = COMPASS.Infra.Notifications.Notification;
+using COMPASS.Common.Domain;
+using COMPASS.Common.Features.Tabs;
+namespace COMPASS.Common.Features.Tags
+{
+    public class TagEditViewModel : EditViewModelBase<TagViewModel, Tag>
+    {
+        private readonly CodexCollectionVM _codexCollectionVm;
+        private readonly INotificationService _notificationService;
+        private readonly IActiveTabContext _activeTabContext;
+        
+        public TagEditViewModel(TagViewModelFactory tagViewModelFactory, INotificationService notificationService, IActiveTabContext activeTabContext,
+            Tag sourceTag, CodexCollectionVM collectionVm, bool createNew) 
+            : base(sourceTag, createNew, tag => tagViewModelFactory.Create(tag, collectionVm))
+        {
+            _notificationService = notificationService;
+            _activeTabContext = activeTabContext;
+            _codexCollectionVm = collectionVm;
+            _possibleParents = GetPossibleParents();
+        }
+
+        #region Properties
+        
+        private ObservableCollection<TreeNode<TagViewModel>> _possibleParents;
+        public ObservableCollection<TreeNode<TagViewModel>> PossibleParents
+        {
+            get => _possibleParents;
+            set
+            {
+                if (SetProperty(ref _possibleParents, value))
+                {
+                    OnPropertyChanged(nameof(HasPossibleParents));
+                }
+            }
+        }
+
+        public bool HasPossibleParents => PossibleParents.Any(node => node.Item.GetModel() != _source);
+
+        public TreeNode<TagViewModel>? SelectedParent
+        {
+            get => PossibleParents.Flatten().FirstOrDefault(node => node.Item == WorkingCopy.Parent);
+            set => WorkingCopy.Parent = value?.Item;
+        }
+
+        public bool IsGroup
+        {
+            get => WorkingCopy.IsGroup;
+            set
+            {
+                WorkingCopy.IsGroup = value;
+                OnPropertyChanged(nameof(ShowGroupIsAssignedWarning));
+            }
+        }
+
+        public string GroupExplainer =>
+            "Group tags cannot be assigned to items, but help you organize your other tags.\n" +
+            "When filtering on multiple tags, tags within the same group with have an OR relation.\n" +
+            "Tags in different groups will have an AND relation.";
+
+        public bool ShowGroupIsAssignedWarning => IsGroup && _codexCollectionVm.Collection.AllCodices.Any(c => c.Tags.Contains(_source));
+
+        #endregion
+
+        #region Methods and Commands
+
+        protected override void HandleCreateNew(Tag newTag)
+        {
+            newTag.Id = IdGenerator.GetAvailableId(_codexCollectionVm.Collection.AllTags);
+            _codexCollectionVm.Collection.AllTags.Add(newTag);
+                
+            if (newTag.Parent == null)
+            {
+                _codexCollectionVm.Collection.RootTags.Add(newTag);
+            }
+            else
+            {
+                newTag.Parent.Children.Add(newTag);
+            }
+            
+            _codexCollectionVm.Collection.TagsChanged();
+        }
+
+        protected override void BeforeApply(Tag source, Tag proposal)
+        {
+            //if parent didn't change, no changes needed
+            if (source.Parent == WorkingCopy.Parent?.GetModel()) return;
+            
+            //if the parent has changed, break the link with old parent
+            IList<Tag> siblings = source.Parent == null ? _codexCollectionVm.Collection.RootTags : source.Parent.Children;
+            siblings.Remove(source);
+        }
+
+        protected override void OnApplied(Tag source)
+        {
+            //ensure parent-child link is bidirectional
+            IList<Tag> siblings = source.Parent == null ? _codexCollectionVm.Collection.RootTags : source.Parent.Children;
+            siblings.AddIfMissing(source);
+
+            //Remove group tags from codices
+            if (source.IsGroup)
+            {
+                foreach (var codex in _codexCollectionVm.Collection.AllCodices)
+                {
+                    codex.Tags.Remove(source);
+                }
+            }
+        }
+
+        protected override void Clear()
+        {
+            base.Clear();
+
+            //reset parents as new tag might have just been added
+            PossibleParents = GetPossibleParents();
+        }
+
+        private ObservableCollection<TreeNode<TagViewModel>> GetPossibleParents()
+        {
+            var collection = _codexCollectionVm.Collection.RootTags
+                .Select(_codexCollectionVm.GetTagVm)
+                .Select(tagVm => new TreeNode<TagViewModel>(tagVm))
+                .ToList();
+
+            foreach (var node in collection.Flatten())
+            {
+                node.Expanded = node.Item.Children.Flatten().Contains(WorkingCopy.Parent); //expand all parents so that parent is visible
+            }
+
+            return new(collection);
+        }
+
+        private RelayCommand? _colorSameAsParentCommand;
+        public RelayCommand ColorSameAsParentCommand => _colorSameAsParentCommand ??= new(SetColorSameAsParent);
+        private void SetColorSameAsParent() => WorkingCopy.InternalBackgroundColor = null;
+
+        private RelayCommand? _clearParentCommand;
+        public RelayCommand ClearParentCommand => _clearParentCommand ??= new(ClearParent);
+        private void ClearParent() => WorkingCopy.Parent = null;
+
+        private RelayCommand? _detectLinksCommand;
+        public RelayCommand DetectLinksCommand => _detectLinksCommand ??= new(DetectLinks, CanDetectLinks);
+
+        private void DetectLinks()
+        {
+            //Can only detect links if tag exists
+            if (_createNew) return;
+            
+            var relevantCodices = _codexCollectionVm.Collection.AllCodices
+                .Where(codex => codex.Sources.HasOfflineSource() &&
+                                codex.Tags.Contains(_source))
+                .ToList();
+
+            var splitFolders = relevantCodices.Select(codex => codex.Sources.Path)
+                                              .SelectMany(path => path.Split(Path.DirectorySeparatorChar))
+                                              .ToHashSet();
+
+            foreach (string folder in splitFolders)
+            {
+                var codicesInFolder = _codexCollectionVm.Collection.AllCodices
+                    .Where(codex => codex.Sources.HasOfflineSource())
+                    .Where(codex => codex.Sources.Path.Contains(Path.DirectorySeparatorChar + folder + Path.DirectorySeparatorChar))
+                    .ToList();
+
+                if (codicesInFolder.Count < 3) continue;  //Require at least 3 codices in same folder before we can speak of a pattern
+
+                string glob = $"**/{folder}/**";
+
+                if (codicesInFolder.All(codex => codex.Tags.Contains(_source)) &&
+                    !WorkingCopy.CalculatedLinkedGlobs.Contains(glob))
+                {
+                    WorkingCopy.LinkedGlobs.AddIfMissing(glob);
+                }
+            }
+        }
+        private bool CanDetectLinks() => !_createNew;
+
+        private AsyncRelayCommand? _applyLinksCommand;
+        public AsyncRelayCommand ApplyLinksCommand => _applyLinksCommand ??= new(ApplyLinks, CanApplyChanges);
+        private async Task ApplyLinks()
+        {
+            //Can only apply links if tag exists
+            if (_createNew) return;
+            
+            var globs = WorkingCopy.LinkedGlobs.Concat(WorkingCopy.CalculatedLinkedGlobs).ToList();
+            List<Codex> matchingCodices = _codexCollectionVm.Collection.AllCodices
+                .Where(codex => PathUtils.MatchesAnyGlob(codex.Sources.Path, globs) &&
+                                !codex.Tags.Contains(_source))
+                .ToList();
+
+            Notification notification;
+
+            if (matchingCodices.Any())
+            {
+                notification = new(
+                    $"{matchingCodices.Count} matching items found",
+                    $"This tag will be added to {matchingCodices.Count} items")
+                {
+                    Details = string.Join('\n', matchingCodices.Select(codex => codex.Title)),
+                    Actions = NotificationAction.Confirm | NotificationAction.Cancel,
+                };
+            }
+            else
+            {
+                notification = new(
+                    $"No new matching items found",
+                    $"Either no matches were found or all matching items already contain this tag.");
+            }
+
+            await _notificationService.ShowDialog(notification);
+
+            if (notification.Result == NotificationAction.Confirm)
+            {
+                foreach (Codex codex in matchingCodices)
+                {
+                    codex.Tags.Add(_source);
+                }
+            }
+        }
+        private bool CanApplyChanges() => !_createNew;
+
+        #endregion
+
+        #region IConfirmable
+        
+        protected override void Confirm()
+        {
+            base.Confirm();      
+
+            _codexCollectionVm.Collection.Save();
+            _activeTabContext.ActiveTab?.TagsVM.UpdateTagsAsTreeNodes();
+        }
+        
+        #endregion
+
+        #region  IModalViewModel
+
+        public override string WindowTitle => _createNew ? "Create new tag" : "Edit tag";
+
+        #endregion
+    }
+
+    [Factory]
+    public class TagEditViewModelFactory(TagViewModelFactory tagViewModelFactory, INotificationService notificationService, IActiveTabContext activeTabContext)
+    {
+        public TagEditViewModel Create(Tag sourceTag, CodexCollectionVM collectionVm, bool createNew)
+            => new(tagViewModelFactory, notificationService, activeTabContext, sourceTag, collectionVm, createNew);
+    }
+}

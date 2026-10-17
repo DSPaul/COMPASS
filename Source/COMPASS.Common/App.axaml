@@ -1,0 +1,24 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             x:Class="COMPASS.Common.App" RequestedThemeVariant="Dark">
+  <Application.Styles>
+    <FluentTheme/>
+    <materialIcons:MaterialIconStyles />
+    <StyleInclude Source="avares://COMPASS.Common/Themes/Styles.axaml" />
+    <StyleInclude Source="avares://COMPASS.Common/Themes/Controls/DataGrid.axaml"/>
+    <StyleInclude Source="avares://MarkView.Avalonia/Themes/MarkdownTheme.axaml" />
+  </Application.Styles>
+  <Application.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceInclude Source="avares://COMPASS.Common/Themes/Constants.axaml"/>
+        <ResourceInclude Source="avares://COMPASS.Common/Themes/Dark.axaml"/>
+        <ResourceInclude Source="avares://COMPASS.Common/Themes/Converters.axaml"/>
+        <ResourceInclude Source="avares://COMPASS.Common/Themes/CustomControls.axaml"/>
+        <ResourceInclude Source="avares://COMPASS.Common/Themes/ContextMenus.axaml"/>
+        <ResourceInclude Source="avares://COMPASS.Common/Themes/Adorners.axaml"/>
+      </ResourceDictionary.MergedDictionaries>
+    </ResourceDictionary>
+  </Application.Resources>
+</Application>

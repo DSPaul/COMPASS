@@ -1,0 +1,128 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:modelVm="using:COMPASS.Common.Features.Codices"
+             xmlns:behav="using:COMPASS.Infra.Avalonia.Behaviors"
+             xmlns:dragdrop="using:COMPASS.Infra.Avalonia.DragDrop"
+             xmlns:controls="using:COMPASS.Infra.Avalonia.Controls"
+             xmlns:materialDesign="using:Material.Icons.Avalonia"
+             xmlns:layouts="using:COMPASS.Common.Features.Layouts.Home"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:DataType="layouts:HomeLayoutViewModel"
+             x:Class="COMPASS.Common.Features.Layouts.Home.HomeLayout">
+
+    <UserControl.Resources>
+        <ControlTheme x:Key="HomeListBoxItemTheme" TargetType="ListBoxItem">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="ClipToBounds" Value="False" />
+            <Style Selector="^:selected">
+                <Setter Property="BorderBrush" Value="{StaticResource AccentColorMuted}" />
+            </Style>
+        </ControlTheme>
+
+        <DataTemplate x:Key="HomeTileTemplate" DataType="modelVm:CodexViewModel">
+            <Grid VerticalAlignment="Top"
+                  RowDefinitions="Auto, Auto"
+                  DoubleTapped="Codex_DoubleTapped"
+                  Background="Transparent"
+                  Classes="ZoomOnHover" 
+                  dragdrop:DropBehavior.IsDropTarget="True"
+                  dragdrop:DropBehavior.DropManager="{Binding DropManager}">
+                <Panel Margin="{Binding $parent[UserControl].((layouts:HomeLayoutViewModel)DataContext).Preferences.TilePanelMargin}" Grid.Row="0"
+                       Width="{Binding $parent[UserControl].((layouts:HomeLayoutViewModel)DataContext).Preferences.TileWidth}"
+                       Height="{Binding $parent[UserControl].((layouts:HomeLayoutViewModel)DataContext).Preferences.TileHeight}">
+                    <Border CornerRadius="5" BorderThickness="3"
+                            VerticalAlignment="Center" HorizontalAlignment="Center"
+                            BorderBrush="{Binding BorderBrush, RelativeSource={RelativeSource AncestorType=ListBoxItem}}">
+                        <Border.Effect>
+                            <DropShadowDirectionEffect BlurRadius="15" />
+                        </Border.Effect>
+                        <controls:RoundedImage Source="{Binding Thumbnail^, Mode=OneWay}" CornerRadius="3" />
+                    </Border>
+                </Panel>
+                <TextBlock Grid.Row="1" Margin="0,5"
+                           TextWrapping="Wrap" FontSize="14" TextTrimming="WordEllipsis" Height="40"
+                           Width="{Binding $parent[UserControl].((layouts:HomeLayoutViewModel)DataContext).Preferences.TileWidth}"
+                           Text="{Binding Title}"
+                           Foreground="{StaticResource TextMutedColor}"
+                           HorizontalAlignment="Center" TextAlignment="Center"
+                           IsVisible="{Binding $parent[UserControl].((layouts:HomeLayoutViewModel)DataContext).Preferences.ShowTitle}" />
+            </Grid>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <UserControl.Styles>
+        <Style Selector="ListBox">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Margin" Value="10,0" />
+            <Setter Property="SelectionMode" Value="Multiple" />
+            <Setter Property="SelectedItem" Value="{Binding SelectedCodex, Mode=OneWayToSource}" />
+            <Setter Property="ItemTemplate" Value="{StaticResource HomeTileTemplate}" />
+            <Setter Property="ItemContainerTheme" Value="{StaticResource HomeListBoxItemTheme}" />
+            <Setter Property="ItemsPanel">
+                <Setter.Value>
+                    <ItemsPanelTemplate>
+                        <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Styles>
+
+    <ScrollViewer>
+        <StackPanel>
+
+            <!-- Favorites -->
+            <StackPanel Orientation="Horizontal" Margin="30,20,30,0">
+                <materialDesign:MaterialIcon Kind="Heart" Foreground="IndianRed" />
+                <TextBlock Text="FAVORITES" Margin="10,0" Foreground="{StaticResource TextMutedColor}"
+                           FontWeight="Bold" VerticalAlignment="Center" />
+            </StackPanel>
+            <ListBox ItemsSource="{Binding Favorites}" SelectionChanged="SelectedCodicesChanged"
+                     KeyDown="HandleKeyDown"
+                     SelectionMode="Multiple"
+                     behav:ContextMenuSelector.SingleSelectContextMenu="{StaticResource CodexContextMenu}"
+                     behav:ContextMenuSelector.MultiSelectContextMenu="{StaticResource MultiCodexContextMenu}" />
+
+            <!-- Recently Opened -->
+            <StackPanel Orientation="Horizontal" Margin="30,20,30,0">
+                <materialDesign:MaterialIcon Kind="History" />
+                <TextBlock Text="RECENTLY OPENED" Margin="10,0" Foreground="{StaticResource TextMutedColor}"
+                           FontWeight="Bold" VerticalAlignment="Center" />
+            </StackPanel>
+            <ListBox ItemsSource="{Binding RecentCodices}" SelectionChanged="SelectedCodicesChanged"
+                     KeyDown="HandleKeyDown"
+                     SelectionMode="Multiple"
+                     behav:ContextMenuSelector.SingleSelectContextMenu="{StaticResource CodexContextMenu}"
+                     behav:ContextMenuSelector.MultiSelectContextMenu="{StaticResource MultiCodexContextMenu}" />
+
+            <!-- Most Opened -->
+            <StackPanel Orientation="Horizontal" Margin="30,20,30,0">
+                <materialDesign:MaterialIcon Kind="BookOpenBlankVariant" />
+                <TextBlock Text="MOST OPENED" Margin="10,0" Foreground="{StaticResource TextMutedColor}"
+                           FontWeight="Bold" VerticalAlignment="Center" />
+            </StackPanel>
+            <ListBox ItemsSource="{Binding MostOpenedCodices}" SelectionChanged="SelectedCodicesChanged"
+                     KeyDown="HandleKeyDown"
+                     SelectionMode="Multiple"
+                     behav:ContextMenuSelector.SingleSelectContextMenu="{StaticResource CodexContextMenu}"
+                     behav:ContextMenuSelector.MultiSelectContextMenu="{StaticResource MultiCodexContextMenu}" />
+
+            <!-- Recently Added -->
+            <StackPanel Orientation="Horizontal" Margin="30,20,30,0">
+                <materialDesign:MaterialIcon Kind="BookPlus" />
+                <TextBlock Text="RECENTLY ADDED" Margin="10,0" Foreground="{StaticResource TextMutedColor}"
+                           FontWeight="Bold" VerticalAlignment="Center" />
+            </StackPanel>
+            <ListBox ItemsSource="{Binding RecentlyAddedCodices}" SelectionChanged="SelectedCodicesChanged"
+                     KeyDown="HandleKeyDown"
+                     SelectionMode="Multiple"
+                     behav:ContextMenuSelector.SingleSelectContextMenu="{StaticResource CodexContextMenu}"
+                     behav:ContextMenuSelector.MultiSelectContextMenu="{StaticResource MultiCodexContextMenu}" />
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

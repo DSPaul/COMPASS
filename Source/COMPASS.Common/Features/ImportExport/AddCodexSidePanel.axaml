@@ -1,0 +1,88 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:COMPASS.Common.Features.ImportExport"
+             xmlns:controls="using:COMPASS.Infra.Avalonia.Controls"
+             mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="450"
+             x:DataType="vm:AddCodexPanelVM"
+             x:Class="COMPASS.Common.Features.ImportExport.AddCodexSidePanel">
+  <ScrollViewer Padding="10">
+    <StackPanel Grid.IsSharedSizeScope="True" Spacing="10" Margin="15,0">
+      <StackPanel.Styles>
+        <Style Selector="controls|IconButton">
+          <Setter Property="Padding" Value="10,4"/>
+        </Style>
+      </StackPanel.Styles>
+      <TextBlock Text="Physical Books" Classes="Categorizer"/>
+      <controls:IconButton Icon="BookPlusOutline" Content="Add Manually"
+          Command="{Binding ImportCommand}" CommandParameter="{x:Static vm:ImportSource.Manual}"/>
+      <controls:IconButton Icon="Barcode" Content="From ISBN"
+          Command="{Binding ImportCommand}" CommandParameter="{x:Static vm:ImportSource.ISBN}"/>
+
+      <TextBlock Text="Add Local Files" Classes="Categorizer"/>
+      <controls:IconButton Icon="FilePlusOutline" Content="Import File(s)"
+          Command="{Binding ImportCommand}" CommandParameter="{x:Static vm:ImportSource.File}"/>
+      <controls:IconButton Icon="FolderPlusOutline" Content="Import Folder"
+          Command="{Binding ImportCommand}" CommandParameter="{x:Static vm:ImportSource.Folder}"/>
+
+
+      <TextBlock Text="Add Online Files" Classes="Categorizer"/>
+      <controls:IconButton Icon="GoogleDrive" Content="Google Drive"
+          Command="{Binding ImportCommand}" CommandParameter="{x:Static vm:ImportSource.GoogleDrive}"/>
+      
+      <Button Command="{Binding ImportCommand}"
+              HorizontalAlignment="Stretch"
+              CommandParameter="{x:Static vm:ImportSource.Homebrewery}">
+        <Button.Template>
+          <ControlTemplate>
+            <Border Background="{TemplateBinding Background}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    CornerRadius="7"
+                    Margin="{TemplateBinding Margin}" Padding="{TemplateBinding Padding}">
+              <Grid HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                    VerticalAlignment="{TemplateBinding VerticalAlignment}">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="auto" SharedSizeGroup="ButtonIcon"/>
+                  <ColumnDefinition Width="*" SharedSizeGroup="ButtonText"/>
+                </Grid.ColumnDefinitions>
+                  <Svg Path="/Assets/homebrewery.svg" Width="20" Height="20" 
+                       HorizontalAlignment="Left" Margin="5,0"/>
+                  <TextBlock Grid.Column="1" Text="Homebrewery" Margin="5,0"/>
+              </Grid>
+            </Border>
+          </ControlTemplate>
+        </Button.Template>
+      </Button>
+      <Button Command="{Binding ImportCommand}" 
+              HorizontalAlignment="Stretch"
+              CommandParameter="{x:Static vm:ImportSource.GmBinder}">
+          <Button.Template>
+              <ControlTemplate>
+                  <Border Background="{TemplateBinding Background}"
+                          BorderThickness="{TemplateBinding BorderThickness}"
+                          CornerRadius="7"
+                          Margin="{TemplateBinding Margin}" Padding="{TemplateBinding Padding}">
+                      <Grid HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            VerticalAlignment="{TemplateBinding VerticalAlignment}">
+                          <Grid.ColumnDefinitions>
+                              <ColumnDefinition Width="auto" SharedSizeGroup="ButtonIcon"/>
+                              <ColumnDefinition Width="*" SharedSizeGroup="ButtonText"/>
+                          </Grid.ColumnDefinitions>
+                          <Svg Path="/Assets/gmbinder.svg" Width="20" Height="20" 
+                               HorizontalAlignment="Left" Margin="5,0"/>
+                          <TextBlock Grid.Column="1" Text="GM Binder" Margin="5,0"/>
+                      </Grid>
+                  </Border>
+              </ControlTemplate>
+          </Button.Template>
+        </Button>
+      <controls:IconButton Icon="Web" Content="Other Website"
+          Command="{Binding ImportCommand}" CommandParameter="{x:Static vm:ImportSource.GenericURL}"/>
+
+      <TextBlock Text="Other" Classes="Categorizer"/>
+      <controls:IconButton Icon="Sack" Content="From a .satchel file"
+              Command="{Binding ImportBooksFromSatchelCommand}"/>
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

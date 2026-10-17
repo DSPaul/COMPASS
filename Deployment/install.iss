@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "COMPASS"
-#define MyAppVersion "1.8.10"
+#define MyAppVersion "2.0.0"
 #define MyAppPublisher "Paul De Smul"
 #define MyAppURL "https://www.compassapp.info"
 #define MyAppExeName "COMPASS.exe"
@@ -37,8 +37,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "..\src\bin\Publish\win-x64\*"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\src\bin\Publish\win-x64\Media\*"; DestDir: "{app}\Media"; Flags: ignoreversion
+Source: "..\publish\win-x64\*"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
@@ -46,7 +45,7 @@ Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
 Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall
 
 [Registry]
 ; ----------- Register .satchel as a COMPASS file -------------- ;
@@ -55,7 +54,7 @@ Root: HKCR; Subkey: ".satchel"; ValueType: string; ValueName: ""; ValueData: "CO
 ; Give it a type name "COMPASS Satchel"
 Root: HKCR; Subkey: "COMPASSSatchelFile"; ValueType: string; ValueName: ""; ValueData: "COMPASS Satchel"; Flags: uninsdeletekey
 ; Give it the COMPASS Icon
-Root: HKCR; Subkey: "COMPASSSatchelFile\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\COMPASS.EXE,0"
+Root: HKCR; Subkey: "COMPASSSatchelFile\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\{#MyAppExeName},0"
 ; Make double click open the file using compass, not handled yet in COMPASS
 ; Root: HKCR; Subkey: "COMPASSSatchelFile\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\COMPASS.EXE"" ""%1"""
 ; -------------------------------------------------------------- ;

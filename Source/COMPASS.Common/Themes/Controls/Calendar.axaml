@@ -1,0 +1,497 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+                    xmlns:converters="using:COMPASS.Infra.Avalonia.Converters"
+                    xmlns:globalization="using:System.Globalization">
+    <Design.PreviewWith>
+        <StackPanel Margin="20,20,20,350" Spacing="10">
+            <CalendarDatePicker Width="200" />
+            <Calendar />
+        </StackPanel>
+    </Design.PreviewWith>
+
+    <!-- Copied verbatim from Avalonia.Themes.Fluent 12.1.3 (Controls/CalendarDatePicker.xaml, Calendar.xaml,
+        CalendarItem.xaml, CalendarButton.xaml, CalendarDayButton.xaml) as a starting point for a custom design. -->
+
+    <x:Double x:Key="CalendarDatePickerMinHeight">32</x:Double>
+
+    <!-- Icon button that opens the calendar popup; transparent, icon grows on hover via the ZoomOnHover class -->
+    <ControlTheme x:Key="CalendarDatePickerButton" TargetType="Button">
+        <Setter Property="Foreground" Value="{DynamicResource CalendarDatePickerCalendarGlyphForeground}" />
+        <!-- Right inset (8 + 2 padding) mirrors the text's left inset (8 picker padding) so the box looks balanced -->
+        <Setter Property="Margin" Value="4,0,8,0" />
+        <Setter Property="Padding" Value="2" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <!-- Transparent (not null) background keeps the padding area clickable -->
+                <Border Background="Transparent"
+                        Padding="{TemplateBinding Padding}"
+                        VerticalAlignment="Center">
+                    <materialIcons:MaterialIcon Kind="CalendarMonth"
+                                                Classes="ZoomOnHover"
+                                                Width="18" Height="18"
+                                                Foreground="{TemplateBinding Foreground}" />
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+
+    <ControlTheme x:Key="{x:Type CalendarDatePicker}" TargetType="CalendarDatePicker">
+        <Setter Property="Background" Value="{DynamicResource CalendarDatePickerBackground}" />
+        <Setter Property="Foreground" Value="{DynamicResource CalendarDatePickerForeground}" />
+        <Setter Property="PlaceholderForeground" Value="{DynamicResource TextControlPlaceholderForeground}" />
+        <!-- Bare date pattern (e.g. "d/MM/yyyy"). Without an explicit PlaceholderText, Avalonia wraps the pattern in
+             hard-coded angle brackets ("<d/MM/yyyy>"), which wastes space. -->
+        <Setter Property="PlaceholderText"
+                Value="{Binding Source={x:Static globalization:CultureInfo.CurrentCulture}, Path=DateTimeFormat.ShortDatePattern}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource CalendarDatePickerBorderBrush}" />
+        <Setter Property="BorderThickness" Value="{DynamicResource CalendarDatePickerBorderThemeThickness}" />
+        <Setter Property="CornerRadius" Value="{DynamicResource ControlCornerRadius}" />
+        <Setter Property="MinHeight" Value="{DynamicResource CalendarDatePickerMinHeight}" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <!-- Text padding: 8 on the left to match the icon's right inset; small on the right since the icon has its own margin -->
+        <Setter Property="Padding" Value="8,4,4,4" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <DataValidationErrors>
+                    <Panel x:Name="LayoutRoot"
+                           HorizontalAlignment="Stretch"
+                           VerticalAlignment="Stretch">
+                        <Border x:Name="Background"
+                                CornerRadius="{TemplateBinding CornerRadius}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                Background="{TemplateBinding Background}" />
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBox Name="PART_TextBox"
+                                     Foreground="{TemplateBinding Foreground}"
+                                     Background="Transparent"
+                                     BorderBrush="Transparent"
+                                     BorderThickness="0"
+                                     CornerRadius="{TemplateBinding CornerRadius}"
+                                     Margin="{TemplateBinding BorderThickness}"
+                                     Padding="{TemplateBinding Padding}"
+                                     PlaceholderText="{TemplateBinding PlaceholderText}"
+                                     PlaceholderForeground="{TemplateBinding PlaceholderForeground}"
+                                     UseFloatingPlaceholder="{TemplateBinding UseFloatingPlaceholder}"
+                                     HorizontalAlignment="Stretch"
+                                     VerticalAlignment="Stretch"
+                                     VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                     HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                     Grid.Column="0">
+                                <TextBox.Styles>
+                                    <Style Selector="TextBox#PART_TextBox:focus /template/ Border#PART_BorderElement">
+                                        <!-- By default the TextBox has its own focused state, override this to disable it here -->
+                                        <Setter Property="Background" Value="Transparent" />
+                                        <Setter Property="BorderBrush" Value="Transparent" />
+                                        <Setter Property="BorderThickness" Value="0" />
+                                    </Style>
+                                    <Style Selector="TextBox#PART_TextBox:disabled">
+                                        <Style Selector="^ /template/ Border#PART_BorderElement">
+                                            <!-- By default the TextBox has its own disabled state, override this to make the border background show through -->
+                                            <Setter Property="Background" Value="Transparent" />
+                                            <Setter Property="BorderBrush" Value="Transparent" />
+                                        </Style>
+                                        <Style Selector="^ /template/ TextBlock#PART_Placeholder, ^ TextBlock#PART_FloatingPlaceholder">
+                                            <Setter Property="TextElement.Foreground" Value="{DynamicResource CalendarDatePickerTextForegroundDisabled}" />
+                                        </Style>
+                                    </Style>
+                                </TextBox.Styles>
+                            </TextBox>
+                            <Button Name="PART_Button"
+                                    Theme="{StaticResource CalendarDatePickerButton}"
+                                    Grid.Column="1"
+                                    Focusable="False" />
+                            <Popup Name="PART_Popup"
+                                   PlacementTarget="{TemplateBinding}"
+                                   IsLightDismissEnabled="True">
+                                <Calendar Name="PART_Calendar"
+                                          FirstDayOfWeek="{TemplateBinding FirstDayOfWeek}"
+                                          IsTodayHighlighted="{TemplateBinding IsTodayHighlighted}"
+                                          SelectedDate="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SelectedDate, Mode=TwoWay}"
+                                          DisplayDate="{TemplateBinding DisplayDate}"
+                                          DisplayDateStart="{TemplateBinding DisplayDateStart}"
+                                          DisplayDateEnd="{TemplateBinding DisplayDateEnd}" />
+                            </Popup>
+                        </Grid>
+                    </Panel>
+                </DataValidationErrors>
+            </ControlTemplate>
+        </Setter>
+
+        <!-- Pressed State -->
+        <Style Selector="^:pressed /template/ Border#Background">
+            <Setter Property="Background" Value="{DynamicResource CalendarDatePickerBackgroundPressed}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource CalendarDatePickerBorderBrushPressed}" />
+        </Style>
+
+        <!-- Pointer-over State -->
+        <Style Selector="^:pointerover /template/ Border#Background">
+            <Setter Property="Background" Value="{DynamicResource CalendarDatePickerBackgroundPointerOver}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource CalendarDatePickerBorderBrushPointerOver}" />
+        </Style>
+
+        <!-- Disabled State -->
+        <Style Selector="^:disabled">
+            <Style Selector="^ /template/ Border#Background">
+                <Setter Property="Background" Value="{DynamicResource CalendarDatePickerBackgroundDisabled}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource CalendarDatePickerBorderBrushDisabled}" />
+            </Style>
+            <Style Selector="^ /template/ Button#PART_Button">
+                <Setter Property="Foreground" Value="{DynamicResource CalendarDatePickerCalendarGlyphForegroundDisabled}" />
+            </Style>
+        </Style>
+
+        <!-- Focused State -->
+        <Style Selector="^:focus-within:not(CalendarDatePicker:focus) /template/ Border#Background">
+            <Setter Property="Background" Value="{DynamicResource TextControlBackgroundFocused}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource TextControlBorderBrushFocused}" />
+            <Setter Property="BorderThickness" Value="{DynamicResource TextControlBorderThemeThicknessFocused}" />
+        </Style>
+
+        <!-- Error State -->
+        <Style Selector="^:error /template/ Border#Background">
+            <Setter Property="BorderBrush" Value="{DynamicResource SystemControlErrorTextForegroundBrush}" />
+        </Style>
+    </ControlTheme>
+
+    <ControlTheme x:Key="{x:Type Calendar}" TargetType="Calendar">
+        <Setter Property="Foreground" Value="{DynamicResource CalendarViewForeground}" />
+        <Setter Property="Background" Value="{DynamicResource CalendarViewBackground}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource CalendarViewBorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <!-- Inherited by the month/year label and the day/month/year cells; weekday headers set their own size -->
+        <Setter Property="FontSize" Value="16" />
+        <!-- Passed on to CalendarItem, which draws the rounded popup body -->
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <StackPanel Name="PART_Root"
+                            HorizontalAlignment="Center"
+                            ClipToBounds="True">
+                    <CalendarItem Name="PART_CalendarItem"
+                                  Background="{TemplateBinding Background}"
+                                  BorderBrush="{TemplateBinding BorderBrush}"
+                                  BorderThickness="{TemplateBinding BorderThickness}"
+                                  CornerRadius="{TemplateBinding CornerRadius}"
+                                  HeaderBackground="{TemplateBinding HeaderBackground}" />
+                </StackPanel>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+
+    <ControlTheme x:Key="FluentCalendarButton" TargetType="Button">
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Background" Value="{DynamicResource CalendarViewNavigationButtonBackground}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="5" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <ContentPresenter Name="PART_ContentPresenter" Background="{TemplateBinding Background}"
+                                  BorderBrush="{DynamicResource CalendarViewNavigationButtonBorderBrush}"
+                                  BorderThickness="{TemplateBinding BorderThickness}"
+                                  CornerRadius="{TemplateBinding CornerRadius}"
+                                  Content="{TemplateBinding Content}"
+                                  Padding="{TemplateBinding Padding}"
+                                  HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                  VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
+            </ControlTemplate>
+        </Setter>
+
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="BorderBrush" Value="{DynamicResource CalendarViewNavigationButtonBorderBrushPointerOver}" />
+            <Setter Property="Foreground" Value="{DynamicResource CalendarViewNavigationButtonForegroundPointerOver}" />
+        </Style>
+        <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="{DynamicResource CalendarViewNavigationButtonForegroundPressed}" />
+        </Style>
+        <Style Selector="^:disabled /template/ ContentPresenter">
+            <Setter Property="Foreground" Value="{DynamicResource CalendarViewWeekDayForegroundDisabled}" />
+        </Style>
+    </ControlTheme>
+
+    <ControlTheme x:Key="{x:Type CalendarItem}" TargetType="CalendarItem">
+        <Setter Property="CornerRadius" Value="{DynamicResource ControlCornerRadius}" />
+        <Setter Property="DayTitleTemplate">
+            <Template x:DataType="x:String">
+                <!-- Two-letter day names (e.g. "ma di wo"). The DataContext Avalonia provides is the culture's
+                     ShortestDayName (often a single, ambiguous letter), so the name is rebuilt from the cell's
+                     column and the calendar's first day of the week instead. -->
+                <TextBlock HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           Foreground="{DynamicResource TextMutedColor}"
+                           FontSize="{DynamicResource CalendarDayButtonFontSize}">
+                    <TextBlock.Text>
+                        <MultiBinding Converter="{x:Static converters:DateConverters.ColumnToTwoLetterDayName}">
+                            <Binding Path="(Grid.Column)" RelativeSource="{RelativeSource Self}" />
+                            <Binding Path="FirstDayOfWeek" RelativeSource="{RelativeSource FindAncestor, AncestorType=Calendar}" />
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
+            </Template>
+        </Setter>
+
+        <Setter Property="Template">
+            <ControlTemplate>
+                <!-- ClipToBounds clips the inner layers (BackgroundLayer, year view) to the rounded corners -->
+                <Border BorderThickness="{TemplateBinding BorderThickness}"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        CornerRadius="{TemplateBinding CornerRadius}"
+                        ClipToBounds="True">
+                    <!-- To keep calendar from resizing when switching DisplayMode.
+                         MinWidth of DayItem = 40, 40 * 7 = 280 + margins/padding = ~294.
+                         Viewport height is ~290 for 6 weeks (+ day names) in Month mode. -->
+                    <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" RowDefinitions="40,*" MinWidth="294">
+                        <!-- Header: previous arrow | month/year label | next arrow -->
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="4" Margin="4">
+                            <Button Name="PART_PreviousButton"
+                                    Grid.Column="0"
+                                    Theme="{StaticResource FluentCalendarButton}"
+                                    Foreground="{TemplateBinding Foreground}"
+                                    Width="32" Height="32"
+                                    HorizontalContentAlignment="Center">
+                                <Path Stroke="{DynamicResource CalendarViewForeground}"
+                                      StrokeThickness="1.5"
+                                      Data="M 9,0 L 0,9 L 9,18"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center" />
+                            </Button>
+                            <Button Name="PART_HeaderButton"
+                                    Grid.Column="1"
+                                    Theme="{StaticResource FluentCalendarButton}"
+                                    Foreground="{TemplateBinding Foreground}"
+                                    HorizontalContentAlignment="Center" />
+                            <Button Name="PART_NextButton"
+                                    Grid.Column="2"
+                                    Theme="{StaticResource FluentCalendarButton}"
+                                    Foreground="{TemplateBinding Foreground}"
+                                    Width="32" Height="32"
+                                    HorizontalContentAlignment="Center">
+                                <Path Stroke="{DynamicResource CalendarViewForeground}"
+                                      StrokeThickness="1.5"
+                                      Data="M 0,0 L 9,9 L 0,18"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center" />
+                            </Button>
+                        </Grid>
+                        <!--Border below is used only for MonthView but it can't be moved inside of Grid because CalendarItem expects it to be empty and it will cause side-effects-->
+                        <Border Name="BackgroundLayer" Background="{TemplateBinding BorderBrush}" Margin="0,38,0,0"
+                                IsVisible="{Binding #PART_MonthView.IsVisible}" Grid.Row="1" />
+                        <Grid Name="PART_MonthView" Grid.Row="1" IsVisible="False" MinHeight="290"
+                              HorizontalAlignment="Center">
+                            <Grid.RowDefinitions>
+                                <!-- Week day names -->
+                                <RowDefinition Height="38" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                        </Grid>
+                        <!-- Background for the month/decade grid. Carries the MinHeight (instead of PART_YearView) so the
+                             popup keeps its size when switching views while the cells themselves stay centred. -->
+                        <Border Name="YearBackgroundLayer" Background="{TemplateBinding BorderBrush}" MinHeight="290"
+                                IsVisible="{Binding #PART_YearView.IsVisible}" Grid.Row="1" />
+                        <Grid Name="PART_YearView"
+                              Grid.Row="1"
+                              IsVisible="False"
+                              HorizontalAlignment="Center"
+                              VerticalAlignment="Center"
+                              RowDefinitions="Auto,Auto,Auto"
+                              ColumnDefinitions="Auto,Auto,Auto,Auto" />
+                    </Grid>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+        <Style Selector="^ /template/ Button:pointerover > Path">
+            <Setter Property="Stroke" Value="{DynamicResource CalendarViewNavigationButtonForegroundPointerOver}" />
+        </Style>
+        <Style Selector="^ /template/ Button:pressed > Path">
+            <Setter Property="Stroke" Value="{DynamicResource CalendarViewNavigationButtonForegroundPressed}" />
+        </Style>
+    </ControlTheme>
+
+    <!-- Month (year view) and year (decade view) cell: same look as the day cells, as larger fixed squares -->
+    <ControlTheme x:Key="{x:Type CalendarButton}" TargetType="CalendarButton">
+        <Setter Property="ClickMode" Value="Release" />
+        <Setter Property="Width" Value="64" />
+        <Setter Property="Height" Value="64" />
+        <Setter Property="Margin" Value="4" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="CornerRadius" Value="5" />
+        <!-- TemplatedControl clips by default; disable so the Backdrop can overhang into the margin -->
+        <Setter Property="ClipToBounds" Value="False" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Foreground" Value="{DynamicResource CalendarViewCalendarItemForeground}" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <!-- Same structure as CalendarDayButton, see the comments there for why Background isn't
+                     template-bound and why the text has an explicit TextBlock. -->
+                <Panel>
+                    <!-- Backdrop overhang = Margin (4) + 0.5 to hide anti-aliasing seams -->
+                    <Border Name="Backdrop"
+                            Margin="-4.5"
+                            IsHitTestVisible="False" />
+                    <Border Name="Root"
+                            CornerRadius="{TemplateBinding CornerRadius}">
+                        <ContentPresenter Name="PART_ContentPresenter"
+                                          Content="{TemplateBinding Content}"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          Margin="{TemplateBinding Padding}">
+                            <ContentPresenter.ContentTemplate>
+                                <DataTemplate x:DataType="x:String">
+                                    <TextBlock Text="{Binding}"
+                                               Foreground="{Binding $parent[ContentPresenter].Foreground}" />
+                                </DataTemplate>
+                            </ContentPresenter.ContentTemplate>
+                        </ContentPresenter>
+                    </Border>
+                </Panel>
+            </ControlTemplate>
+        </Setter>
+
+        <Style Selector="^ /template/ Border#Root">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <!-- Years outside the displayed decade: dark band behind the cell, muted text -->
+        <Style Selector="^:inactive">
+            <Style Selector="^ /template/ Border#Backdrop">
+                <Setter Property="Background" Value="{DynamicResource Layer0}" />
+            </Style>
+            <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Foreground" Value="{DynamicResource TextMutedColor}" />
+            </Style>
+        </Style>
+        <Style Selector="^:pointerover /template/ Border#Root">
+            <Setter Property="Background" Value="{DynamicResource ListHover}" />
+        </Style>
+
+        <Style Selector="^:selected">
+            <Style Selector="^ /template/ Border#Root">
+                <Setter Property="Background" Value="{DynamicResource AccentColor}" />
+            </Style>
+            <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Foreground" Value="White" />
+                <Setter Property="FontWeight" Value="SemiBold" />
+            </Style>
+        </Style>
+
+        <Style Selector="^:blackout /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="{DynamicResource CalendarViewBlackoutForeground}" />
+        </Style>
+        <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="{DynamicResource CalendarViewWeekDayForegroundDisabled}" />
+        </Style>
+    </ControlTheme>
+
+    <!-- Day cell: transparent and rounded, hover highlight, accent fill when selected -->
+    <ControlTheme x:Key="{x:Type CalendarDayButton}" TargetType="CalendarDayButton">
+        <Setter Property="ClickMode" Value="Release" />
+        <!-- 36 + 2*2 margin keeps each cell at 40px, so the calendar size is unchanged -->
+        <Setter Property="MinWidth" Value="36" />
+        <Setter Property="MinHeight" Value="36" />
+        <Setter Property="Margin" Value="2" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="CornerRadius" Value="5" />
+        <!-- TemplatedControl clips by default; disable so the Backdrop can overhang into the margin -->
+        <Setter Property="ClipToBounds" Value="False" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Foreground" Value="{DynamicResource CalendarViewCalendarItemForeground}" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <!-- Background is deliberately NOT template-bound: the global "main|MainView :is(Button)" style in
+                     Styles.axaml sets Button.Background, and Style setters outrank ControlTheme setters.
+                     Styling Border#Root directly (below) keeps day cells independent of it. -->
+                <Panel>
+                    <!-- Backdrop: square layer extending into the button's 2px margin (Margin setter above), so backdrops
+                         of neighbouring cells touch and form one edge-to-edge band. The extra 0.5 overlaps neighbours
+                         slightly to hide anti-aliasing seams at fractional display scaling. Not hit-testable, so the
+                         overhang never steals hover/clicks from neighbouring cells. -->
+                    <Border Name="Backdrop"
+                            Margin="-2.5"
+                            IsHitTestVisible="False" />
+                    <Border Name="Root"
+                            CornerRadius="{TemplateBinding CornerRadius}">
+                        <ContentPresenter Name="PART_ContentPresenter"
+                                          Content="{TemplateBinding Content}"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          Margin="{TemplateBinding Padding}">
+                            <!-- Explicit TextBlock bound to the presenter's Foreground: the global "TextBlock" style in
+                                 Styles.axaml forces white text, which would otherwise ignore the state colours below. -->
+                            <ContentPresenter.ContentTemplate>
+                                <DataTemplate x:DataType="x:String">
+                                    <TextBlock Text="{Binding}"
+                                               Foreground="{Binding $parent[ContentPresenter].Foreground}" />
+                                </DataTemplate>
+                            </ContentPresenter.ContentTemplate>
+                        </ContentPresenter>
+                    </Border>
+                </Panel>
+            </ControlTemplate>
+        </Setter>
+
+        <Style Selector="^ /template/ Border#Root">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <!-- Days outside the displayed month: dark edge-to-edge band behind the cell -->
+        <Style Selector="^:inactive /template/ Border#Backdrop">
+            <Setter Property="Background" Value="{DynamicResource Layer0}" />
+        </Style>
+        <Style Selector="^:pointerover /template/ Border#Root">
+            <Setter Property="Background" Value="{DynamicResource ListHover}" />
+        </Style>
+
+        <!-- Today: accent text instead of a fill, so it doesn't compete with the selected date -->
+        <Style Selector="^:today /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="{DynamicResource AccentColor}" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+
+        <Style Selector="^:selected">
+            <Style Selector="^ /template/ Border#Root">
+                <Setter Property="Background" Value="{DynamicResource AccentColor}" />
+            </Style>
+            <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Foreground" Value="White" />
+                <Setter Property="FontWeight" Value="SemiBold" />
+            </Style>
+        </Style>
+
+        <!-- Days outside the displayed month -->
+        <Style Selector="^:inactive /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="{DynamicResource TextMutedColor}" />
+        </Style>
+        <Style Selector="^:blackout /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="{DynamicResource CalendarViewBlackoutForeground}" />
+        </Style>
+        <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="{DynamicResource CalendarViewWeekDayForegroundDisabled}" />
+        </Style>
+    </ControlTheme>
+</ResourceDictionary>

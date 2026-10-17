@@ -1,0 +1,31 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:main="using:COMPASS.Common.Shell"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+        x:Class="COMPASS.Common.Shell.MainWindow"
+        ExtendClientAreaTitleBarHeightHint="45"
+        Closing="Window_Closing"
+        Title="COMPASS" Background="{StaticResource WindowBackground}">
+    <Window.Resources>
+		<x:Double x:Key="CaptionButtonHeight">45</x:Double>
+    </Window.Resources>
+    <Window.Styles>
+        <!-- TODO these will be redundant when https://github.com/AvaloniaUI/Avalonia/issues/21178 is implemented -->
+        <!--Hide window title-->
+        <Style Selector="WindowDrawnDecorations /template/ Panel#PART_TitleTextPanel > TextBlock">
+			<Setter Property="IsVisible" Value="False" />
+		</Style>
+        <!--Hide Fullscreen-->
+        <Style Selector="WindowDrawnDecorations /template/ Button#PART_FullScreenButton">
+			<Setter Property="IsVisible" Value="False" />
+		</Style>
+    </Window.Styles>
+
+    <Panel Margin="{Binding $parent[Window].OffScreenMargin}">
+        <main:MainView />
+    </Panel>
+
+
+</Window>
