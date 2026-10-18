@@ -58,11 +58,14 @@ def IncrementVersions():
     # Prepend new release entry to flatpak metainfo
     today = date.today().strftime("%Y-%m-%d")
     release_type = "development" if re.search(r"[-+]", NEW_VERSION) else "stable"
+    # Placeholder description to be replaced with real release notes, following
+    # Flathub's quality guidelines (short, user-focused, no generic boilerplate).
     new_release = (
         f'    <release version="{NEW_VERSION}" date="{today}" type="{release_type}">\n'
         f'      <description>\n'
-        f'        <p>See release notes on GitHub.</p>\n'
+        f'        <p>TODO: Summarize the user-visible changes in this release.</p>\n'
         f'      </description>\n'
+        f'      <url type="details">https://www.compassapp.info/releases/v{NEW_VERSION}</url>\n'
         f'    </release>\n'
     )
     replaceInFile("flatpak/info.compassapp.COMPASS.metainfo.xml",

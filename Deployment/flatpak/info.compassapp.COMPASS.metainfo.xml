@@ -12,7 +12,7 @@
     <p>
       COMPASS is a desktop application that helps you organize all your Tabletop RPG resources.
       It provides powerful tools to catalog and manage your digital library of rulebooks, adventures,
-      maps, and other gaming materials. Supports PDFs, images, and weblinks.
+      maps, and other gaming materials. Supports any file type, webpages and integrates with services such as Homebrewery.
     </p>
     <p>Key Features:</p>
     <ul>
@@ -69,33 +69,39 @@
   <releases>
     <release version="2.0.0" date="2026-10-17" type="stable">
       <description>
-        <p>See release notes on GitHub.</p>
+        <p>A major rewrite with a redesigned interface, Linux support via Flatpak, and tabs that let you keep several collections open at once. Scrolling, filtering, and sorting are considerably faster on large collections, ISBN barcode scanning has been rebuilt, and item descriptions now support Markdown.</p>
       </description>
+      <url type="details">https://www.compassapp.info/releases/v2.0.0</url>
     </release>
     <release version="2.0.0-rc.1" date="2026-10-03" type="development">
       <description>
-        <p>See release notes on GitHub.</p>
+        <p>The first release candidate for 2.0.0, focused on a simplified, single-screen folder import dialog and fixes for merging collections. Importing metadata from file:// URLs and bare domains is now supported, and numerous crashes when importing, moving, and merging items have been fixed.</p>
       </description>
+      <url type="details">https://www.compassapp.info/releases/v2.0.0-rc.1</url>
     </release>
     <release version="2.0.0-beta.2" date="2026-08-25" type="development">
       <description>
-        <p>See release notes on GitHub.</p>
+        <p>A bug-fix release that resolves crashes and sorting problems and further improves performance on large collections. Multiple authors can now be added and removed in bulk edit.</p>
       </description>
+      <url type="details">https://www.compassapp.info/releases/v2.0.0-beta.2</url>
     </release>
     <release version="2.0.0-beta.1" date="2026-08-09" type="development">
       <description>
-        <p>See release notes on GitHub.</p>
+        <p>This beta reaches feature parity with v1.8.10, so all major features are now available in the 2.0.0 rewrite. It adds automatic updates on Windows and Markdown support in item descriptions, along with performance improvements and several crash fixes.</p>
       </description>
+      <url type="details">https://www.compassapp.info/releases/v2.0.0-beta.1</url>
     </release>
     <release version="2.0.0-alpha.2" date="2026-07-10" type="development">
       <description>
-        <p>See release notes on GitHub.</p>
+        <p>The second alpha brings back ISBN barcode scanning, now with webcam selection and support for scanning several codes before importing them at once. It also adds a confirmation dialog when deleting tags and fixes a number of crashes and tag assignment issues.</p>
       </description>
+      <url type="details">https://www.compassapp.info/releases/v2.0.0-alpha.2</url>
     </release>
     <release version="2.0.0-alpha.1" date="2026-06-26" type="development">
       <description>
-        <p>Initial Flatpak release (alpha)</p>
+        <p>The first public alpha of the 2.0.0 rewrite, introducing a redesigned interface, Linux support via Flatpak, and tabs so each collection keeps its own layout and active filters. Scrolling, filtering, and sorting on large collections are considerably faster.</p>
       </description>
+      <url type="details">https://www.compassapp.info/releases/v2.0.0-alpha.1</url>
     </release>
   </releases>
   
