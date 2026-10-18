@@ -189,7 +189,7 @@ public class ImportExportService(
 
         try
         {
-            await progressTrackingManager.RunAsync(progressTracker, $"Importing {fileName}",
+            await progressTrackingManager.RunAsync(progressTracker, $"Reading {fileName}...",
                 async (tracker, ct) =>
                 {
                     //unzip the file to tmp folder
