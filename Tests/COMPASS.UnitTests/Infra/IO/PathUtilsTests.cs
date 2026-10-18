@@ -59,6 +59,76 @@ public class PathUtilsTests
         Assert.Throws<ArgumentNullException>(() => PathUtils.GetCommonFolder(null!));
     }
 
+    [Test]
+    public void GetCommonFolder_AbsolutePath_ReturnsFullPath()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            Assert.Ignore("Drive-absolute paths are a Windows concept");
+        }
+
+        string path = Path.Combine(@"C:\", "Users", "pauld", "books", "a.epub");
+
+        Assert.That(PathUtils.GetCommonFolder([path]), Is.EqualTo(path));
+    }
+
+    [Test]
+    public void GetCommonFolder_AbsolutePaths_ReturnsCommonDirectory()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            Assert.Ignore("Drive-absolute paths are a Windows concept");
+        }
+
+        //Regression: the leading "C:" segment used to be normalized on its own,
+        //where Path.GetFullPath("C:") resolves to the current directory instead of
+        //the drive root, so no common folder was ever found.
+        List<string> paths =
+        [
+            Path.Combine(@"C:\", "Users", "pauld", "books", "a.epub"),
+            Path.Combine(@"C:\", "Users", "pauld", "books", "sub", "b.epub"),
+            Path.Combine(@"C:\", "Users", "pauld", "books", "c.epub")
+        ];
+
+        Assert.That(PathUtils.GetCommonFolder(paths),
+            Is.EqualTo(Path.Combine(@"C:\", "Users", "pauld", "books")));
+    }
+
+    [Test]
+    public void GetCommonFolder_DifferentDrives_ReturnsEmpty()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            Assert.Ignore("Drive-absolute paths are a Windows concept");
+        }
+
+        List<string> paths =
+        [
+            Path.Combine(@"C:\", "books", "a.epub"),
+            Path.Combine(@"D:\", "books", "b.epub")
+        ];
+
+        Assert.That(PathUtils.GetCommonFolder(paths), Is.EqualTo(""));
+    }
+
+    [Test]
+    public void GetCommonFolder_RootAbsolutePaths_ReturnsCommonDirectory()
+    {
+        if (OperatingSystem.IsWindows())
+        {
+            Assert.Ignore("Root-absolute POSIX paths only");
+        }
+
+        List<string> paths =
+        [
+            Path.Combine("/", "home", "user", "books", "a.epub"),
+            Path.Combine("/", "home", "user", "books", "sub", "b.epub")
+        ];
+
+        Assert.That(PathUtils.GetCommonFolder(paths),
+            Is.EqualTo(Path.Combine("/", "home", "user", "books")));
+    }
+
     #endregion
 
     #region GetDifferingRoot

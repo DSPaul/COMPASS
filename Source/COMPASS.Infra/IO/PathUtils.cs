@@ -90,7 +90,7 @@ public static class PathUtils
         foreach (string segment in referenceSegments)
         {
             List<string> candidateSegments = [.. commonSegments, segment];
-            string candidatePath = string.Join(Path.DirectorySeparatorChar, candidateSegments);
+            string candidatePath = string.Join(Path.DirectorySeparatorChar, candidateSegments) + Path.DirectorySeparatorChar;
             bool sharedByAll = paths.All(path =>
                 PathsEqual(path, candidatePath) || IsPathInsideDirectory(path, candidatePath));
             if (sharedByAll)
