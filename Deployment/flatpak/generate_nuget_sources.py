@@ -20,12 +20,14 @@ import binascii
 import gzip
 import json
 import os
+import re
 import urllib.request
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).parent.parent.parent
 LOCK_FILE = REPO_ROOT / "Source/COMPASS.Linux/packages.lock.json"
+MANIFEST = Path(__file__).parent / "info.compassapp.COMPASS.yaml"
 OUTPUT = Path(__file__).parent / "nuget-sources.json"
 RUNTIME_VERSION_OUTPUT = Path(__file__).parent / "dotnet-runtime-version.txt"
 DEST_DIR = "nuget-sources"
@@ -56,9 +58,23 @@ def _fetch_json(url: str) -> dict:
 
 def _resolve_dotnet_runtime_version() -> str:
     """Read the .NET version shipped by the Flatpak SDK extension from its appdata.xml."""
+    # Read the top-level scalar without introducing a YAML package dependency.
+    runtime_lines = [
+        line for line in MANIFEST.read_text(encoding="utf-8").splitlines()
+        if line.startswith("runtime-version:")
+    ]
+    if len(runtime_lines) != 1:
+        raise RuntimeError(f"Expected exactly one top-level runtime-version in {MANIFEST}")
+    match = re.fullmatch(
+        r"runtime-version:[ \t]*(['\"]?)([0-9]{2}\.[0-9]{2})\1[ \t]*(?:#.*)?",
+        runtime_lines[0],
+    )
+    if match is None:
+        raise RuntimeError(f"Expected runtime-version in YY.MM format in {MANIFEST}")
+    runtime_branch = match.group(2)
     appdata_url = (
         "https://raw.githubusercontent.com/flathub/org.freedesktop.Sdk.Extension.dotnet10"
-        "/refs/heads/branch/25.08/org.freedesktop.Sdk.Extension.dotnet10.appdata.xml"
+        f"/refs/heads/branch/{runtime_branch}/org.freedesktop.Sdk.Extension.dotnet10.appdata.xml"
     )
     with urllib.request.urlopen(appdata_url, timeout=30) as resp:
         raw = resp.read()
@@ -160,8 +176,9 @@ def generate():
 
     sources.sort(key=lambda s: s["dest-filename"])
 
-    with OUTPUT.open("w", encoding="utf-8") as f:
+    with OUTPUT.open("w", encoding="utf-8", newline="\n") as f:
         json.dump(sources, f, indent=4)
+        f.write("\n")
 
     print(f"Written {len(sources)} packages to {OUTPUT}")
 
