@@ -358,6 +358,61 @@ public class PathUtilsTests
 
     #endregion
 
+    #region Portable relative paths
+
+    [Test]
+    public void ToPortablePath_NativeSeparators_ConvertedToForwardSlashes()
+    {
+        string path = Path.Combine("books", "sub", "file.txt");
+
+        Assert.That(PathUtils.ToPortablePath(path), Is.EqualTo("books/sub/file.txt"));
+    }
+
+    [Test]
+    public void FromPortablePath_ForwardSlashes_ConvertedToNativeSeparators()
+    {
+        string path = PathUtils.FromPortablePath("books/sub/file.txt");
+
+        Assert.That(path, Is.EqualTo(Path.Combine("books", "sub", "file.txt")));
+    }
+
+    [Test]
+    public void PortablePath_RoundTripsToOriginal()
+    {
+        string path = Path.Combine("books", "sub", "file.txt");
+
+        string portable = PathUtils.ToPortablePath(path);
+
+        Assert.That(portable, Does.Not.Contain('\\'));
+        Assert.That(PathUtils.FromPortablePath(portable), Is.EqualTo(path));
+    }
+
+    [Test]
+    public void ToPortablePath_BackslashOnUnix_Untouched()
+    {
+        //On Linux a backslash is a legal character in a file name, not a separator,
+        //so it must not be rewritten.
+        if (OperatingSystem.IsWindows())
+        {
+            Assert.Ignore("Backslash is a directory separator on Windows");
+        }
+
+        Assert.That(PathUtils.ToPortablePath("books\\sub"), Is.EqualTo("books\\sub"));
+    }
+
+    [Test]
+    public void ToPortablePath_ForwardSlashOnWindows_StaysForwardSlash()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            Assert.Ignore("Forward slash is the native separator on Unix");
+        }
+
+        Assert.That(PathUtils.ToPortablePath("books/sub"), Is.EqualTo("books/sub"));
+    }
+
+    #endregion
+
     #region GetCommonFolder prefix fix
 
     [Test]

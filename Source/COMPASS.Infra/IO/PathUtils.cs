@@ -69,6 +69,30 @@ public static class PathUtils
     }
 
     /// <summary>
+    /// Normalizes a path's directory separators to forward slashes ('/'), 
+    /// so it can be read back on another platform that might use a different separator. 
+    /// </summary>
+    public static string ToPortablePath(string path)
+    {
+        string portable = path;
+        if (Path.DirectorySeparatorChar != '/')
+        {
+            portable = portable.Replace(Path.DirectorySeparatorChar, '/');
+        }
+        if (Path.AltDirectorySeparatorChar != '/')
+        {
+            portable = portable.Replace(Path.AltDirectorySeparatorChar, '/');
+        }
+        return portable;
+    }
+
+    /// <summary>
+    /// Converts a path stored with portable separators ('/') back to this platform's directory separator.
+    /// </summary>
+    public static string FromPortablePath(string path) =>
+        Path.DirectorySeparatorChar == '/' ? path : path.Replace('/', Path.DirectorySeparatorChar);
+
+    /// <summary>
     /// Get the longest common path shared by all the given paths
     /// </summary>
     /// <param name="paths"></param>

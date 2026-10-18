@@ -2,6 +2,7 @@ using Autofac;
 using Avalonia.Controls;
 using Avalonia.Headless.NUnit;
 using Avalonia.Platform.Storage;
+using COMPASS.Common.Domain;
 using COMPASS.Common.Features.CodexCollections;
 using COMPASS.Common.Features.ImportExport;
 using COMPASS.Common.Features.Persistence;
@@ -147,6 +148,105 @@ namespace COMPASS.IntegrationTests.Common.Services
                 importedCollection?.DeleteCollection();
                 deserializedCollectionVm?.DeleteCollection();
                 File.Delete(filePath);
+                window.Close();
+            }
+        }
+
+        [AvaloniaTest]
+        public async Task ImportCollection_WithUserFiles_RoundTripsFiles()
+        {
+            var window = new Window();
+            window.Show();
+
+            //Setup: a collection whose codices point at real files, one of them nested in a subfolder
+            var container = BuildContainer();
+            string sourceDir = Path.Combine(Path.GetTempPath(), "COMPASS_ImportFiles_" + Guid.NewGuid());
+            string nestedDir = Path.Combine(sourceDir, "books");
+            Directory.CreateDirectory(nestedDir);
+            string fileA = Path.Combine(sourceDir, "a.pdf");
+            string fileB = Path.Combine(nestedDir, "b.pdf");
+            await File.WriteAllTextAsync(fileA, "content-a");
+            await File.WriteAllTextAsync(fileB, "content-b");
+
+            var testCollection = new CodexCollection("__SatchelUserFiles");
+            testCollection.AllCodices.Add(new Codex(testCollection)
+            {
+                Id = 1,
+                Title = "A",
+                Sources = new SourceSet { Path = fileA }
+            });
+            testCollection.AllCodices.Add(new Codex(testCollection)
+            {
+                Id = 2,
+                Title = "B",
+                Sources = new SourceSet { Path = fileB }
+            });
+
+            string satchelPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + Constants.SatchelExtension);
+            ImportCollectionViewModel? importViewModel = null;
+            CodexCollectionVM? importedCollection = null;
+            try
+            {
+                var importExportService = container.Resolve<IImportExportService>();
+
+                //Export including the user files
+                var targetFile = await GetStorageFileFromPath(satchelPath, window);
+                Assert.That(targetFile, Is.Not.Null, "Could not get target file for satchel export");
+                await importExportService.ExportCollection(testCollection, targetFile, includeFiles: true, includeCovers: false);
+                await Task.Delay(100);
+
+                //Import
+                var deserialized = await importExportService.OpenSatchel(satchelPath);
+                Assert.That(deserialized, Is.Not.Null, "Could not read the exported satchel");
+
+                //Paths stored in a satchel must be relative and use portable separators, so the
+                //satchel can be imported on a different platform than it was exported from
+                foreach (Codex codex in deserialized!.AllCodices)
+                {
+                    Assert.That(Path.IsPathFullyQualified(codex.Sources.Path), Is.False,
+                        $"Satchel stored an absolute path: {codex.Sources.Path}");
+                    Assert.That(codex.Sources.Path.Contains('\\'), Is.False,
+                        $"Satchel stored a non-portable path: {codex.Sources.Path}");
+                }
+
+                var deserializedCollectionVm = container.Resolve<CodexCollectionVMFactory>().Create(deserialized, StorageStrategy.Xml);
+                importViewModel = container.Resolve<ImportCollectionViewModelFactory>().Create(deserializedCollectionVm);
+                importViewModel.CollectionName = "Imported_UserFiles";
+                importViewModel.MergeIntoCollection = false;
+                await importViewModel.Finish();
+
+                importedCollection = container.Resolve<CollectionManager>().GetCollectionVM("Imported_UserFiles");
+                Assert.That(importedCollection, Is.Not.Null, "Imported collection not found after import");
+                Assert.That(importedCollection.Collection.AllCodices, Has.Count.EqualTo(2));
+
+                var importedCodices = importedCollection.Collection.AllCodices.OrderBy(codex => codex.Id).ToList();
+                string expectedFilesDir = Path.Combine("Collections", "Imported_UserFiles", Constants.DIR_FILES);
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(Path.GetFileName(importedCodices[0].Sources.Path), Is.EqualTo("a.pdf"));
+                    Assert.That(Path.GetFileName(importedCodices[1].Sources.Path), Is.EqualTo("b.pdf"));
+
+                    //The files must have been moved into the imported collection's user files folder
+                    Assert.That(importedCodices[0].Sources.Path, Does.Contain(expectedFilesDir));
+                    Assert.That(importedCodices[1].Sources.Path, Does.Contain(expectedFilesDir));
+
+                    //...and actually exist there with the original content
+                    Assert.That(File.Exists(importedCodices[0].Sources.Path), Is.True,
+                        $"Imported file is missing at {importedCodices[0].Sources.Path}");
+                    Assert.That(File.Exists(importedCodices[1].Sources.Path), Is.True,
+                        $"Imported file is missing at {importedCodices[1].Sources.Path}");
+                    Assert.That(File.ReadAllText(importedCodices[0].Sources.Path), Is.EqualTo("content-a"));
+                    Assert.That(File.ReadAllText(importedCodices[1].Sources.Path), Is.EqualTo("content-b"));
+                });
+            }
+            finally
+            {
+                //Cleanup
+                importedCollection?.DeleteCollection();
+                importViewModel?.Dispose();
+                if (File.Exists(satchelPath)) File.Delete(satchelPath);
+                if (Directory.Exists(sourceDir)) Directory.Delete(sourceDir, true);
                 window.Close();
             }
         }

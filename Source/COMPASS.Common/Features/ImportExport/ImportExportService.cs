@@ -392,7 +392,8 @@ public class ImportExportService(
 
         foreach (Codex codex in itemsWithOfflineSource)
         {
-            string relativePath = codex.Sources.Path[commonFolder.Length..].TrimStart(Path.DirectorySeparatorChar);
+            string relativePath = codex.Sources.Path[commonFolder.Length..]
+                .TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
 
             //Add the file
             if (File.Exists(codex.Sources.Path))
@@ -400,8 +401,8 @@ public class ImportExportService(
                 await archive.AddEntryAsync(Path.Combine(Constants.DIR_FILES, relativePath), codex.Sources.Path);
             }
 
-            //keep the relative path, will be used during import to link the included files
-            codex.Sources.Path = relativePath;
+            //keep the relative path and make it portable, will be used during import to link the included files
+            codex.Sources.Path = PathUtils.ToPortablePath(relativePath);
         }
     }
 
@@ -420,11 +421,14 @@ public class ImportExportService(
 
         foreach (Codex codex in itemsWithCovers)
         {
-            string relativePath = codex.CoverArtPath[commonFolder.Length..].TrimStart(Path.DirectorySeparatorChar);
+            string relativePath = codex.CoverArtPath[commonFolder.Length..]
+                .TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+
             //Add the file
             await archive.AddEntryAsync(Path.Combine(Constants.DIR_COVERS, relativePath), codex.CoverArtPath);
-            //keep the relative path, will be used during import to link the included files
-            codex.CoverArtPath = relativePath;
+
+            //keep the relative path and make it portable, will be used during import to link the included files
+            codex.CoverArtPath = PathUtils.ToPortablePath(relativePath);
         }
     }
 

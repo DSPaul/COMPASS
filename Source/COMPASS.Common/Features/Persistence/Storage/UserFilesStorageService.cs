@@ -62,7 +62,9 @@ public class UserFilesStorageService(
 
         if (!Path.IsPathFullyQualified(codex.Sources.Path)) //relative path
         {
-            newPath = Path.Combine(UserFilesDirectory(targetCollection), codex.Sources.Path); // keep relative structure
+            //relative paths are stored with portable separators, so convert to this platform's
+            string relativePath = PathUtils.FromPortablePath(codex.Sources.Path);
+            newPath = Path.Combine(UserFilesDirectory(targetCollection), relativePath); // keep relative structure
             if(sourceCollection == null)
             {
                 oldPath = null;
@@ -70,7 +72,7 @@ public class UserFilesStorageService(
             }
             else
             {
-                oldPath = Path.Combine(UserFilesDirectory(sourceCollection), codex.Sources.Path);
+                oldPath = Path.Combine(UserFilesDirectory(sourceCollection), relativePath);
             }
 
         }
