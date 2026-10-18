@@ -1,4 +1,5 @@
 using COMPASS.Infra.IO;
+using System.IO.Compression;
 
 namespace COMPASS.UnitTests.Infra.IO;
 
@@ -232,7 +233,7 @@ public class PathUtilsTests
 
     #endregion
 
-    #region NormalizePath / PathsEqual / IsPathInsideDirectory
+    #region PathsEqual
 
     [Test]
     public void PathsEqual_SamePath_ReturnsTrue()
@@ -282,6 +283,10 @@ public class PathUtilsTests
         Assert.That(PathUtils.PathsEqual(pathA, pathB), Is.False);
     }
 
+    #endregion
+
+    #region IsPathInsideDirectory
+
     [Test]
     public void IsPathInsideDirectory_DirectChild_ReturnsTrue()
     {
@@ -314,6 +319,41 @@ public class PathUtilsTests
     public void IsPathInsideDirectory_NullOrEmpty_ReturnsFalse(string? child, string? parent)
     {
         Assert.That(PathUtils.IsPathInsideDirectory(child, parent), Is.False);
+    }
+
+    #endregion
+
+    #region NormalizePath
+
+    [Test]
+    public void NormalizePath_GoodPath_Untouched()
+    {
+        string path = Path.Combine("C:\\", "books", "file.txt");
+        string normalized = PathUtils.NormalizePath(path);
+
+        Assert.AreEqual(path, normalized);
+    }
+
+    [Test]
+    public void NormalizePath_WrongSeparator_Normalized()
+    {
+        string path = Path.Combine("C:\\", "books", "file.txt");
+        string brokenPath;
+
+        if(OperatingSystem.IsWindows())
+        {
+            brokenPath = path.Replace(@"\", @"/");
+        }
+        else
+        {
+            brokenPath = path.Replace(@"/", @"\");
+        }
+
+        Assert.AreNotEqual(path, brokenPath);
+
+        string normalized = PathUtils.NormalizePath(brokenPath);
+
+        Assert.AreEqual(path, normalized);
     }
 
     #endregion

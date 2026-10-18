@@ -9,6 +9,7 @@ public static class Constants
     public const string DIR_COLLECTIONS = "Collections";
     public const string DIR_THUMBNAILS = "Thumbnails";
     public const string DIR_COVERS = "CoverArt";
+    public const string DIR_FILES = "Files";
 
     public const string DEFAULT_COLLECTION_NAME = "Default Collection";
 

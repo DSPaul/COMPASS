@@ -6,6 +6,7 @@ using COMPASS.Infra.Logging;
 using COMPASS.Infra.Notifications;
 using COMPASS.Common.Domain;
 using COMPASS.Common.Features.Tabs;
+
 namespace COMPASS.Common.Features.ImportExport
 {
     public class ImportCollectionViewModel : WizardViewModel, IDisposable
@@ -50,15 +51,6 @@ namespace COMPASS.Common.Features.ImportExport
             ContentSelectorVM = contentSelectorVMFactory.Create(CollectionToImport);
             
             UpdateSteps();
-
-            //if files were included in compass file, set paths of codices to those files
-            if (_userFilesStorageService.HasUserFiles(CollectionToImport))
-            {
-                foreach (Codex codex in CollectionToImport.AllCodices.Where(c => c.Sources.HasOfflineSource()))
-                {
-                    _userFilesStorageService.MoveCodexDataToCollection(codex, CollectionToImport);
-                }
-            }
         }
 
         #region Properties
@@ -168,6 +160,15 @@ namespace COMPASS.Common.Features.ImportExport
                 if (targetCollectionHandle == null)
                 {
                     throw new LoadException(MergeIntoCollection ? TargetCollection!.Identifier : CollectionName);
+                }
+
+                //if files were included in compass file, set paths of codices to those files
+                if (_userFilesStorageService.HasUserFiles(CollectionToImport))
+                {
+                    foreach (Codex codex in ContentSelectorVM.CuratedCollection.AllCodices.Where(c => c.Sources.HasOfflineSource()))
+                    {
+                        _userFilesStorageService.MoveCodexDataToCollection(codex, targetCollectionHandle.CollectionVM.Collection, CollectionToImport);
+                    }
                 }
 
                 //Save the changes to a permanent collection
