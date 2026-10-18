@@ -42,5 +42,5 @@ modules:
     sources:
       - type: git
         url: https://github.com/DSPaul/COMPASS
-        branch: Avalonia
+        branch: dev
       - nuget-sources.json
