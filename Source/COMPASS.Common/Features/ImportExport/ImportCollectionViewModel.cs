@@ -7,6 +7,7 @@ using COMPASS.Infra.Notifications;
 using COMPASS.Common.Domain;
 using COMPASS.Common.Features.Tabs;
 using COMPASS.Common.Features.Covers;
+using COMPASS.Infra.Text;
 
 namespace COMPASS.Common.Features.ImportExport
 {
@@ -45,15 +46,16 @@ namespace COMPASS.Common.Features.ImportExport
             _codexCollectionOperations = codexCollectionOperations;
             _collectionManager = collectionManager;
             _tabsViewModel = tabsViewModel;
-            AddValidation(nameof(MergeIntoCollection), ValidateTarget);
-            AddValidation(nameof(CollectionName), ValidateTarget);
-            AddValidation(nameof(TargetCollection), ValidateTarget);
+            AddValidation(nameof(MergeIntoCollection), ValidateCollectionName);
+            AddValidation(nameof(CollectionName), ValidateCollectionName);
             
             CollectionVMToImport = collectionVmToImport;
-            TargetCollection = targetCollection ?? tabsViewModel.ActiveTab?.CollectionVM;
+            TargetCollection = targetCollection ?? tabsViewModel.ActiveTab?.CollectionVM ?? collectionManager.CollectionVms.First();
             CollectionVms = _collectionManager.CollectionVms.ToList(); 
             //Collection will have format '__<name><extension>'
-            CollectionName = collectionVmToImport.Identifier.Substring(2, collectionVmToImport.Identifier.Length - 2 - Constants.SatchelExtension.Length);
+            CollectionName = collectionVmToImport.Identifier
+                .Substring(2, collectionVmToImport.Identifier.Length - 2 - Constants.SatchelExtension.Length)
+                .GetValidVariant(name => CollectionManager.IsValidCollectionName(name, out _, CollectionVms));
 
             _collectionToImportHandle = collectionVmToImport.Load() ?? throw new LoadException(collectionVmToImport.Identifier);
             
@@ -71,7 +73,7 @@ namespace COMPASS.Common.Features.ImportExport
 
         public IList<CodexCollectionVM> CollectionVms { get; } 
         
-        public CodexCollectionVM? TargetCollection { get; set => SetProperty(ref field, value); }
+        public CodexCollectionVM TargetCollection { get; set => SetProperty(ref field, value); }
         
         /// <summary>
         /// Indicates that the tags should all be imported in a new, separate group
@@ -163,12 +165,12 @@ namespace COMPASS.Common.Features.ImportExport
             try
             {
                 using var targetCollectionHandle = MergeIntoCollection ? 
-                    TargetCollection?.Load() : 
+                    TargetCollection.Load() : 
                     _collectionManager.CreateAndLoadCollection(CollectionName);
 
                 if (targetCollectionHandle == null)
                 {
-                    throw new LoadException(MergeIntoCollection ? TargetCollection!.Identifier : CollectionName);
+                    throw new LoadException(MergeIntoCollection ? TargetCollection.Identifier : CollectionName);
                 }
 
                 //if files were included in compass file, set paths of codices to those files
@@ -215,13 +217,11 @@ namespace COMPASS.Common.Features.ImportExport
 
         #region Methods
 
-        private void ValidateTarget()
+        private void ValidateCollectionName()
         {
             //Because a change in MergeIntoCollection can change validity, clear errors on the other props manually
             _overviewStep.ClearErrors(nameof(CollectionName));
-            _overviewStep.ClearErrors(nameof(TargetCollection));
             ClearErrors(nameof(CollectionName));
-            ClearErrors(nameof(TargetCollection));
             
             if (!MergeIntoCollection && !CollectionManager.IsValidCollectionName(CollectionName, out string? invalidReason, CollectionVms))
             {
@@ -229,14 +229,6 @@ namespace COMPASS.Common.Features.ImportExport
                 _overviewStep.AddError(nameof(CollectionName), invalidReason);
                 //Error on vm to show in UI
                 AddError(nameof(CollectionName), invalidReason);
-            }
-            
-            if (MergeIntoCollection && TargetCollection == null)
-            {
-                //Error on step to block next
-                _overviewStep.AddError(nameof(TargetCollection), "Please select a target collection");
-                //Error on vm to show in UI
-                AddError(nameof(TargetCollection), "Please select a target collection");
             }
         }
 

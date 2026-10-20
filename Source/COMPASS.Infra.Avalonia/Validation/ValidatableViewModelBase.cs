@@ -4,6 +4,7 @@ using COMPASS.Infra.Avalonia.Modal;
 using COMPASS.Infra.Avalonia.Threading;
 using System.Collections;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace COMPASS.Infra.Avalonia.Validation;
 
@@ -40,8 +41,10 @@ public abstract class ValidatableViewModelBase : ObservableObject, INotifyDataEr
             : (IEnumerable)(_errors.TryGetValue(propertyName, out var errors) ? errors : []);
     }
 
-    protected void MarkAsTouched(string propertyName)
+    protected void MarkAsTouched([CallerMemberName] string? propertyName = null)
     {
+        if (propertyName == null) return;
+
         if (_touchedProperties.Add(propertyName))
         {
             OnErrorsChanged(propertyName);

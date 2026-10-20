@@ -31,7 +31,7 @@ namespace COMPASS.Common.Features.CodexCollections
 
         #region Methods
     
-        public static bool IsValidCollectionName(string? proposedName, [NotNullWhen(false)] out string? invalidReason, IList<CodexCollectionVM> existingCollections)
+        public static bool IsValidCollectionName(string? proposedName, [NotNullWhen(false)] out string? invalidReason, IEnumerable<CodexCollectionVM> existingCollections)
         {
             invalidReason = null;
             
@@ -46,14 +46,14 @@ namespace COMPASS.Common.Features.CodexCollections
             var invalidChars = Path.GetInvalidPathChars().Concat(Path.GetInvalidFileNameChars()).ToArray();
             if (proposedName.IndexOfAny(invalidChars) is var invalidCharIndex && invalidCharIndex >= 0)
             {
-                invalidReason = $"Character ${invalidChars[invalidCharIndex]} is not allowed";
+                invalidReason = $"Character {proposedName[invalidCharIndex]} is not allowed";
                 return false;
             }
 
             //Must be unique
-            if (existingCollections.Any(col => col.Identifier == proposedName))
+            if (existingCollections.Any(col => string.Equals(col.Identifier, proposedName, StringComparison.InvariantCultureIgnoreCase)))
             {
-                invalidReason = $"Collection {proposedName} already exists";
+                invalidReason = $"Collection '{proposedName}' already exists";
                 return false;
             }
             
