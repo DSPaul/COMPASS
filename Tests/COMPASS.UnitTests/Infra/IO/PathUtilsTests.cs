@@ -328,32 +328,31 @@ public class PathUtilsTests
     [Test]
     public void NormalizePath_GoodPath_Untouched()
     {
-        string path = Path.Combine("C:\\", "books", "file.txt");
+        string path = GetRootedPath("books", "file.txt");
         string normalized = PathUtils.NormalizePath(path);
 
-        Assert.AreEqual(path, normalized);
+        Assert.That(normalized, Is.EqualTo(path));
     }
 
     [Test]
-    public void NormalizePath_WrongSeparator_Normalized()
+    public void NormalizePath_ForwardSlashes_NormalizedOnWindows()
     {
-        string path = Path.Combine("C:\\", "books", "file.txt");
-        string brokenPath;
-
-        if(OperatingSystem.IsWindows())
+        //Only Windows has a second separator ('/') that NormalizePath repairs:
+        //on Unix both DirectorySeparatorChar and AltDirectorySeparatorChar are '/',
+        //and a backslash is an ordinary filename character rather than a separator.
+        if (!OperatingSystem.IsWindows())
         {
-            brokenPath = path.Replace(@"\", @"/");
-        }
-        else
-        {
-            brokenPath = path.Replace(@"/", @"\");
+            Assert.Ignore("Forward slash is the only separator on Unix, so there is no wrong separator to repair");
         }
 
-        Assert.AreNotEqual(path, brokenPath);
+        string path = GetRootedPath("books", "file.txt");
+        string brokenPath = path.Replace('\\', '/');
+
+        Assert.That(brokenPath, Is.Not.EqualTo(path));
 
         string normalized = PathUtils.NormalizePath(brokenPath);
 
-        Assert.AreEqual(path, normalized);
+        Assert.That(normalized, Is.EqualTo(path));
     }
 
     #endregion
@@ -539,6 +538,22 @@ public class PathUtilsTests
     public void MatchesAnyGlob_NullOrEmptyPath_ReturnsFalse(string? path)
     {
         Assert.That(PathUtils.MatchesAnyGlob(path!, ["*"]), Is.False);
+    }
+
+    #endregion
+
+    #region Helpers
+
+    /// <summary>
+    /// Builds an absolute path using this platform's root: a drive root such as
+    /// "C:\" on Windows, "/" elsewhere. A Windows drive path is a relative path
+    /// on Unix, so Path.GetFullPath would resolve it against the working directory.
+    /// </summary>
+    private static string GetRootedPath(params string[] segments)
+    {
+        string volumeRoot = OperatingSystem.IsWindows() ? @"C:\" : "/";
+
+        return Path.Combine([volumeRoot, .. segments]);
     }
 
     #endregion
