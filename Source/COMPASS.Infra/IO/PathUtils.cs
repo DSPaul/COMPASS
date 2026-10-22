@@ -195,20 +195,43 @@ public static class PathUtils
         }
     }
 
+    /// <summary>
+    /// True when the path (or URL) matches any of the globs.
+    /// </summary>
     public static bool MatchesAnyGlob(string filePath, IList<string> globs )
     {
         if (string.IsNullOrEmpty(filePath)) return false;
-            
+        if (globs.Count == 0) return false;
+
         // Check for exact matches first
         if (globs.Any(glob => glob == filePath))
         {
             return true;
         }
 
+        string matchRoot = Directory.GetCurrentDirectory();
+        string pathToMatch = filePath;
+        if (Path.IsPathRooted(filePath) || HasParentTraversal(filePath))
+        {
+            string fullPath = NormalizePath(filePath);
+            string volumeRoot = Path.GetPathRoot(fullPath) ?? string.Empty;
+            if (!string.IsNullOrEmpty(volumeRoot) && fullPath.Length > volumeRoot.Length)
+            {
+                matchRoot = volumeRoot;
+                pathToMatch = fullPath[volumeRoot.Length..];
+            }
+        }
+
         var matcher = new Matcher();
         matcher.AddIncludePatterns(globs);
-        return matcher.Match(filePath).HasMatches;
+        return matcher.Match(matchRoot, pathToMatch).HasMatches;
     }
+
+    /// <summary>
+    /// True when any segment of the path is ".."; the path therefore needs resolving
+    /// </summary>
+    private static bool HasParentTraversal(string path) =>
+        path.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar).Contains("..");
 
     /// <summary>
     /// Identity for symlink cycle detection

@@ -492,6 +492,38 @@ public class PathUtilsTests
     }
 
     [Test]
+    public void MatchesAnyGlob_AbsolutePath_MatchesFolderGlob()
+    {
+        string filePath = GetRootedPath("Users", "pauld", "Documents", "TTRPG", "A subfolder", "anotherFolder", "test.txt");
+
+        Assert.That(PathUtils.MatchesAnyGlob(filePath, ["**/A subfolder/**"]), Is.True);
+    }
+
+    [Test]
+    public void MatchesAnyGlob_AbsolutePath_MatchesExtensionGlob()
+    {
+        string filePath = GetRootedPath("Users", "pauld", "Documents", "A subfolder", "test.txt");
+
+        Assert.That(PathUtils.MatchesAnyGlob(filePath, ["**/*.txt"]), Is.True);
+    }
+
+    [Test]
+    public void MatchesAnyGlob_AbsolutePath_NoMatch_ReturnsFalse()
+    {
+        string filePath = GetRootedPath("Users", "pauld", "Documents", "A subfolder", "test.txt");
+
+        Assert.That(PathUtils.MatchesAnyGlob(filePath, ["**/Other Tag/**"]), Is.False);
+    }
+
+    [Test]
+    public void MatchesAnyGlob_RelativePathWithParentTraversal_MatchesFolderGlob()
+    {
+        string filePath = Path.Combine("..", "TTRPG", "A subfolder", "anotherFolder", "test.txt");
+
+        Assert.That(PathUtils.MatchesAnyGlob(filePath, ["**/A subfolder/**"]), Is.True);
+    }
+
+    [Test]
     public void MatchesAnyGlob_GlobPattern_Matches_FileWithoutDirectory()
     {
         Assert.That(PathUtils.MatchesAnyGlob("readme.md", ["*.md"]), Is.True);
