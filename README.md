@@ -12,6 +12,8 @@
 # COMPASS
 Codex Organizer to make Pen-and-paper Adventuring Super Simple or COMPASS for short is a desktop application to organize and manage all your TTRPG resources, inspired by [Playnite](https://github.com/JosefNemec/Playnite). You can download the latest version of COMPASS over at https://www.compassapp.info or in the [Github Releases section](https://github.com/DSPaul/COMPASS/releases).
 
+> **COMPASS 2.0.0 is a complete rewrite in Avalonia**, you can read all about the port from WPF [here](Docs/Avalonia%20Port/AvaloniaMigration.md).
+
 ## :scroll: Story
 
 If you are a fellow TTRPG enthusiast, you probably have lots of pdf's both homebrew and official from sites such as [Drivethrough RPG](https://www.drivethrurpg.com/), [Humble Bundle Books](https://www.humblebundle.com/books),  [GM Binder](https://www.gmbinder.com/), [Homebrewery](https://homebrewery.naturalcrit.com/), [itch.io](https://itch.io/books/genre-rpg) or content from subreddits, patreon creators and kickstarters. Or perhaps you own them in digital form on sites such as [D&D Beyond](https://www.dndbeyond.com/sources#Sourcebooks) or [Roll20](https://roll20.net/compendium/dnd5e/BookIndex). Keeping track of all these books, maps and other resources is hard and nothing is more frustrating than franticly clicking through folders in search of that one statblock you need in the heat of combat.
