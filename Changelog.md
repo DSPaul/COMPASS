@@ -1,5 +1,21 @@
 # CHANGELOG
 
+## COMPASS v2.0.1 (24 October 2026)
+
+### New Features
+
+### Improvements
+
+- After importing a satchel, open it in a new tab and generate thumbnails
+
+### Fixes
+
+- Fix files being added to wrong folder in satchel
+- Fix files in satchel not copied correctly
+- Fix filepath in satchel not compatible between windows and linux
+- Block importing or creating a collection with a name that is already taken
+- Fix Folder-Tag links not working
+
 ## COMPASS v2.0.0 (17 October 2026)
 
 ### New Features
@@ -20,7 +36,6 @@
 - Changed licence from GPLv3 to AGPLv3
 - Added privacy policy
 
-
 ## COMPASS v1.8.10 (23 November 2025)
 
 ### Improvements
@@ -32,6 +47,7 @@
 
 - Fix a crash when moving an item without thumbnail to a different collection
 - Potentially fix a crash when opening the file selector dialog
+
 ## COMPASS v1.8.9 (26 October 2025)
 
 ### Improvements
@@ -45,6 +61,7 @@
 - Fixed a crash when preferences file is corrupted
 - Fixed rare crash when displaying the update notification
 - Fixed multiple possible crashes when dropping files
+
 ## COMPASS v1.8.8 (28 June 2025)
 
 ### Fixes
@@ -52,11 +69,13 @@
 - Fix potential crash when looking at the change logs in the settings
 - Fix a crash when deleting a collection when a file is locked
 - Fix an issue where the open collection was copied to the new data location after changing it
+
 ## COMPASS v1.8.7 (27 May 2025)
 
 ### Fixes
 
 - Fixed issue in "move to collection" where the item would not appear in the target collection.
+
 ## COMPASS v1.8.6 (06 April 2025)
 
 ### Improvements
@@ -67,6 +86,7 @@
 
 - Fix crash when a thumbnail is corrupted
 - Create required folders before trying to save thumbnail
+
 ## COMPASS v1.8.5 (16 February 2025)
 
 ### Fixes
@@ -74,11 +94,13 @@
 - Fix issues with downloading cover for google drive files
 - Fix title scraped from websites containing html codes
 - Fix crash when selecting an item with a corrupt cover art file
+
 ## COMPASS v1.8.4 (12 February 2025)
 
 ### Fixes
 - Fix crash when trying to import an unauthorized folder
 - Fix crash when thumbnail fails to load for any reason
+
 ## COMPASS v1.8.3 (20 December 2024)
 
 ### Fixes
@@ -89,6 +111,7 @@
 
 ### Other 
  Upgrade to .NET 9
+
 ## COMPASS v1.8.2 (01 November 2024)
 
 ### New Features
@@ -99,6 +122,7 @@
 - Fix metadata priority only applying after restart
 - Fix crash when fetching data from openLibrary
 - Fix crash on 'Move to Collection'
+
 ## COMPASS v1.8.1 (13 October 2024)
 
 ### New Features
@@ -113,6 +137,7 @@
 - Fix crash when trying to reach to reach openLibrary while it is down
 - Fix crash when cancelling an operation
 - Fix flashbang when fetching a cover in chrome 129
+
 ## COMPASS v1.8.0 (18 September 2024)
 
 ### New Features
@@ -130,6 +155,7 @@
 - Fix crash when disk is full
 - Fix crash when writing to a folder without authorization
 - Fix crash when resolving broken paths
+
 ## COMPASS v1.7.6 (10 September 2024)
 
 ### Fixes

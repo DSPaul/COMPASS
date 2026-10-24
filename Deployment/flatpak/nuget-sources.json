@@ -302,17 +302,17 @@
     },
     {
         "type": "file",
-        "url": "https://api.nuget.org/v3-flatcontainer/markdig/1.4.0/markdig.1.4.0.nupkg",
-        "sha512": "f0490114594ba100914be2ca2c674450de8be7b046910376b62476ff3ceb77e376915140349ceadb84ca49e1fb944fae707700f8ec6194d366b09019149793aa",
+        "url": "https://api.nuget.org/v3-flatcontainer/markdig/1.4.1/markdig.1.4.1.nupkg",
+        "sha512": "c60baa18687b048bbe5ba9562e10cc467026d24e9b69c36149d1caa5310fa47df521f54b48ad91d26245c265a61b965ee3456df30628c2a45ffeec9e8c2f8be2",
         "dest": "nuget-sources",
-        "dest-filename": "markdig.1.4.0.nupkg"
+        "dest-filename": "markdig.1.4.1.nupkg"
     },
     {
         "type": "file",
-        "url": "https://api.nuget.org/v3-flatcontainer/markview.avalonia/12.3.0/markview.avalonia.12.3.0.nupkg",
-        "sha512": "1ce60b6740711127643b23e0bd6ceedecddbaddfe6094542317a33e377103b256cd18c35e5adf82a32584238105d2d38f036a5a930a18a792be1e8d1f03459f6",
+        "url": "https://api.nuget.org/v3-flatcontainer/markview.avalonia/12.4.0/markview.avalonia.12.4.0.nupkg",
+        "sha512": "4323ac5e7573bf29e23ecdc95439047d42cb08406eb4a7b722006f1bd154ef2a3a5280a916e7e08e2ec881001a061fb776fe52216ec6dc6add5133beb7cd0744",
         "dest": "nuget-sources",
-        "dest-filename": "markview.avalonia.12.3.0.nupkg"
+        "dest-filename": "markview.avalonia.12.4.0.nupkg"
     },
     {
         "type": "file",
@@ -477,17 +477,17 @@
     },
     {
         "type": "file",
-        "url": "https://api.nuget.org/v3-flatcontainer/opencvsharp5/5.0.0.20261012/opencvsharp5.5.0.0.20261012.nupkg",
-        "sha512": "2f7fa90ac0a1221f55743dc7cf2c95c010b1a3bd752d4c9eee21258647ec529dd8fdb7570a285503e7c34c13b379bc9ed0f24884ee438c2199b0adc694ca1937",
+        "url": "https://api.nuget.org/v3-flatcontainer/opencvsharp5/5.0.0.20261018/opencvsharp5.5.0.0.20261018.nupkg",
+        "sha512": "5ee2472edb7a5e99e65989accee7e73e3136500262983d98c446c4f9d06e26e7d542980f6131443d912b89dbebfbaf3541afa1905c6bc5ec5805b661dee24a33",
         "dest": "nuget-sources",
-        "dest-filename": "opencvsharp5.5.0.0.20261012.nupkg"
+        "dest-filename": "opencvsharp5.5.0.0.20261018.nupkg"
     },
     {
         "type": "file",
-        "url": "https://api.nuget.org/v3-flatcontainer/opencvsharp5.official.runtime.linux-x64.slim/5.0.0.20261012/opencvsharp5.official.runtime.linux-x64.slim.5.0.0.20261012.nupkg",
-        "sha512": "9b2175c508997bb09a9e39f52401ed62a7681d471b59be0bee0eb522d30a5f849029de1d77af8164aecba6f1c3a0ff658379e58a037a06480079ad4efe46b23b",
+        "url": "https://api.nuget.org/v3-flatcontainer/opencvsharp5.official.runtime.linux-x64.slim/5.0.0.20261018/opencvsharp5.official.runtime.linux-x64.slim.5.0.0.20261018.nupkg",
+        "sha512": "41f148341047e2fc3d3b584ae7687121f9c919033df1a2be17a92c1adcef4f5a36ca96083114127f8f9628101276962729108e9ae00c24e785ce7b4060e82d75",
         "dest": "nuget-sources",
-        "dest-filename": "opencvsharp5.official.runtime.linux-x64.slim.5.0.0.20261012.nupkg"
+        "dest-filename": "opencvsharp5.official.runtime.linux-x64.slim.5.0.0.20261018.nupkg"
     },
     {
         "type": "file",
@@ -533,10 +533,10 @@
     },
     {
         "type": "file",
-        "url": "https://api.nuget.org/v3-flatcontainer/sharpcompress/0.50.5/sharpcompress.0.50.5.nupkg",
-        "sha512": "0364462e723e78914cca5829e2130759c194e91f340cc41d84b3b38188c2a63646b30680801deb5c50c162f4ff1c412db34270dd2ffd71ff793f03e9b0162a6a",
+        "url": "https://api.nuget.org/v3-flatcontainer/sharpcompress/0.50.7/sharpcompress.0.50.7.nupkg",
+        "sha512": "5d3b95e304a13ae831ea55a2e373815af8b3320955a1bab9f0ccbfa502b81334cbb7f4514090402ea744d478ac7f282c54e1351f6702a406f0e77cc14879fc5c",
         "dest": "nuget-sources",
-        "dest-filename": "sharpcompress.0.50.5.nupkg"
+        "dest-filename": "sharpcompress.0.50.7.nupkg"
     },
     {
         "type": "file",
