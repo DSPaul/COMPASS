@@ -98,12 +98,14 @@ public abstract class EditViewModelBase<TViewModel, TModel> : ValidatableViewMod
     public IRelayCommand ConfirmCommand => _confirmCommand ??= new(Confirm, CanConfirm);
     private bool CanConfirm()
     {
+        bool valid = !HasErrors;
+
         if (WorkingCopy is INotifyDataErrorInfo hasErrorInfo)
         {
-            return !hasErrorInfo.HasErrors;
+            valid &= !hasErrorInfo.HasErrors;
         }
         
-        return true;
+        return valid;
     }
 
     protected virtual void Confirm()

@@ -1,4 +1,5 @@
 using COMPASS.Infra.IO;
+using System.IO.Compression;
 
 namespace COMPASS.UnitTests.Infra.IO;
 
@@ -57,6 +58,76 @@ public class PathUtilsTests
     public void GetCommonFolder_Null_Throws()
     {
         Assert.Throws<ArgumentNullException>(() => PathUtils.GetCommonFolder(null!));
+    }
+
+    [Test]
+    public void GetCommonFolder_AbsolutePath_ReturnsFullPath()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            Assert.Ignore("Drive-absolute paths are a Windows concept");
+        }
+
+        string path = Path.Combine(@"C:\", "Users", "pauld", "books", "a.epub");
+
+        Assert.That(PathUtils.GetCommonFolder([path]), Is.EqualTo(path));
+    }
+
+    [Test]
+    public void GetCommonFolder_AbsolutePaths_ReturnsCommonDirectory()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            Assert.Ignore("Drive-absolute paths are a Windows concept");
+        }
+
+        //Regression: the leading "C:" segment used to be normalized on its own,
+        //where Path.GetFullPath("C:") resolves to the current directory instead of
+        //the drive root, so no common folder was ever found.
+        List<string> paths =
+        [
+            Path.Combine(@"C:\", "Users", "pauld", "books", "a.epub"),
+            Path.Combine(@"C:\", "Users", "pauld", "books", "sub", "b.epub"),
+            Path.Combine(@"C:\", "Users", "pauld", "books", "c.epub")
+        ];
+
+        Assert.That(PathUtils.GetCommonFolder(paths),
+            Is.EqualTo(Path.Combine(@"C:\", "Users", "pauld", "books")));
+    }
+
+    [Test]
+    public void GetCommonFolder_DifferentDrives_ReturnsEmpty()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            Assert.Ignore("Drive-absolute paths are a Windows concept");
+        }
+
+        List<string> paths =
+        [
+            Path.Combine(@"C:\", "books", "a.epub"),
+            Path.Combine(@"D:\", "books", "b.epub")
+        ];
+
+        Assert.That(PathUtils.GetCommonFolder(paths), Is.EqualTo(""));
+    }
+
+    [Test]
+    public void GetCommonFolder_RootAbsolutePaths_ReturnsCommonDirectory()
+    {
+        if (OperatingSystem.IsWindows())
+        {
+            Assert.Ignore("Root-absolute POSIX paths only");
+        }
+
+        List<string> paths =
+        [
+            Path.Combine("/", "home", "user", "books", "a.epub"),
+            Path.Combine("/", "home", "user", "books", "sub", "b.epub")
+        ];
+
+        Assert.That(PathUtils.GetCommonFolder(paths),
+            Is.EqualTo(Path.Combine("/", "home", "user", "books")));
     }
 
     #endregion
@@ -162,7 +233,7 @@ public class PathUtilsTests
 
     #endregion
 
-    #region NormalizePath / PathsEqual / IsPathInsideDirectory
+    #region PathsEqual
 
     [Test]
     public void PathsEqual_SamePath_ReturnsTrue()
@@ -212,6 +283,10 @@ public class PathUtilsTests
         Assert.That(PathUtils.PathsEqual(pathA, pathB), Is.False);
     }
 
+    #endregion
+
+    #region IsPathInsideDirectory
+
     [Test]
     public void IsPathInsideDirectory_DirectChild_ReturnsTrue()
     {
@@ -244,6 +319,95 @@ public class PathUtilsTests
     public void IsPathInsideDirectory_NullOrEmpty_ReturnsFalse(string? child, string? parent)
     {
         Assert.That(PathUtils.IsPathInsideDirectory(child, parent), Is.False);
+    }
+
+    #endregion
+
+    #region NormalizePath
+
+    [Test]
+    public void NormalizePath_GoodPath_Untouched()
+    {
+        string path = GetRootedPath("books", "file.txt");
+        string normalized = PathUtils.NormalizePath(path);
+
+        Assert.That(normalized, Is.EqualTo(path));
+    }
+
+    [Test]
+    public void NormalizePath_ForwardSlashes_NormalizedOnWindows()
+    {
+        //Only Windows has a second separator ('/') that NormalizePath repairs:
+        //on Unix both DirectorySeparatorChar and AltDirectorySeparatorChar are '/',
+        //and a backslash is an ordinary filename character rather than a separator.
+        if (!OperatingSystem.IsWindows())
+        {
+            Assert.Ignore("Forward slash is the only separator on Unix, so there is no wrong separator to repair");
+        }
+
+        string path = GetRootedPath("books", "file.txt");
+        string brokenPath = path.Replace('\\', '/');
+
+        Assert.That(brokenPath, Is.Not.EqualTo(path));
+
+        string normalized = PathUtils.NormalizePath(brokenPath);
+
+        Assert.That(normalized, Is.EqualTo(path));
+    }
+
+    #endregion
+
+    #region Portable relative paths
+
+    [Test]
+    public void ToPortablePath_NativeSeparators_ConvertedToForwardSlashes()
+    {
+        string path = Path.Combine("books", "sub", "file.txt");
+
+        Assert.That(PathUtils.ToPortablePath(path), Is.EqualTo("books/sub/file.txt"));
+    }
+
+    [Test]
+    public void FromPortablePath_ForwardSlashes_ConvertedToNativeSeparators()
+    {
+        string path = PathUtils.FromPortablePath("books/sub/file.txt");
+
+        Assert.That(path, Is.EqualTo(Path.Combine("books", "sub", "file.txt")));
+    }
+
+    [Test]
+    public void PortablePath_RoundTripsToOriginal()
+    {
+        string path = Path.Combine("books", "sub", "file.txt");
+
+        string portable = PathUtils.ToPortablePath(path);
+
+        Assert.That(portable, Does.Not.Contain('\\'));
+        Assert.That(PathUtils.FromPortablePath(portable), Is.EqualTo(path));
+    }
+
+    [Test]
+    public void ToPortablePath_BackslashOnUnix_Untouched()
+    {
+        //On Linux a backslash is a legal character in a file name, not a separator,
+        //so it must not be rewritten.
+        if (OperatingSystem.IsWindows())
+        {
+            Assert.Ignore("Backslash is a directory separator on Windows");
+        }
+
+        Assert.That(PathUtils.ToPortablePath("books\\sub"), Is.EqualTo("books\\sub"));
+    }
+
+    [Test]
+    public void ToPortablePath_ForwardSlashOnWindows_StaysForwardSlash()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            Assert.Ignore("Forward slash is the native separator on Unix");
+        }
+
+        Assert.That(PathUtils.ToPortablePath("books/sub"), Is.EqualTo("books/sub"));
     }
 
     #endregion
@@ -328,6 +492,38 @@ public class PathUtilsTests
     }
 
     [Test]
+    public void MatchesAnyGlob_AbsolutePath_MatchesFolderGlob()
+    {
+        string filePath = GetRootedPath("Users", "pauld", "Documents", "TTRPG", "A subfolder", "anotherFolder", "test.txt");
+
+        Assert.That(PathUtils.MatchesAnyGlob(filePath, ["**/A subfolder/**"]), Is.True);
+    }
+
+    [Test]
+    public void MatchesAnyGlob_AbsolutePath_MatchesExtensionGlob()
+    {
+        string filePath = GetRootedPath("Users", "pauld", "Documents", "A subfolder", "test.txt");
+
+        Assert.That(PathUtils.MatchesAnyGlob(filePath, ["**/*.txt"]), Is.True);
+    }
+
+    [Test]
+    public void MatchesAnyGlob_AbsolutePath_NoMatch_ReturnsFalse()
+    {
+        string filePath = GetRootedPath("Users", "pauld", "Documents", "A subfolder", "test.txt");
+
+        Assert.That(PathUtils.MatchesAnyGlob(filePath, ["**/Other Tag/**"]), Is.False);
+    }
+
+    [Test]
+    public void MatchesAnyGlob_RelativePathWithParentTraversal_MatchesFolderGlob()
+    {
+        string filePath = Path.Combine("..", "TTRPG", "A subfolder", "anotherFolder", "test.txt");
+
+        Assert.That(PathUtils.MatchesAnyGlob(filePath, ["**/A subfolder/**"]), Is.True);
+    }
+
+    [Test]
     public void MatchesAnyGlob_GlobPattern_Matches_FileWithoutDirectory()
     {
         Assert.That(PathUtils.MatchesAnyGlob("readme.md", ["*.md"]), Is.True);
@@ -374,6 +570,22 @@ public class PathUtilsTests
     public void MatchesAnyGlob_NullOrEmptyPath_ReturnsFalse(string? path)
     {
         Assert.That(PathUtils.MatchesAnyGlob(path!, ["*"]), Is.False);
+    }
+
+    #endregion
+
+    #region Helpers
+
+    /// <summary>
+    /// Builds an absolute path using this platform's root: a drive root such as
+    /// "C:\" on Windows, "/" elsewhere. A Windows drive path is a relative path
+    /// on Unix, so Path.GetFullPath would resolve it against the working directory.
+    /// </summary>
+    private static string GetRootedPath(params string[] segments)
+    {
+        string volumeRoot = OperatingSystem.IsWindows() ? @"C:\" : "/";
+
+        return Path.Combine([volumeRoot, .. segments]);
     }
 
     #endregion

@@ -95,7 +95,7 @@ def WriteChangelog():
         content = f.read()
         f.seek(14)  # skip "# CHANGELOG\n\n"
         data = data.replace("# ", "## ")  # make titles one level smaller
-        f.write(data + '\n' + content[13:])
+        f.write(data + '\n' + content[13:] + '\n')
 
     # Clear changes back to template
     if os.path.exists("release-notes-template.md"):

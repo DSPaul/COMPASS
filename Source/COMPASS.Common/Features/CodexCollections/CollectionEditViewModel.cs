@@ -2,6 +2,8 @@ using COMPASS.Infra.Avalonia.Mvvm;
 using COMPASS.Infra.DependencyInjection;
 using COMPASS.Common.Domain;
 using COMPASS.Common.Features.Tabs;
+using COMPASS.Infra.Collections;
+using COMPASS.Infra.Text;
 
 namespace COMPASS.Common.Features.CodexCollections;
 
@@ -22,7 +24,8 @@ public class CollectionEditViewModel : EditViewModelBase<CollectionInfoViewModel
         _tabVm = tabVm;
         AddValidation(nameof(Name), ValidateName);
 
-        Name = createNew ? "New collection" : _collectionVm.Collection.Name;
+        Name = (createNew ? "New collection" : _collectionVm.Collection.Name)
+            .GetValidVariant(name => IsNameValid(name, out _));
     }
 
     #region Properties
@@ -34,7 +37,8 @@ public class CollectionEditViewModel : EditViewModelBase<CollectionInfoViewModel
         {
             if(SetProperty(ref field, value))
             {
-                ValidateName();
+                Validate(nameof(Name));
+                MarkAsTouched();
             }
         }
     }
@@ -69,10 +73,18 @@ public class CollectionEditViewModel : EditViewModelBase<CollectionInfoViewModel
 
     #endregion
 
+
+    private bool IsNameValid(string name, out string? reason)
+    {
+        var otherCollections = _createNew ? 
+            _collectionManager.CollectionVms:
+            _collectionManager.CollectionVms.Without(_collectionVm);
+        return CollectionManager.IsValidCollectionName(name, out reason, otherCollections);
+    }
+
     private void ValidateName()
     {
-        var otherCollections = _collectionManager.CollectionVms.Except([_collectionVm]).ToList();
-        if (!CollectionManager.IsValidCollectionName(Name, out string? reason, otherCollections))
+        if (!IsNameValid(Name, out string? reason))
         {
             AddError(nameof(Name), reason!);
         }

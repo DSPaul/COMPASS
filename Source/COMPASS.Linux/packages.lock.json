@@ -30,9 +30,9 @@
       },
       "OpenCvSharp5.official.runtime.linux-x64.slim": {
         "type": "Direct",
-        "requested": "[5.0.0.20261012, )",
-        "resolved": "5.0.0.20261012",
-        "contentHash": "weUS9MxE/oeEApA4epeMqELEhVm+KfbO8fMfLkMGXxVucJg0Erqz9YA7H8iWbf9moHzjQZ09cJDefGZVKtrbCQ=="
+        "requested": "[5.0.0.20261018, )",
+        "resolved": "5.0.0.20261018",
+        "contentHash": "DsTiIPBVwhNAlbh3D5NfcPr6IVUneoVt5YuoGHr52ZX5VNz0v9Y+pk9PASVYqVKS+DlplNGhQTwZjhp79rXhKw=="
       },
       "SkiaSharp.NativeAssets.Linux": {
         "type": "Direct",
@@ -327,16 +327,16 @@
       },
       "Markdig": {
         "type": "Transitive",
-        "resolved": "1.4.0",
-        "contentHash": "lLhaiI/mNDTNzgLqnmknhf4LjgTqOAyjx5+GNz0X3AxYMxUhmFppF2WVMdER+SDqwhE5wUF1pzs/cuLwFxs7xA=="
+        "resolved": "1.4.1",
+        "contentHash": "laiWlBRnwVqQlY9eWR56+uteUVtR+LpGw0doMSpirFuxdplSi3V59UOGRTepJaE8hJvfKGcCoguIZ8jmUHcEnA=="
       },
       "MarkView.Avalonia": {
         "type": "Transitive",
-        "resolved": "12.3.0",
-        "contentHash": "O269q5WEVmOWy4LbbzrCGgVhp6m8Uo3XcYwjq9wwe41RH4uyOsQm7Bebz3OQIPXmP1WZZWh1utmHqf7wQujGOA==",
+        "resolved": "12.4.0",
+        "contentHash": "N8nwPEAqnEUNFfE7u3btmUN17bv9xxnkgaNnyTWQBPb0Lp8xTRSRKM6Pu2o59nGEvIKasnFbn6xiVq6uH+qnBg==",
         "dependencies": {
-          "Avalonia": "12.1.3",
-          "Markdig": "1.4.0"
+          "Avalonia": "12.1.4",
+          "Markdig": "1.4.1"
         }
       },
       "Material.Icons": {
@@ -490,8 +490,8 @@
       },
       "OpenCvSharp5": {
         "type": "Transitive",
-        "resolved": "5.0.0.20261012",
-        "contentHash": "Ch9FXEpZNQMEr9TOP8oVXNLXiDaqE8R8ZhO7qUl2TUdGvRrotFDx2iJaUkxGMu/Ip32NostzzAI9IbFDOtgFxA=="
+        "resolved": "5.0.0.20261018",
+        "contentHash": "AVRSdqht1PRr9QfQjVzd6CM4o4IxHS5VeT94ZEEKdMHSQIx7U+VR0O3OzCxRROirJlmH6oz+MMw0SUBxKEN3Qw=="
       },
       "PdfPig": {
         "type": "Transitive",
@@ -540,8 +540,8 @@
       },
       "SharpCompress": {
         "type": "Transitive",
-        "resolved": "0.50.5",
-        "contentHash": "wAEAxPV67rmS3IlIm+tvGNPJXEtZNqlwkZrwJZAvz0AagZP0qLtT4mM2hk8S+uO0Kx+wYoy/FsADQpHwsN5y3g=="
+        "resolved": "0.50.7",
+        "contentHash": "amxjOlPKUFb33ohAVahPCCBHLtToYOOb6JGyM40q8DnT6KYoBLW1TtW6uLEXbv40S7ej6ikf6VmAXGBaFL6Klg=="
       },
       "ShimSkiaSharp": {
         "type": "Transitive",
@@ -669,7 +669,7 @@
           "Avalonia.Fonts.Inter": "[12.1.4, )",
           "Avalonia.Labs.Gif": "[12.0.2, )",
           "Avalonia.Themes.Fluent": "[12.1.4, )",
-          "COMPASS.Infra.Avalonia": "[2.0.0-rc.1, )",
+          "COMPASS.Infra.Avalonia": "[2.0.0, )",
           "Magick.NET.AvaloniaMediaImaging": "[2.0.0, )",
           "PDFtoImage": "[5.4.0, )",
           "PdfPig": "[0.1.16, )",
@@ -681,7 +681,7 @@
         "dependencies": {
           "Autofac": "[9.3.4, )",
           "Autofac.Extensions.DependencyInjection": "[11.0.2, )",
-          "COMPASS.ApiClients": "[2.0.0-rc.1, )",
+          "COMPASS.ApiClients": "[2.0.0, )",
           "CommandLineParser": "[2.9.1, )",
           "CommunityToolkit.Mvvm": "[8.4.2, )",
           "FuzzySharp": "[2.0.2, )",
@@ -694,7 +694,7 @@
           "Selenium.WebDriver": "[4.51.0, )",
           "Serilog": "[4.4.0, )",
           "Serilog.Sinks.File": "[7.0.0, )",
-          "SharpCompress": "[0.50.5, )"
+          "SharpCompress": "[0.50.7, )"
         }
       },
       "compass.infra.avalonia": {
@@ -705,12 +705,12 @@
           "Avalonia.Controls.DataGrid": "[12.1.2, )",
           "Avalonia.Labs.Gif": "[12.0.2, )",
           "AvaloniaUI.DiagnosticsSupport": "[2.2.3, )",
-          "COMPASS.Infra": "[2.0.0-rc.1, )",
+          "COMPASS.Infra": "[2.0.0, )",
           "CommunityToolkit.Mvvm": "[8.4.2, )",
           "FlashCap": "[1.12.0, )",
-          "MarkView.Avalonia": "[12.3.0, )",
+          "MarkView.Avalonia": "[12.4.0, )",
           "Material.Icons.Avalonia": "[3.0.2, )",
-          "OpenCvSharp5": "[5.0.0.20261012, )",
+          "OpenCvSharp5": "[5.0.0.20261018, )",
           "SkiaImageView.Avalonia11": "[1.5.0, )",
           "SkiaSharp": "[4.153.1, )"
         }
@@ -719,9 +719,9 @@
     "net10.0/linux-x64": {
       "OpenCvSharp5.official.runtime.linux-x64.slim": {
         "type": "Direct",
-        "requested": "[5.0.0.20261012, )",
-        "resolved": "5.0.0.20261012",
-        "contentHash": "weUS9MxE/oeEApA4epeMqELEhVm+KfbO8fMfLkMGXxVucJg0Erqz9YA7H8iWbf9moHzjQZ09cJDefGZVKtrbCQ=="
+        "requested": "[5.0.0.20261018, )",
+        "resolved": "5.0.0.20261018",
+        "contentHash": "DsTiIPBVwhNAlbh3D5NfcPr6IVUneoVt5YuoGHr52ZX5VNz0v9Y+pk9PASVYqVKS+DlplNGhQTwZjhp79rXhKw=="
       },
       "SkiaSharp.NativeAssets.Linux": {
         "type": "Direct",

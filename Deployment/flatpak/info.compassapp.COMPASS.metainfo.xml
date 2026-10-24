@@ -67,6 +67,12 @@
   </screenshots>
   
   <releases>
+    <release version="2.0.1" date="2026-10-24" type="stable">
+      <description>
+        <p>A bugfix release focused on issues related to import and export functionality.</p>
+      </description>
+      <url type="details">https://www.compassapp.info/releases/v2.0.1</url>
+    </release>
     <release version="2.0.0" date="2026-10-17" type="stable">
       <description>
         <p>A major rewrite with a redesigned interface, Linux support via Flatpak, and tabs that let you keep several collections open at once. Scrolling, filtering, and sorting are considerably faster on large collections, ISBN barcode scanning has been rebuilt, and item descriptions now support Markdown.</p>

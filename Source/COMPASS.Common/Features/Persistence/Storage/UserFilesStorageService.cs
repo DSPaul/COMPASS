@@ -10,11 +10,11 @@ public class UserFilesStorageService(
     ILogger logger
     ) : IUserFilesStorageService
 {
-    private readonly string _collectionsPath = Path.Combine(applicationDataService.UserDataPath, "Collections");
+    private readonly string _collectionsPath = Path.Combine(applicationDataService.UserDataPath, Constants.DIR_COLLECTIONS);
     
 
     #region IUserFilesStorageService
-    private string UserFilesDirectory(CodexCollection collection) => Path.Combine(_collectionsPath, collection.Name , "Files");
+    private string UserFilesDirectory(CodexCollection collection) => Path.Combine(_collectionsPath, collection.Name , Constants.DIR_FILES);
 
     public bool HasUserFiles(CodexCollection collection)
     {
@@ -50,59 +50,77 @@ public class UserFilesStorageService(
     public void MoveCodexDataToCollection(Codex codex, CodexCollection targetCollection, CodexCollection? sourceCollection = null, bool copy = false)
     {
         //if no prev User files dir is given, we just use the current folder 
-        if (!File.Exists(codex.Sources.Path))
+        if (string.IsNullOrEmpty(codex.Sources.Path))
         {
             return;
         }
         
         EnsureDirectoryExists(targetCollection);
         
+        string? oldPath;
         string newPath;
-        //if no previous collection given, put it top level in user files directory
-        if (sourceCollection == null)
+
+        if (!Path.IsPathFullyQualified(codex.Sources.Path)) //relative path
         {
-            newPath = Path.IsPathFullyQualified(codex.Sources.Path)
-                ? Path.Combine(UserFilesDirectory(targetCollection), Path.GetFileName(codex.Sources.Path)) //absolute path, just move the file top level
-                : Path.Combine(UserFilesDirectory(targetCollection), codex.Sources.Path); //relative path, keep relative structure
+            //relative paths are stored with portable separators, so convert to this platform's
+            string relativePath = PathUtils.FromPortablePath(codex.Sources.Path);
+            newPath = Path.Combine(UserFilesDirectory(targetCollection), relativePath); // keep relative structure
+            if(sourceCollection == null)
+            {
+                oldPath = null;
+                logger.Warn($"Unable to move the file references by {codex.Title} because it has a relative path");
+            }
+            else
+            {
+                oldPath = Path.Combine(UserFilesDirectory(sourceCollection), relativePath);
+            }
+
         }
-        //if existing user files dir is given, replace it with new dir
-        else if (codex.Sources.Path.StartsWith(UserFilesDirectory(sourceCollection)))
+        else //absolute path
         {
-            newPath = codex.Sources.Path.Replace(UserFilesDirectory(sourceCollection), UserFilesDirectory(targetCollection));
-        }
-        //if the file wasn't in the previous user files, doesn't nee to be copied over
-        else
-        {
-            return;
+            oldPath = codex.Sources.Path;
+
+            //if no previous collection given, put it top level in user files directory
+            if (sourceCollection == null)
+            {
+                newPath = Path.Combine(UserFilesDirectory(targetCollection), Path.GetFileName(codex.Sources.Path));
+            }
+            //if existing user files dir is given, replace it with new dir
+            else if (codex.Sources.Path.StartsWith(UserFilesDirectory(sourceCollection)))
+            {
+                newPath = codex.Sources.Path.Replace(UserFilesDirectory(sourceCollection), UserFilesDirectory(targetCollection));
+            }
+            //if the file wasn't in the previous user files, doesn't nee to be copied over
+            else
+            {
+                return;
+            }
         }
 
-        if (newPath == codex.Sources.Path)
+
+        if (newPath == codex.Sources.Path || oldPath == null)
         {
             return;
         }
         
         try
         {
-            string? newDir = Path.GetDirectoryName(newPath);
-            if (newDir != null)
-            {
-                try
-                {
-                    ioService.EnsureDirectoryExists(newDir);
-                }
-                catch (Exception ex)
-                {
-                    logger.Error("Failed to create a folder to store the imported files", ex);
-                }
-            }
+            ioService.EnsureDirectoryExists(newPath);
+        }
+        catch (Exception ex)
+        {
+            logger.Error("Failed to create a folder to store the imported files", ex);
+        }
 
+        try
+        {
             if (copy)
             {
-                File.Copy(codex.Sources.Path, newPath, true);
+                File.Copy(oldPath, newPath, true);
             }
             else
             {
-                File.Move(codex.Sources.Path, newPath, true);
+                File.Move(oldPath, newPath, true);
             }
             codex.Sources.Path = newPath;
         }

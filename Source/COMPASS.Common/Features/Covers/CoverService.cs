@@ -95,7 +95,7 @@ namespace COMPASS.Common.Features.Covers
             }
         }
 
-        public async Task FetchAndApplyCovers(List<Codex> codices)
+        public async Task FetchAndApplyCovers(IList<Codex> codices)
         {
             if (!codices.Any()) return;
 

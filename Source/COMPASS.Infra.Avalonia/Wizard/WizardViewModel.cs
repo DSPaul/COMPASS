@@ -38,9 +38,10 @@ namespace COMPASS.Infra.Avalonia.Wizard
         protected override void OnPropertyChanged(PropertyChangedEventArgs e)
         {
             base.OnPropertyChanged(e);
-            if (e.PropertyName != nameof(HasErrors))
+            if (e.PropertyName != nameof(HasErrors) && e.PropertyName != null)
             {
                 Validate(e.PropertyName);
+                MarkAsTouched(e.PropertyName);
             }
         }
         

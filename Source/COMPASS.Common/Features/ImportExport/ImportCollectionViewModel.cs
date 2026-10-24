@@ -6,59 +6,62 @@ using COMPASS.Infra.Logging;
 using COMPASS.Infra.Notifications;
 using COMPASS.Common.Domain;
 using COMPASS.Common.Features.Tabs;
+using COMPASS.Common.Features.Covers;
+using COMPASS.Infra.Text;
+
 namespace COMPASS.Common.Features.ImportExport
 {
     public class ImportCollectionViewModel : WizardViewModel, IDisposable
     {
+        private readonly ILogger _logger;
+        private readonly ICoverService _coverService;
         private readonly IUserFilesStorageService _userFilesStorageService;
         private readonly INotificationService _notificationService;
         private readonly CodexCollectionOperations _codexCollectionOperations;
         private readonly CollectionManager _collectionManager;
+        private readonly TabsViewModel _tabsViewModel;
 
         public override string WindowTitle { get; } = "Import Collection";
 
         private readonly WizardStepViewModel _overviewStep = new("Overview");
 
         private readonly CollectionHandle _collectionToImportHandle;
-        
+
         public ImportCollectionViewModel(
+            ILogger logger,
+            ICoverService coverService, 
             IUserFilesStorageService userFilesStorageService, 
             INotificationService notificationService, 
             CodexCollectionOperations codexCollectionOperations, 
             CollectionManager collectionManager,
             CollectionContentSelectorViewModelFactory contentSelectorVMFactory, 
-            IActiveTabContext activeTabContext,
+            TabsViewModel tabsViewModel,
             CodexCollectionVM collectionVmToImport,
             CodexCollectionVM? targetCollection = null)
         {
+            _logger = logger;
+            _coverService = coverService;
             _userFilesStorageService = userFilesStorageService;
             _notificationService = notificationService;
             _codexCollectionOperations = codexCollectionOperations;
             _collectionManager = collectionManager;
-            AddValidation(nameof(MergeIntoCollection), ValidateTarget);
-            AddValidation(nameof(CollectionName), ValidateTarget);
-            AddValidation(nameof(TargetCollection), ValidateTarget);
+            _tabsViewModel = tabsViewModel;
+            AddValidation(nameof(MergeIntoCollection), ValidateCollectionName);
+            AddValidation(nameof(CollectionName), ValidateCollectionName);
             
             CollectionVMToImport = collectionVmToImport;
-            TargetCollection = targetCollection ?? activeTabContext.ActiveTab?.CollectionVM;
+            TargetCollection = targetCollection ?? tabsViewModel.ActiveTab?.CollectionVM ?? collectionManager.CollectionVms.First();
             CollectionVms = _collectionManager.CollectionVms.ToList(); 
             //Collection will have format '__<name><extension>'
-            CollectionName = collectionVmToImport.Identifier.Substring(2, collectionVmToImport.Identifier.Length - 2 - Constants.SatchelExtension.Length);
+            CollectionName = collectionVmToImport.Identifier
+                .Substring(2, collectionVmToImport.Identifier.Length - 2 - Constants.SatchelExtension.Length)
+                .GetValidVariant(name => CollectionManager.IsValidCollectionName(name, out _, CollectionVms));
 
             _collectionToImportHandle = collectionVmToImport.Load() ?? throw new LoadException(collectionVmToImport.Identifier);
             
             ContentSelectorVM = contentSelectorVMFactory.Create(CollectionToImport);
             
             UpdateSteps();
-
-            //if files were included in compass file, set paths of codices to those files
-            if (_userFilesStorageService.HasUserFiles(CollectionToImport))
-            {
-                foreach (Codex codex in CollectionToImport.AllCodices.Where(c => c.Sources.HasOfflineSource()))
-                {
-                    _userFilesStorageService.MoveCodexDataToCollection(codex, CollectionToImport);
-                }
-            }
         }
 
         #region Properties
@@ -70,7 +73,7 @@ namespace COMPASS.Common.Features.ImportExport
 
         public IList<CodexCollectionVM> CollectionVms { get; } 
         
-        public CodexCollectionVM? TargetCollection { get; set => SetProperty(ref field, value); }
+        public CodexCollectionVM TargetCollection { get; set => SetProperty(ref field, value); }
         
         /// <summary>
         /// Indicates that the tags should all be imported in a new, separate group
@@ -157,27 +160,44 @@ namespace COMPASS.Common.Features.ImportExport
 
             //Apply the selection
             ContentSelectorVM.ApplyAllSelections();
+            CloseAction();
 
-            CollectionHandle? targetCollectionHandle = null;
             try
             {
-                targetCollectionHandle = MergeIntoCollection ? 
-                    TargetCollection?.Load() : 
+                using var targetCollectionHandle = MergeIntoCollection ? 
+                    TargetCollection.Load() : 
                     _collectionManager.CreateAndLoadCollection(CollectionName);
 
                 if (targetCollectionHandle == null)
                 {
-                    throw new LoadException(MergeIntoCollection ? TargetCollection!.Identifier : CollectionName);
+                    throw new LoadException(MergeIntoCollection ? TargetCollection.Identifier : CollectionName);
+                }
+
+                //if files were included in compass file, set paths of codices to those files
+                if (_userFilesStorageService.HasUserFiles(CollectionToImport))
+                {
+                    foreach (Codex codex in ContentSelectorVM.CuratedCollection.AllCodices.Where(c => c.Sources.HasOfflineSource()))
+                    {
+                        _userFilesStorageService.MoveCodexDataToCollection(codex, targetCollectionHandle.CollectionVM.Collection, CollectionToImport);
+                    }
                 }
 
                 //Save the changes to a permanent collection
                 _codexCollectionOperations.Merge(ContentSelectorVM.CuratedCollection, targetCollectionHandle.CollectionVM.Collection, ImportTagsSeparately);
                 targetCollectionHandle.Save();
+
+                //open the imported collection in a new tab if not the active one
+                if(_tabsViewModel.ActiveTab?.CollectionVM != targetCollectionHandle.CollectionVM)
+                {
+                    _tabsViewModel.CreateTab(targetCollectionHandle.CollectionVM);
+                }
+
+                //covers are not included by default so good idea to regen
+                await _coverService.FetchAndApplyCovers(targetCollectionHandle.CollectionVM.Collection.AllCodices);
             }
-            finally
+            catch(Exception ex)
             {
-                targetCollectionHandle?.Dispose();
-                CloseAction();
+                _logger.Error("Failed to complete import", ex);
             }
         }
 
@@ -197,13 +217,11 @@ namespace COMPASS.Common.Features.ImportExport
 
         #region Methods
 
-        private void ValidateTarget()
+        private void ValidateCollectionName()
         {
             //Because a change in MergeIntoCollection can change validity, clear errors on the other props manually
             _overviewStep.ClearErrors(nameof(CollectionName));
-            _overviewStep.ClearErrors(nameof(TargetCollection));
             ClearErrors(nameof(CollectionName));
-            ClearErrors(nameof(TargetCollection));
             
             if (!MergeIntoCollection && !CollectionManager.IsValidCollectionName(CollectionName, out string? invalidReason, CollectionVms))
             {
@@ -211,14 +229,6 @@ namespace COMPASS.Common.Features.ImportExport
                 _overviewStep.AddError(nameof(CollectionName), invalidReason);
                 //Error on vm to show in UI
                 AddError(nameof(CollectionName), invalidReason);
-            }
-            
-            if (MergeIntoCollection && TargetCollection == null)
-            {
-                //Error on step to block next
-                _overviewStep.AddError(nameof(TargetCollection), "Please select a target collection");
-                //Error on vm to show in UI
-                AddError(nameof(TargetCollection), "Please select a target collection");
             }
         }
 
@@ -235,13 +245,17 @@ namespace COMPASS.Common.Features.ImportExport
 
     [Factory]
     public class ImportCollectionViewModelFactory(
-        IUserFilesStorageService userFilesStorageService, INotificationService notificationService, 
+        ILogger logger,
+        ICoverService coverService, IUserFilesStorageService userFilesStorageService, INotificationService notificationService, 
         CodexCollectionOperations codexCollectionOperations, 
         CollectionManager collectionManager,
         CollectionContentSelectorViewModelFactory contentSelectorVMFactory,
-        IActiveTabContext activeTabContext)
+        Lazy<TabsViewModel> tabsViewModel)
     {
         public ImportCollectionViewModel Create(CodexCollectionVM collectionVmToImport, CodexCollectionVM? targetCollection = null)
-            => new(userFilesStorageService, notificationService, codexCollectionOperations, collectionManager, contentSelectorVMFactory, activeTabContext, collectionVmToImport, targetCollection);
+            => new(logger, coverService, userFilesStorageService, notificationService, 
+                codexCollectionOperations, collectionManager,
+                contentSelectorVMFactory, tabsViewModel.Value, 
+                collectionVmToImport, targetCollection);
     }
 }

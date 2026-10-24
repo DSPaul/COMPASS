@@ -12,7 +12,7 @@ public interface ICoverService
     /// <exception cref="System.OperationCanceledException"></exception>
     Task FetchAndApplyCover(Codex codex, ChooseMetadataViewModel? chooseMetadataViewModel = null, CancellationToken cancellationToken = default);
 
-    Task FetchAndApplyCovers(List<Codex> codices);
+    Task FetchAndApplyCovers(IList<Codex> codices);
 
     Task ApplyCover(Codex destCodex, string imagePath, CancellationToken cancellationToken = default);
     Task ApplyCover(Codex destCodex, IMagickImage image, CancellationToken cancellationToken = default);

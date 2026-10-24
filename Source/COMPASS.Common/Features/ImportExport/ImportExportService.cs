@@ -189,7 +189,7 @@ public class ImportExportService(
 
         try
         {
-            await progressTrackingManager.RunAsync(progressTracker, $"Importing {fileName}",
+            await progressTrackingManager.RunAsync(progressTracker, $"Reading {fileName}...",
                 async (tracker, ct) =>
                 {
                     //unzip the file to tmp folder
@@ -383,34 +383,52 @@ public class ImportExportService(
             .Where(codex => codex.Sources.HasOfflineSource())
             .ToList();
         string commonFolder = PathUtils.GetCommonFolder(itemsWithOfflineSource.Select(codex => codex.Sources.Path).ToList());
+
+        if(itemsWithOfflineSource.Count == 1)
+        {
+            //single file will share full path with itself, including file name, so we need to get the directory instead
+            commonFolder = Path.GetDirectoryName(itemsWithOfflineSource[0].Sources.Path) ?? string.Empty;
+        }
+
         foreach (Codex codex in itemsWithOfflineSource)
         {
-            string relativePath = codex.Sources.Path[commonFolder.Length..].TrimStart(Path.DirectorySeparatorChar);
+            string relativePath = codex.Sources.Path[commonFolder.Length..]
+                .TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
 
             //Add the file
             if (File.Exists(codex.Sources.Path))
             {
-                await archive.AddEntryAsync(Path.Combine("Files", relativePath), codex.Sources.Path);
+                await archive.AddEntryAsync(Path.Combine(Constants.DIR_FILES, relativePath), codex.Sources.Path);
             }
 
-            //keep the relative path, will be used during import to link the included files
-            codex.Sources.Path = relativePath;
+            //keep the relative path and make it portable, will be used during import to link the included files
+            codex.Sources.Path = PathUtils.ToPortablePath(relativePath);
         }
     }
 
     private async static Task AddCoversToArchive(CodexCollection collection, IWritableAsyncArchive<ZipWriterOptions> archive)
     {
         var itemsWithCovers = collection.AllCodices
-            .Where(codex => codex.CoverArtPath != null && File.Exists(codex.CoverArtPath))
+            .Where(codex => File.Exists(codex.CoverArtPath))
             .ToList();
-        string commonFolder = PathUtils.GetCommonFolder(itemsWithCovers.Select(codex => codex.CoverArtPath!).ToList());
+        string commonFolder = PathUtils.GetCommonFolder(itemsWithCovers.Select(codex => codex.CoverArtPath).ToList());
+
+        if (itemsWithCovers.Count == 1)
+        {
+            //single file will share full path with itself, including file name, so we need to get the directory instead
+            commonFolder = Path.GetDirectoryName(itemsWithCovers[0].CoverArtPath) ?? string.Empty;
+        }
+
         foreach (Codex codex in itemsWithCovers)
         {
-            string relativePath = codex.CoverArtPath![commonFolder.Length..].TrimStart(Path.DirectorySeparatorChar);
+            string relativePath = codex.CoverArtPath[commonFolder.Length..]
+                .TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+
             //Add the file
-            await archive.AddEntryAsync(Path.Combine("CoverArt", relativePath), codex.CoverArtPath!);
-            //keep the relative path, will be used during import to link the included files
-            codex.CoverArtPath = relativePath;
+            await archive.AddEntryAsync(Path.Combine(Constants.DIR_COVERS, relativePath), codex.CoverArtPath);
+
+            //keep the relative path and make it portable, will be used during import to link the included files
+            codex.CoverArtPath = PathUtils.ToPortablePath(relativePath);
         }
     }
 

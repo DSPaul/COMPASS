@@ -16,7 +16,7 @@ public static class CollectionGenerator
         var collection = new CodexCollection(name);
 
         //create tags and codices
-        collection.AddTags(RandomGenerator.GetRandomList<Tag>());
+        collection.AddTags(RandomGenerator.GetRandomList<Tag>(minLength: 1));
         int codexCount = Random.Next(1, 20);
         for (int i = 0; i < codexCount; i++)
         {

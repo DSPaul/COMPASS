@@ -69,6 +69,30 @@ public static class PathUtils
     }
 
     /// <summary>
+    /// Normalizes a path's directory separators to forward slashes ('/'), 
+    /// so it can be read back on another platform that might use a different separator. 
+    /// </summary>
+    public static string ToPortablePath(string path)
+    {
+        string portable = path;
+        if (Path.DirectorySeparatorChar != '/')
+        {
+            portable = portable.Replace(Path.DirectorySeparatorChar, '/');
+        }
+        if (Path.AltDirectorySeparatorChar != '/')
+        {
+            portable = portable.Replace(Path.AltDirectorySeparatorChar, '/');
+        }
+        return portable;
+    }
+
+    /// <summary>
+    /// Converts a path stored with portable separators ('/') back to this platform's directory separator.
+    /// </summary>
+    public static string FromPortablePath(string path) =>
+        Path.DirectorySeparatorChar == '/' ? path : path.Replace('/', Path.DirectorySeparatorChar);
+
+    /// <summary>
     /// Get the longest common path shared by all the given paths
     /// </summary>
     /// <param name="paths"></param>
@@ -90,7 +114,7 @@ public static class PathUtils
         foreach (string segment in referenceSegments)
         {
             List<string> candidateSegments = [.. commonSegments, segment];
-            string candidatePath = string.Join(Path.DirectorySeparatorChar, candidateSegments);
+            string candidatePath = string.Join(Path.DirectorySeparatorChar, candidateSegments) + Path.DirectorySeparatorChar;
             bool sharedByAll = paths.All(path =>
                 PathsEqual(path, candidatePath) || IsPathInsideDirectory(path, candidatePath));
             if (sharedByAll)
@@ -171,20 +195,43 @@ public static class PathUtils
         }
     }
 
+    /// <summary>
+    /// True when the path (or URL) matches any of the globs.
+    /// </summary>
     public static bool MatchesAnyGlob(string filePath, IList<string> globs )
     {
         if (string.IsNullOrEmpty(filePath)) return false;
-            
+        if (globs.Count == 0) return false;
+
         // Check for exact matches first
         if (globs.Any(glob => glob == filePath))
         {
             return true;
         }
 
+        string matchRoot = Directory.GetCurrentDirectory();
+        string pathToMatch = filePath;
+        if (Path.IsPathRooted(filePath) || HasParentTraversal(filePath))
+        {
+            string fullPath = NormalizePath(filePath);
+            string volumeRoot = Path.GetPathRoot(fullPath) ?? string.Empty;
+            if (!string.IsNullOrEmpty(volumeRoot) && fullPath.Length > volumeRoot.Length)
+            {
+                matchRoot = volumeRoot;
+                pathToMatch = fullPath[volumeRoot.Length..];
+            }
+        }
+
         var matcher = new Matcher();
         matcher.AddIncludePatterns(globs);
-        return matcher.Match(filePath).HasMatches;
+        return matcher.Match(matchRoot, pathToMatch).HasMatches;
     }
+
+    /// <summary>
+    /// True when any segment of the path is ".."; the path therefore needs resolving
+    /// </summary>
+    private static bool HasParentTraversal(string path) =>
+        path.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar).Contains("..");
 
     /// <summary>
     /// Identity for symlink cycle detection
