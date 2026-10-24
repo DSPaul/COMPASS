@@ -4,9 +4,11 @@ using Avalonia.Headless.NUnit;
 using Avalonia.Platform.Storage;
 using COMPASS.Common.Domain;
 using COMPASS.Common.Features.CodexCollections;
+using COMPASS.Common.Features.Covers;
 using COMPASS.Common.Features.ImportExport;
 using COMPASS.Common.Features.Persistence;
 using COMPASS.Common.Features.Persistence.Repositories;
+using COMPASS.Common.Features.Tabs;
 using COMPASS.Tests.Common.DataGenerators;
 using COMPASS.Tests.Common.Mocks;
 using SharpCompress.Archives;
@@ -21,8 +23,48 @@ namespace COMPASS.IntegrationTests.Common.Services
     [TestFixture]
     public class ImportExportServiceTests
     {
+        private IContainer _container = null!;
+        private CollectionHandle _initialCollection = null!;
+
         private IContainer BuildContainer() => Helpers.SetupContainer(builder =>
-            builder.RegisterType<ImportExportService>().As<IImportExportService>());
+        {
+            builder.RegisterType<ImportExportService>().As<IImportExportService>();
+            //Importing a collection regenerates its covers; keep that off the network
+            builder.RegisterType<MockCoverService>().As<ICoverService>();
+        });
+
+        [SetUp]
+        public void SetUp()
+        {
+            _container = BuildContainer();
+
+            //The app always has at least one collection: it creates the default one when there are none.
+            //The import wizard needs an existing collection to target, so set it up the same way the app does.
+            _initialCollection = _container.Resolve<CollectionManager>().GetOrCreateInitialCollectionVM();
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            //The import wizard opens a tab for the collection it imported, and an open tab keeps a
+            //collection from being deleted, so close the tabs before deleting the test collections
+            TabsViewModel tabsViewModel = _container.Resolve<TabsViewModel>();
+            while (tabsViewModel.Tabs.Count > 0)
+            {
+                CollectionTabVM tab = tabsViewModel.Tabs[^1];
+                tabsViewModel.Tabs.Remove(tab);
+                tab.Dispose();
+            }
+
+            _initialCollection.Dispose();
+
+            foreach (CodexCollectionVM collectionVm in _container.Resolve<CollectionManager>().CollectionVms.ToList())
+            {
+                collectionVm.DeleteCollection();
+            }
+
+            _container.Dispose();
+        }
 
         [Test]
         public async Task OpenSatchel()
@@ -35,10 +77,9 @@ namespace COMPASS.IntegrationTests.Common.Services
             };
 
             string path = Path.GetTempPath() + Guid.NewGuid() + Constants.SatchelExtension;
-            var container = BuildContainer();
-            var storageService = container.Resolve<IImportExportService>();
-            var repo = container.ResolveKeyed<ICodexCollectionRepository>(StorageStrategy.Xml);
-            var satchelLogger = container.Resolve<MockLogger>();
+            var storageService = _container.Resolve<IImportExportService>();
+            var repo = _container.ResolveKeyed<ICodexCollectionRepository>(StorageStrategy.Xml);
+            var satchelLogger = _container.Resolve<MockLogger>();
 
             await using (var zip = await ZipArchive.CreateAsyncArchive())
             {
@@ -88,11 +129,10 @@ namespace COMPASS.IntegrationTests.Common.Services
             window.Show();
 
             //Setup
-            var container = BuildContainer();
             string testCollectionId = "__SatchelExport";
             var testCollection = CollectionGenerator.GetCompleteCollection(testCollectionId);
-            var importExportService = container.Resolve<IImportExportService>();
-            var exportLogger = container.Resolve<MockLogger>();
+            var importExportService = _container.Resolve<IImportExportService>();
+            var exportLogger = _container.Resolve<MockLogger>();
 
             //Export
             var filePath = Path.GetTempPath() + Guid.NewGuid().ToString() + Constants.SatchelExtension;
@@ -110,7 +150,7 @@ namespace COMPASS.IntegrationTests.Common.Services
             Assert.That(exportLogger.Fatals, Is.Empty, "ExportCollection logged fatals");
 
             CodexCollectionVM? deserializedCollectionVm = null;
-            CodexCollectionVM? importedCollection = null;
+            ImportCollectionViewModel? importViewModel = null;
             try
             {
                 //Deserialize Satchel
@@ -120,8 +160,8 @@ namespace COMPASS.IntegrationTests.Common.Services
                 Assert.That(exportLogger.Errors, Is.Empty, "OpenSatchel of exported collection logged errors");
                 Assert.That(exportLogger.Warnings, Is.Empty, "OpenSatchel of exported collection logged warnings");
                 Assert.That(exportLogger.Fatals, Is.Empty, "OpenSatchel of exported collection logged fatals");
-                deserializedCollectionVm = container.Resolve<CodexCollectionVMFactory>().Create(deserializedCollection, StorageStrategy.Xml);
-                ImportCollectionViewModel importViewModel = container.Resolve<ImportCollectionViewModelFactory>().Create(deserializedCollectionVm);
+                deserializedCollectionVm = _container.Resolve<CodexCollectionVMFactory>().Create(deserializedCollection, StorageStrategy.Xml);
+                importViewModel = _container.Resolve<ImportCollectionViewModelFactory>().Create(deserializedCollectionVm);
 
                 Assert.That(importViewModel.ContentSelectorVM.HasCodices, "deserialized satchel has no Codices");
                 Assert.That(importViewModel.ContentSelectorVM.HasTags, "deserialized satchel has no Tags");
@@ -133,7 +173,7 @@ namespace COMPASS.IntegrationTests.Common.Services
                 importViewModel.MergeIntoCollection = false;
                 await importViewModel.Finish();
 
-                importedCollection = container.Resolve<CollectionManager>().GetCollectionVM("Imported_Satchel");
+                CodexCollectionVM? importedCollection = _container.Resolve<CollectionManager>().GetCollectionVM("Imported_Satchel");
                 Assert.That(importedCollection, Is.Not.Null, "Imported collection not found after import");
                 Assert.That(importedCollection.Collection.AllCodices, Has.Count.EqualTo(deserializedCollection.AllCodices.Count));
                 Assert.That(importedCollection.Collection.AllTags, Has.Count.EqualTo(deserializedCollection.AllTags.Count));
@@ -144,8 +184,8 @@ namespace COMPASS.IntegrationTests.Common.Services
             }
             finally
             {
-                //Cleanup
-                importedCollection?.DeleteCollection();
+                //Cleanup: the imported collection and the tabs are cleaned up in TearDown
+                importViewModel?.Dispose();
                 deserializedCollectionVm?.DeleteCollection();
                 File.Delete(filePath);
                 window.Close();
@@ -159,7 +199,6 @@ namespace COMPASS.IntegrationTests.Common.Services
             window.Show();
 
             //Setup: a collection whose codices point at real files, one of them nested in a subfolder
-            var container = BuildContainer();
             string sourceDir = Path.Combine(Path.GetTempPath(), "COMPASS_ImportFiles_" + Guid.NewGuid());
             string nestedDir = Path.Combine(sourceDir, "books");
             Directory.CreateDirectory(nestedDir);
@@ -184,10 +223,9 @@ namespace COMPASS.IntegrationTests.Common.Services
 
             string satchelPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + Constants.SatchelExtension);
             ImportCollectionViewModel? importViewModel = null;
-            CodexCollectionVM? importedCollection = null;
             try
             {
-                var importExportService = container.Resolve<IImportExportService>();
+                var importExportService = _container.Resolve<IImportExportService>();
 
                 //Export including the user files
                 var targetFile = await GetStorageFileFromPath(satchelPath, window);
@@ -209,13 +247,13 @@ namespace COMPASS.IntegrationTests.Common.Services
                         $"Satchel stored a non-portable path: {codex.Sources.Path}");
                 }
 
-                var deserializedCollectionVm = container.Resolve<CodexCollectionVMFactory>().Create(deserialized, StorageStrategy.Xml);
-                importViewModel = container.Resolve<ImportCollectionViewModelFactory>().Create(deserializedCollectionVm);
+                var deserializedCollectionVm = _container.Resolve<CodexCollectionVMFactory>().Create(deserialized, StorageStrategy.Xml);
+                importViewModel = _container.Resolve<ImportCollectionViewModelFactory>().Create(deserializedCollectionVm);
                 importViewModel.CollectionName = "Imported_UserFiles";
                 importViewModel.MergeIntoCollection = false;
                 await importViewModel.Finish();
 
-                importedCollection = container.Resolve<CollectionManager>().GetCollectionVM("Imported_UserFiles");
+                CodexCollectionVM? importedCollection = _container.Resolve<CollectionManager>().GetCollectionVM("Imported_UserFiles");
                 Assert.That(importedCollection, Is.Not.Null, "Imported collection not found after import");
                 Assert.That(importedCollection.Collection.AllCodices, Has.Count.EqualTo(2));
 
@@ -242,8 +280,7 @@ namespace COMPASS.IntegrationTests.Common.Services
             }
             finally
             {
-                //Cleanup
-                importedCollection?.DeleteCollection();
+                //Cleanup: the imported collection and the tabs are cleaned up in TearDown
                 importViewModel?.Dispose();
                 if (File.Exists(satchelPath)) File.Delete(satchelPath);
                 if (Directory.Exists(sourceDir)) Directory.Delete(sourceDir, true);
