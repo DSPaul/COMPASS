@@ -129,6 +129,19 @@ jobs:
     needs: [get-version, package-windows, package-flatpak]
 
     steps:
+    - uses: actions/checkout@v6
+      with:
+        ref: ${{ inputs.branch }}
+
+    #Prefills the draft body with the '## COMPASS v<version>' section of Changelog.md, so the release
+    #only needs reviewing instead of being written by hand.
+    - name: Extract changelog entry
+      run: >
+        python3 Deployment/extract_changelog.py
+        ${{ needs.get-version.outputs.version }}
+        --output release-notes.md
+        --allow-missing
+
     - name: Download Windows installer
       uses: actions/download-artifact@v8
       with:
@@ -146,6 +159,7 @@ jobs:
       with:
         tag_name: v${{ needs.get-version.outputs.version }}
         name: v${{ needs.get-version.outputs.version }}
+        body_path: release-notes.md
         target_commitish: ${{ inputs.branch }}
         draft: true
         prerelease: ${{ contains(needs.get-version.outputs.version, '-') }}
