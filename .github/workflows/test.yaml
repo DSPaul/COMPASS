@@ -35,16 +35,26 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
-    - name: Test
-      run: |
-        dotnet test Tests/COMPASS.UnitTests --no-restore -v normal
-        dotnet test Tests/COMPASS.IntegrationTests.Common --no-restore -v normal
-        dotnet test Tests/COMPASS.IntegrationTests.Windows --no-restore -v normal
+    #One step per test project: a multi-command pwsh step only reports the exit code of its last
+    #command, so a failure in an earlier project would leave the job green.
+    #Every project runs even when an earlier one fails, so a single run shows all failures.
+    - name: Test unit tests
+      if: ${{ !cancelled() }}
+      run: dotnet test Tests/COMPASS.UnitTests --no-restore -v normal
+
+    - name: Test common integration tests
+      if: ${{ !cancelled() }}
+      run: dotnet test Tests/COMPASS.IntegrationTests.Common --no-restore -v normal
+
+    - name: Test windows integration tests
+      if: ${{ !cancelled() }}
+      run: dotnet test Tests/COMPASS.IntegrationTests.Windows --no-restore -v normal
 
     - name: Smoke test - launch app and verify it survives startup
       shell: pwsh
       run: |
         dotnet publish Source/COMPASS.Windows/COMPASS.Windows.csproj --configuration Release --no-restore -o publish/win-x64
+        if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
         $compassProcess = Start-Process -FilePath ".\publish\win-x64\COMPASS.exe" -PassThru
         Start-Sleep -Seconds 12
         if ($compassProcess.HasExited) {
@@ -73,11 +83,19 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
-    - name: Test
-      run: |
-        dotnet test Tests/COMPASS.UnitTests --no-restore -v normal
-        dotnet test Tests/COMPASS.IntegrationTests.Common --no-restore -v normal
-        dotnet test Tests/COMPASS.IntegrationTests.Linux --no-restore -v normal
+    #One step per test project so a failure in any of them fails the job.
+    #Every project runs even when an earlier one fails, so a single run shows all failures.
+    - name: Test unit tests
+      if: ${{ !cancelled() }}
+      run: dotnet test Tests/COMPASS.UnitTests --no-restore -v normal
+
+    - name: Test common integration tests
+      if: ${{ !cancelled() }}
+      run: dotnet test Tests/COMPASS.IntegrationTests.Common --no-restore -v normal
+
+    - name: Test linux integration tests
+      if: ${{ !cancelled() }}
+      run: dotnet test Tests/COMPASS.IntegrationTests.Linux --no-restore -v normal
 
     - name: Smoke test - launch app and verify it survives startup
       run: |
