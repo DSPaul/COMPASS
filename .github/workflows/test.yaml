@@ -6,14 +6,8 @@ permissions:
 
 on:
   workflow_dispatch:
-  push:
-    branches: [ avalonia, dev ]
-    paths:
-    - '**.cs'
-    - '**.csproj'
-    - '.github/workflows/*'
   pull_request:
-    branches: [ master ]
+    branches: [ dev, master ]
     paths:
     - '**.cs'
     - '**.csproj'
