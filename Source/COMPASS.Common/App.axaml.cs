@@ -23,7 +23,8 @@ public partial class App : Application
     {
         AvaloniaXamlLoader.Load(this);
         MarkdownViewerLinkHandler.EnsureRegistered();
-        ModalDialogs.Register();
+        ViewRegistrar.RegisterModals();
+        ViewRegistrar.RegisterLayouts();
         
 #if DEBUG
         this.AttachDeveloperTools();

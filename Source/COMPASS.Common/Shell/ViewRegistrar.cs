@@ -2,6 +2,11 @@ using COMPASS.Common.Features.CodexCollections;
 using COMPASS.Common.Features.Codices;
 using COMPASS.Common.Features.ImportExport;
 using COMPASS.Common.Features.ISBN;
+using COMPASS.Common.Features.Layouts;
+using COMPASS.Common.Features.Layouts.Card;
+using COMPASS.Common.Features.Layouts.Home;
+using COMPASS.Common.Features.Layouts.List;
+using COMPASS.Common.Features.Layouts.Tile;
 using COMPASS.Common.Features.Metadata;
 using COMPASS.Common.Features.Settings;
 using COMPASS.Common.Features.Tags;
@@ -10,11 +15,11 @@ using COMPASS.Infra.Avalonia.Modal;
 namespace COMPASS.Common.Shell;
 
 /// <summary>
-/// Maps every modal view-model to its view.
+/// Maps view-models to their views.
 /// </summary>
-public static class ModalDialogs
+internal static class ViewRegistrar
 {
-    public static void Register()
+    internal static void RegisterModals()
     {
         // Modals
         ModalWindow.Register<CollectionEditViewModel, CollectionEditView>();
@@ -33,5 +38,13 @@ public static class ModalDialogs
         // Wizards
         ModalWindow.Register<ImportCollectionViewModel, ImportCollectionWizard>();
         ModalWindow.Register<ExportCollectionViewModel, ExportCollectionWizard>();
+    }
+
+    internal static void RegisterLayouts()
+    {
+        CodexLayoutHost.Register<HomeLayoutViewModel, HomeLayout>();
+        CodexLayoutHost.Register<ListLayoutViewModel, ListLayout>();
+        CodexLayoutHost.Register<CardLayoutViewModel, CardLayout>();
+        CodexLayoutHost.Register<TileLayoutViewModel, TileLayout>();
     }
 }

@@ -120,10 +120,16 @@ namespace COMPASS.Common.Features.Layouts
                 }
             });
 
+        /// <summary>
+        /// Raised when the layout is disposed, so views that were built for it can be released.
+        /// </summary>
+        public event EventHandler? Disposed;
+
         public void Dispose()
         {
             _tabViewModel.CollectionChanging -= OnCollectionChanging;
             _tabViewModel.CollectionChanged -= OnCollectionChanged;
+            Disposed?.Invoke(this, EventArgs.Empty);
         }
     }
 

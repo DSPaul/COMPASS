@@ -19,5 +19,6 @@
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="COMPASS.UnitTests" />
+    <InternalsVisibleTo Include="COMPASS.IntegrationTests.Common" />
   </ItemGroup>
 </Project>

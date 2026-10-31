@@ -260,6 +260,8 @@ public class CollectionTabVM : ValidatableViewModelBase, IDisposable
     public RelayCommand<CodexLayout> ChangeLayoutCommand => field ??= new(ChangeLayout);
     private void ChangeLayout(CodexLayout layout)
     {
+        if (_currentLayout.LayoutType == layout) return;
+
         _currentLayout.Dispose();
         CurrentLayout = _layoutViewModelFactory.Create(this, layout);
     }

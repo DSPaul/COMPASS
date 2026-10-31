@@ -13,28 +13,11 @@
              xmlns:behaviors="using:COMPASS.Infra.Avalonia.Behaviors"
              xmlns:dragdrop="using:COMPASS.Infra.Avalonia.DragDrop"
              xmlns:layouts="using:COMPASS.Common.Features.Layouts"
-             xmlns:cardLayout="using:COMPASS.Common.Features.Layouts.Card"
-             xmlns:homeLayout="using:COMPASS.Common.Features.Layouts.Home"
-             xmlns:listLayout="using:COMPASS.Common.Features.Layouts.List"
-             xmlns:tileLayout="using:COMPASS.Common.Features.Layouts.Tile"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="800"
              x:Class="COMPASS.Common.Shell.MainView" FontSize="16"
              x:DataType="vm:MainViewModel"
              KeyDown="UserControl_KeyDown">
     <UserControl.DataTemplates>
-        <DataTemplate DataType="listLayout:ListLayoutViewModel">
-            <listLayout:ListLayout />
-        </DataTemplate>
-        <DataTemplate DataType="cardLayout:CardLayoutViewModel">
-            <cardLayout:CardLayout />
-        </DataTemplate>
-        <DataTemplate DataType="tileLayout:TileLayoutViewModel">
-            <tileLayout:TileLayout />
-        </DataTemplate>
-        <DataTemplate DataType="homeLayout:HomeLayoutViewModel">
-            <homeLayout:HomeLayout />
-        </DataTemplate>
-
         <DataTemplate DataType="vm:LeftDockViewModel">
             <main:LeftDockView />
         </DataTemplate>
@@ -361,8 +344,8 @@
             <Panel dragdrop:DropBehavior.IsDropTarget="True"
                    dragdrop:DropBehavior.DropManager="{Binding CurrentLayout.FileDropManager}">
                 <!--Layout-->
-                <ContentControl Content="{Binding CurrentLayout}"
-                                IsVisible="{Binding !!CollectionVM.Collection.AllCodices.Count}"/>
+                <layouts:CodexLayoutHost ActiveLayout="{Binding CurrentLayout}"
+                                         IsVisible="{Binding !!CollectionVM.Collection.AllCodices.Count}"/>
                 
                 <main:WelcomeView IsVisible="{Binding !CollectionVM.Collection.AllCodices.Count}"/>
             </Panel>
