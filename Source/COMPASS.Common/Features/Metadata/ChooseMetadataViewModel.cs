@@ -4,7 +4,7 @@ using COMPASS.Infra.DependencyInjection;
 using COMPASS.Common.Domain;
 namespace COMPASS.Common.Features.Metadata
 {
-    public class ChooseMetadataViewModel : WizardViewModel
+    public class ChooseMetadataViewModel : WizardViewModel, IDisposable
     {
         private readonly MetadataProposalViewModelFactory _metaDataProposalViewModelFactory;
 
@@ -53,9 +53,16 @@ namespace COMPASS.Common.Features.Metadata
             foreach (var proposal in MetadataProposals)
             {
                 await proposal.ApplyChoice();
+            }
+        }
+
+        public void Dispose()
+        {
+            foreach (var proposal in MetadataProposals)
+            {
                 proposal.Dispose();
             }
-            
+
             MetadataProposals.Clear();
         }
     }

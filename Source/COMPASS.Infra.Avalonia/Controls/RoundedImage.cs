@@ -33,7 +33,7 @@ namespace COMPASS.Infra.Avalonia.Controls
                 catch (ObjectDisposedException ex)
                 {
                     // The bound bitmap was released while still set as Source
-                    ServiceResolver.Resolve<ILogger>().Error("Source image was disposed while still bound to a roundedimage control.", ex);
+                    LogDisposedSource(ex);
                 }
             }
 
@@ -91,5 +91,24 @@ namespace COMPASS.Infra.Avalonia.Controls
 
             return bounds;
         }
+
+        protected override Size ArrangeOverride(Size finalSize)
+        {
+            try
+            {
+                return base.ArrangeOverride(finalSize);
+            }
+            catch (ObjectDisposedException ex)
+            {
+                // Image.ArrangeOverride reads Source.Size. If a view model has already
+                // released the bitmap, throwing here escapes the layout pass and crashes
+                // the app, so keep the last measured bounds instead.
+                LogDisposedSource(ex);
+                return finalSize;
+            }
+        }
+
+        private static void LogDisposedSource(ObjectDisposedException exception)
+            => ServiceResolver.Resolve<ILogger>().Error("Source image was disposed while still bound to a roundedimage control.", exception);
     }
 }

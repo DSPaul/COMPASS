@@ -7,6 +7,7 @@ using COMPASS.Infra.DependencyInjection;
 using COMPASS.Infra.Preferences;
 using COMPASS.Infra.Avalonia.Validation;
 using COMPASS.Common.Features.Tabs;
+using COMPASS.Common.Features.Covers;
 
 namespace COMPASS.Common.Features.Codices
 {
@@ -48,8 +49,10 @@ namespace COMPASS.Common.Features.Codices
                 CodexViewModel? prevCodex = field;
                 if (SetProperty(ref field, value))
                 {
-                    prevCodex?.DisposeCover();
+                    // Load the new cover before releasing the old one so the info panel
+                    // never paints a bitmap that has already been disposed.
                     field?.LoadCover();
+                    AssetsService.DisposeAsset(prevCodex?.Cover);
                     OnPropertyChanged(nameof(ShowInfo));
                     OnPropertyChanged(nameof(HasDisplayedCodex));
                 }
