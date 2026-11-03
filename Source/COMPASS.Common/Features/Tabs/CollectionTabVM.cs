@@ -269,6 +269,21 @@ public class CollectionTabVM : ValidatableViewModelBase, IDisposable
     #endregion
     
     #region Methods
+
+    /// <summary>
+    /// Selects the given codices in this tab, so the user can see what was just imported.
+    /// Codices that belong to another collection are ignored, because this tab doesn't show them.
+    /// </summary>
+    public void SelectCodices(IEnumerable<Codex> codicesToSelect)
+    {
+        List<Codex> codicesInThisCollection = codicesToSelect
+            .Where(codex => ReferenceEquals(codex.Collection, CollectionVM.Collection))
+            .ToList();
+
+        if (codicesInThisCollection.Count == 0) return;
+
+        CurrentLayout.SelectCodices(codicesInThisCollection);
+    }
     
     /// <summary>
     /// Called by selection changed event on collection dropdown

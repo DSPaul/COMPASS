@@ -127,7 +127,7 @@ namespace COMPASS.Common.Features.ImportExport
 
             CloseAction();
 
-            await _codexCollectionOperations.CreateCodicesAsync([sourceSet]);
+            IList<Codex> createdCodices = await _codexCollectionOperations.CreateCodicesAsync([sourceSet]);
 
             if (ShowEditWhenDone)
             {
@@ -144,6 +144,8 @@ namespace COMPASS.Common.Features.ImportExport
                     _logger.Warn($"Could not find codex with source URL '{InputURL}' after import. Cannot open edit modal.");
                 }
             }
+
+            _activeTabContext.ActiveTab?.SelectCodices(createdCodices);
         }
 
         

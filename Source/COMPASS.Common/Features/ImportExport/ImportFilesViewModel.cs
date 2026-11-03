@@ -21,6 +21,7 @@ public class ImportFilesViewModel : ValidatableViewModelBase, IDisposable
     private readonly CodexCollectionOperations _codexCollectionOperations;
     private readonly CodexOperations _codexOperations;
     private readonly CollectionManager _collectionManager;
+    private readonly IActiveTabContext _activeTabContext;
 
     private readonly bool _autoImport;
     private readonly CollectionHandle _targetCollectionHandle;
@@ -36,6 +37,7 @@ public class ImportFilesViewModel : ValidatableViewModelBase, IDisposable
         CodexCollectionOperations codexCollectionOperations,
         CodexOperations codexOperations,
         CollectionManager collectionManager,
+        IActiveTabContext activeTabContext,
         string targetCollectionId, bool autoImport)
     {
         _logger = logger;
@@ -46,6 +48,7 @@ public class ImportFilesViewModel : ValidatableViewModelBase, IDisposable
         _codexCollectionOperations = codexCollectionOperations;
         _codexOperations = codexOperations;
         _collectionManager = collectionManager;
+        _activeTabContext = activeTabContext;
         
         var handle = _collectionManager.LoadCollection(targetCollectionId);
         if (handle != null)
@@ -108,6 +111,10 @@ public class ImportFilesViewModel : ValidatableViewModelBase, IDisposable
             if (folderImportDialogVm.OpenEditWindowWhenDone && importedCodices.Any())
             {
                 await _codexOperations.EditCodices(importedCodices.ToList());
+            }
+            else if (!_autoImport) //if we don't open edit window, at least select the newly added items
+            {
+                _activeTabContext.ActiveTab?.SelectCodices(importedCodices);
             }
         }
         else if (!_autoImport)
@@ -206,7 +213,8 @@ public class ImportFilesViewModel : ValidatableViewModelBase, IDisposable
         FolderFactory folderFactory,
         CodexCollectionOperations codexCollectionOperations,
         CodexOperations codexOperations,
-        Lazy<CollectionManager> collectionManager)
+        Lazy<CollectionManager> collectionManager,
+        IActiveTabContext activeTabContext)
     {
         public ImportFilesViewModel Create(bool autoImport)
         {
@@ -223,7 +231,7 @@ public class ImportFilesViewModel : ValidatableViewModelBase, IDisposable
             return new ImportFilesViewModel(
                 logger, ioService, notificationService, 
                 importFolderDialogFactory, folderFactory,
-                codexCollectionOperations, codexOperations, collectionManager.Value,
+                codexCollectionOperations, codexOperations, collectionManager.Value, activeTabContext,
                 targetCollectionId, autoImport);
         }
     }

@@ -69,6 +69,34 @@ namespace COMPASS.Common.Features.Layouts
 
         #endregion
 
+        /// <summary>
+        /// Raised when this layout should show codices as selected, for instance right after they were imported.
+        /// The view applies it, because the selection of a list or grid is not bindable.
+        /// </summary>
+        public event EventHandler<CodexSelectionEventArgs>? SelectionRequested;
+
+        /// <summary>
+        /// Selects the given codices in this layout, so the user can see what was just imported.
+        /// Codices that the active filters hide stay out of the selection, because they are not in the list.
+        /// </summary>
+        public void SelectCodices(IEnumerable<Codex> codicesToSelect)
+        {
+            HashSet<Codex> modelsToSelect = [.. codicesToSelect];
+            if (modelsToSelect.Count == 0) return;
+
+            //Filtering refreshes the visible list through the dispatcher, so only select once that queue has caught up
+            Dispatcher.UIThread.Post(() =>
+            {
+                List<CodexViewModel> codexVmsToSelect = _tabViewModel.CollectionVM.AllCodexVms
+                    .Where(codexVm => modelsToSelect.Contains(codexVm.GetModel()))
+                    .ToList();
+
+                if (codexVmsToSelect.Count == 0) return;
+
+                SelectionRequested?.Invoke(this, new CodexSelectionEventArgs(codexVmsToSelect));
+            });
+        }
+
 
         protected virtual void OnCollectionChanging(object? sender, EventArgs? eventArgs)
         {
@@ -113,7 +141,8 @@ namespace COMPASS.Common.Features.Layouts
                                 await tabVm.ImportSatchelAsync(files.First());
                                 break;
                             default:
-                                await codexCollectionOperations.ImportFilesAsync(files, _tabViewModel.CollectionVM.Identifier);
+                                IList<Codex> importedCodices = await codexCollectionOperations.ImportFilesAsync(files, _tabViewModel.CollectionVM.Identifier);
+                                _tabViewModel.SelectCodices(importedCodices);
                                 break;
                         }
                     }
