@@ -67,6 +67,12 @@
   </screenshots>
   
   <releases>
+    <release version="2.0.2" date="2026-11-07" type="stable">
+      <description>
+        <p>A bugfix release focused on a crash caused by use after dispose, selection issues, and a resize issue in the tile layout.</p>
+      </description>
+      <url type="details">https://www.compassapp.info/releases/v2.0.2</url>
+    </release>
     <release version="2.0.1" date="2026-10-24" type="stable">
       <description>
         <p>A bugfix release focused on issues related to import and export functionality.</p>

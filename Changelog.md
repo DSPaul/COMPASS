@@ -1,8 +1,17 @@
 # CHANGELOG
 
-## COMPASS v2.0.1 (24 October 2026)
+## COMPASS v2.0.2 (07 November 2026)
 
-### New Features
+### Improvements
+
+- Select newly added items after import
+
+### Fixes
+
+- Fix crash due to images being shown after dispose
+- Fix selection of different tabs with same open collection not having independant selection
+- Fix tile layout not properly responing to tile resizing
+## COMPASS v2.0.1 (24 October 2026)
 
 ### Improvements
 
@@ -716,3 +725,4 @@ This new feaures and related options can be found in the `import` tab of the set
 ## COMPASS v0.1.0 (10 June 2022)
 
 - Release of 0.1.0
+
