@@ -10,6 +10,7 @@ using COMPASS.Common.Features.Layouts.Tile;
 using COMPASS.Common.Features.Metadata;
 using COMPASS.Common.Features.Settings;
 using COMPASS.Common.Features.Tags;
+using COMPASS.Common.Features.Onboarding;
 using COMPASS.Infra.Avalonia.Modal;
 
 namespace COMPASS.Common.Shell;
@@ -34,6 +35,7 @@ internal static class ViewRegistrar
         ModalWindow.Register<SettingsViewModel, SettingsView>();
         ModalWindow.Register<ChangeDataLocationViewModel, ChangeDataLocationView>();
         ModalWindow.Register<ChooseMetadataViewModel, ChooseMetadataView>();
+        ModalWindow.Register<V1toV2OnboardingVM, V1toV2OnboardingView>();
 
         // Wizards
         ModalWindow.Register<ImportCollectionViewModel, ImportCollectionWizard>();

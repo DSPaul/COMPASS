@@ -17,6 +17,11 @@ public interface IApplicationDataService
     void MigrateFromV1();
 
     /// <summary>
+    /// Whether the user data path already contains at least one collection
+    /// </summary>
+    bool HasExistingUserData();
+
+    /// <summary>
     /// Updates the base data path
     /// </summary>
     /// <param name="newPath"></param>
