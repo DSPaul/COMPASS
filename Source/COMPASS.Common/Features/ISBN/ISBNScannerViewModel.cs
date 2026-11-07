@@ -155,7 +155,8 @@ namespace COMPASS.Common.Features.ISBN
                 ISBN = code.ISBN
             }).ToList();
 
-            await _codexCollectionOperations.CreateCodicesAsync(sourceSets);
+            IList<Codex> createdCodices = await _codexCollectionOperations.CreateCodicesAsync(sourceSets);
+            _activeTabContext.ActiveTab?.SelectCodices(createdCodices);
         }
 
         public async ValueTask DisposeAsync()

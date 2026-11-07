@@ -13,4 +13,5 @@ public class MockApplicationDataService : IApplicationDataService
 
     public void MigrateFromV1() { }
 
+    public bool HasExistingUserData() => true;
 }

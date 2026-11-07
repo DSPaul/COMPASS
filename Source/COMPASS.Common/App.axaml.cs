@@ -14,6 +14,7 @@ using COMPASS.Infra.Preferences;
 using COMPASS.Infra.Progress;
 using NuGet.Versioning;
 using COMPASS.Common.Features.Notifications;
+using COMPASS.Common.Features.Onboarding;
 
 namespace COMPASS.Common;
 
@@ -23,7 +24,8 @@ public partial class App : Application
     {
         AvaloniaXamlLoader.Load(this);
         MarkdownViewerLinkHandler.EnsureRegistered();
-        ModalDialogs.Register();
+        ViewRegistrar.RegisterModals();
+        ViewRegistrar.RegisterLayouts();
         
 #if DEBUG
         this.AttachDeveloperTools();
@@ -81,7 +83,7 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            HandleVersionChanges();
+            int lastRunVersion = HandleVersionChanges();
 
             var mainWindow = new MainWindow();
             var mainVm = ServiceResolver.Resolve<MainViewModel>();
@@ -98,26 +100,37 @@ public partial class App : Application
 
             // Finally, close the splash screen
             _splashScreenWindow?.Close();
+
+            if (lastRunVersion == 1)
+            {
+                Dispatcher.UIThread.Post(() => _ = WindowManager.OpenModal(new V1toV2OnboardingVM()), DispatcherPriority.Background);
+            }
         }
     }
 
     /// <summary>
     /// Handle launching a different version of the application
     /// </summary>
-    private static void HandleVersionChanges()
+    /// <returns>The last run version</returns>
+    private static int HandleVersionChanges()
     {
         var preferencesService = ServiceResolver.Resolve<IPreferencesService>();
         var applicationService = ServiceResolver.Resolve<IApplicationService>();
+        var applicationDataService = ServiceResolver.Resolve<IApplicationDataService>();
         var logger = ServiceResolver.Resolve<ILogger>();
+
 
         SemanticVersion? lastRanVersion = preferencesService.GetPreferences<Preferences>().LastRanVersion;
         SemanticVersion? currentVersion = SemanticVersion.Parse(applicationService.Version);
-
-        //Check if migration from v1 is needed
+        
         if (lastRanVersion == null || lastRanVersion.Major == 1)
         {
-            ServiceResolver.Resolve<IApplicationDataService>().MigrateFromV1();
+            applicationDataService.MigrateFromV1();
         }
+
+        //We check this after datamigration, as detecting the user data location has changed between v1 and v2
+        //So checking for user data first would use the new logic on old data and detect nothing
+        bool freshInstall = lastRanVersion == null && !applicationDataService.HasExistingUserData();
 
         //Check if current verion is newer or older than last ran version
         if (lastRanVersion == null || lastRanVersion < currentVersion)
@@ -131,5 +144,7 @@ public partial class App : Application
 
         preferencesService.GetPreferences<Preferences>().LastRanVersion = currentVersion;
         preferencesService.SavePreferences();
+
+        return freshInstall ? 0 : lastRanVersion?.Major ?? 1;
     }
 }

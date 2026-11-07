@@ -5,6 +5,8 @@ using COMPASS.Infra.Avalonia.Files;
 using COMPASS.Infra.Avalonia.Modal;
 using COMPASS.Infra.DependencyInjection;
 using COMPASS.Infra.Avalonia.Validation;
+using COMPASS.Common.Domain;
+using COMPASS.Common.Features.Tabs;
 namespace COMPASS.Common.Features.ImportExport
 {
     public class ImportViewModel : ValidatableViewModelBase
@@ -16,6 +18,7 @@ namespace COMPASS.Common.Features.ImportExport
         private readonly IFilesService _filesService;
         private readonly CodexCollectionOperations _codexCollectionOperations;
         private readonly CollectionManager _collectionManager;
+        private readonly IActiveTabContext _activeTabContext;
 
         public ImportViewModel(
             CodexEditViewModelFactory codexEditViewModelFactory, 
@@ -25,6 +28,7 @@ namespace COMPASS.Common.Features.ImportExport
             IFilesService filesService,
             CodexCollectionOperations codexCollectionOperations,
             CollectionManager collectionManager,
+            IActiveTabContext activeTabContext,
             string targetCollectionId)
         {
             _codexEditViewModelFactory = codexEditViewModelFactory;
@@ -34,6 +38,7 @@ namespace COMPASS.Common.Features.ImportExport
             _filesService = filesService;
             _codexCollectionOperations = codexCollectionOperations;
             _collectionManager = collectionManager;
+            _activeTabContext = activeTabContext;
             _targetcollectionId = targetCollectionId;
         }
 
@@ -47,7 +52,8 @@ namespace COMPASS.Common.Features.ImportExport
             {
                 case ImportSource.File:
                     pathsToImport = await ChooseFiles();
-                    await _codexCollectionOperations.ImportFilesAsync(pathsToImport, targetCollectionId);
+                    IList<Codex> importedCodices = await _codexCollectionOperations.ImportFilesAsync(pathsToImport, targetCollectionId);
+                    _activeTabContext.ActiveTab?.SelectCodices(importedCodices);
                     break;
                 case ImportSource.Folder:
                     using (ImportFilesViewModel folderVM = _importFilesViewModelFactory.Create(targetCollectionId, autoImport: false))
@@ -117,9 +123,10 @@ namespace COMPASS.Common.Features.ImportExport
         ISBNScannerViewModelFactory isbnScannerViewModelFactory,
         IFilesService filesService,
         CodexCollectionOperations codexCollectionOperations,
-        CollectionManager collectionManager)
+        CollectionManager collectionManager,
+        IActiveTabContext activeTabContext)
     {
         public ImportViewModel Create(string targetCollectionId)
-            => new(codexEditViewModelFactory, importFilesViewModelFactory, importURLViewModelFactory, isbnScannerViewModelFactory, filesService, codexCollectionOperations, collectionManager, targetCollectionId);
+            => new(codexEditViewModelFactory, importFilesViewModelFactory, importURLViewModelFactory, isbnScannerViewModelFactory, filesService, codexCollectionOperations, collectionManager, activeTabContext, targetCollectionId);
     }
 }

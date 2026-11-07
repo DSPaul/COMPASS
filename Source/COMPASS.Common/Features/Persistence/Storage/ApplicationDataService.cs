@@ -73,30 +73,17 @@ public class ApplicationDataService(
     /// </summary>
     public void MigrateFromV1()
     {
-        const string LegacyEnvVarKey = "COMPASS_DATA_PATH";
-
-        // If redirect is already in the new Local location, nothing to do.
+        // If redirect is already in the new Local location
+        // that means migration already happened, nothing to do.
         if (File.Exists(RedirectFilePath))
         {
             return;
         }
 
-        // User path could have been in env variable
-        string? legacyPath = Environment.GetEnvironmentVariable(LegacyEnvVarKey);
-        if (Path.Exists(legacyPath))
-        {
-            UserDataPath = legacyPath;
-        }
+        // User path could have been in env variable, needs to become redirect file
+        MigrateDataLocationRedirect();
 
-        if (string.IsNullOrEmpty(legacyPath))
-        {
-            // Remove the variable so it doesn't interfere on future launches.
-            try 
-            {
-                Environment.SetEnvironmentVariable(LegacyEnvVarKey, null, EnvironmentVariableTarget.User); 
-            }
-            catch (PlatformNotSupportedException) { }
-        }
+        if (!HasExistingUserData()) return;
 
         //Thumbnails moved, delete old thumbnail folder if it exists
         var collectionsPath = Path.Combine(UserDataPath, Constants.DIR_COLLECTIONS);
@@ -105,7 +92,7 @@ public class ApplicationDataService(
             return;
         }
 
-        foreach(string colletionDir in Directory.GetDirectories(collectionsPath))
+        foreach (string colletionDir in Directory.GetDirectories(collectionsPath))
         {
             var oldThumbnailPath = Path.Combine(colletionDir, "Thumbnails");
             if (Directory.Exists(oldThumbnailPath))
@@ -123,6 +110,12 @@ public class ApplicationDataService(
 
         //Hidden tab at index 0 is gone, -1 is now no selection 
         preferencesService.Value.GetPreferences<UIState>().StartupTab -= 1;
+    }
+
+    public bool HasExistingUserData()
+    {
+        string collectionsPath = Path.Combine(UserDataPath, Constants.DIR_COLLECTIONS);
+        return Directory.Exists(collectionsPath) && Directory.EnumerateDirectories(collectionsPath).Any();
     }
 
     public async Task<bool> UpdateUserDataPath(string newPath)
@@ -307,6 +300,31 @@ public class ApplicationDataService(
                     Severity.Warning);
                 await notificationService.ShowDialog(notValid);
             }
+        }
+    }
+
+    /// <summary>
+    /// Migrates from the old redirect system that stored the user data path in an environment variable
+    /// to a redirect file
+    /// </summary>
+    private void MigrateDataLocationRedirect()
+    {
+        const string LegacyEnvVarKey = "COMPASS_DATA_PATH";
+
+        string? legacyPath = Environment.GetEnvironmentVariable(LegacyEnvVarKey);
+        if (Path.Exists(legacyPath))
+        {
+            UserDataPath = legacyPath;
+        }
+
+        // Remove the variable so it doesn't interfere on future launches.
+        if (!string.IsNullOrEmpty(legacyPath))
+        {
+            try
+            {
+                Environment.SetEnvironmentVariable(LegacyEnvVarKey, null, EnvironmentVariableTarget.User);
+            }
+            catch (PlatformNotSupportedException) { }
         }
     }
 }

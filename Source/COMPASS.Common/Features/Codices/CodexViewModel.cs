@@ -1,18 +1,18 @@
 using Avalonia.Input;
 using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.Input;
+using COMPASS.Common.Domain;
 using COMPASS.Common.Features.CodexCollections;
 using COMPASS.Common.Features.Covers;
 using COMPASS.Common.Features.Tags;
-using COMPASS.Infra.Avalonia.Mvvm;
 using COMPASS.Infra.Avalonia.DragDrop;
+using COMPASS.Infra.Avalonia.Mvvm;
 using COMPASS.Infra.Collections;
 using COMPASS.Infra.DependencyInjection;
 using COMPASS.Infra.Logging;
 using COMPASS.Infra.Text;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using COMPASS.Common.Domain;
 
 namespace COMPASS.Common.Features.Codices;
 
@@ -211,17 +211,20 @@ public class CodexViewModel : ModelViewModelBase<Codex>
     
     #region Methods
 
-    public void LoadCover()
+    public bool LoadCover()
     {
         try
         {
             Cover = File.Exists(_model.CoverArtPath) ? 
                 new(_model.CoverArtPath) : 
                 AssetsService.GetPlaceholder(_model);
+
+            return true;
         }
         catch (Exception ex)
         {
             _logger.Error("Failed to load thumbnail", ex);
+            return false;
         }
     }
 
@@ -280,45 +283,33 @@ public class CodexViewModel : ModelViewModelBase<Codex>
     
     private void CodexOnCoverChanged(object? sender, EventArgs e)
     {
-        DisposeThumbnail();
+        //Reset the lazy load
+        _thumbnail = null;
         OnPropertyChanged(nameof(Thumbnail));
 
         //only reload cover is it was already loaded
-        if (Cover != null)
+        if (_cover != null)
         {
-            DisposeCover();
-            LoadCover();
+            var prevCover = _cover;
+            if (LoadCover())
+            {
+                AssetsService.DisposeAsset(prevCover);
+            }
         }
     }
     
     public override void Dispose()
     {
-        DisposeThumbnail();
-        DisposeCover();
-        
+        AssetsService.DisposeAsset(_thumbnail);
+        AssetsService.DisposeAsset(_cover);
+        _thumbnail = null;
+        _cover = null;
+
         _model.Authors.CollectionChanged -= OnCollectionChanged;
         _model.Tags.CollectionChanged -= OnCollectionChanged;
         _model.CoverChanged -= CodexOnCoverChanged;
         
         base.Dispose();
-    }
-
-    private void DisposeThumbnail()
-    {
-        if (_thumbnail != null && !AssetsService.IsSharedAsset(_thumbnail))
-        {
-            _thumbnail.Dispose();
-        }
-        _thumbnail = null;
-    }
-    
-    public void DisposeCover()
-    {
-        if (_cover != null && !AssetsService.IsSharedAsset(_cover))
-        {
-            _cover.Dispose();
-        }
-        _cover = null;
     }
     
     #endregion

@@ -115,6 +115,20 @@ public sealed class DropBehavior : AvaloniaObject
 
         var context = new DropContext { DropTarget = dropTarget, DragEventArgs = e };
         e.Handled = dropManager.HandleDrop(e.DataTransfer, context);
+
+        //A drop from another application leaves the keyboard focus there, so take the window back.
+        //Without this, shortcuts keep going to the window the user dragged from.
+        if (e.Handled)
+        {
+            ActivateWindow(dropTarget);
+        }
+    }
+
+    private static void ActivateWindow(Visual dropTarget)
+    {
+        if (TopLevel.GetTopLevel(dropTarget) is not Window window) return;
+
+        window.Activate();
     }
 
     #endregion

@@ -78,7 +78,6 @@ public class WrapGrid : VirtualizingPanel
     private int _columnCount = 1;
     private double _cellWidth = 0;
     private double _horizontalOffset = 0;
-    private double _lastAvailableWidth = -1;
     private double _estimatedItemHeight = 250; // fallback until first real measure
 
     // Viewport tracking
@@ -151,18 +150,18 @@ public class WrapGrid : VirtualizingPanel
         bool hasFixedHeight = !double.IsNaN(ItemHeight);
 
 
-        // Step 1: Determine cell width
-        bool widthChanged = Abs(availableSize.Width - _lastAvailableWidth) > 0.5;
-
+        // Step 1: Determine cell width.
+        // Item widths are driven by the item content, which can change at any point
+        // (for example a tile size bound to user preferences). Re-probe an item's
+        // natural width on every pass so cells follow their content instead of
+        // keeping a stale width that lets items overlap their neighbours.
         if (hasFixedWidth)
         {
             _cellWidth = ItemWidth;
         }
-        else if (widthChanged || _cellWidth == 0)
+        else
         {
-            // Materialize a single item to probe its desired width.
-            // This is the only measure that happens unconditionally on width change.
-            var probe = GetOrCreateContainer(items, 0, generator);
+            var probe = GetOrCreateContainer(items, GetItemWidthProbeIndex(), generator);
             if (probe != null)
             {
                 probe.Measure(new Size(availableSize.Width, double.PositiveInfinity));
@@ -187,7 +186,11 @@ public class WrapGrid : VirtualizingPanel
         };
         _horizontalOffset = Max(0, _horizontalOffset);
 
-        _lastAvailableWidth = availableSize.Width;
+        // Items without a fixed width need to be measured with the width the panel
+        // was given, not with the previously derived cell width. Measuring them with
+        // a stale, smaller width would clamp their desired size, so a growing item
+        // would never report a size change and the grid would not relayout.
+        double itemMeasureWidth = hasFixedWidth ? _cellWidth : availableSize.Width;
 
 
         // Step 3: Compute bounds for ALL items using cached / estimated heights.
@@ -257,12 +260,12 @@ public class WrapGrid : VirtualizingPanel
 
             if (hasFixedHeight)
             {
-                container.Measure(new Size(_cellWidth, ItemHeight));
+                container.Measure(new Size(itemMeasureWidth, ItemHeight));
             }
             else
             {
                 // Measure with unconstrained height so the item can be its natural size
-                container.Measure(new Size(_cellWidth, double.PositiveInfinity));
+                container.Measure(new Size(itemMeasureWidth, double.PositiveInfinity));
                 double measuredHeight = container.DesiredSize.Height;
 
                 if (!_itemHeightKnown[i] || Abs(_itemHeightCache[i] - measuredHeight) > 1.0)
@@ -309,7 +312,7 @@ public class WrapGrid : VirtualizingPanel
                     if (_neededIndices.Contains(j) && _itemBoundsCache[j].Height != rowHeight)
                     {
                         if (_indexToContainer.TryGetValue(j, out var c))
-                            c.Measure(new Size(_cellWidth, rowHeight));
+                            c.Measure(new Size(itemMeasureWidth, rowHeight));
                     }
 
                     _itemBoundsCache[j] = newRect;
@@ -339,6 +342,16 @@ public class WrapGrid : VirtualizingPanel
     }
 
     #region Container lifecycle helpers
+
+    private int GetItemWidthProbeIndex()
+    {
+        // Prefer a container that is already realized so scrolling does not
+        // repeatedly materialize and recycle the first item just to probe it.
+        foreach (int realizedIndex in _indexToContainer.Keys)
+            return realizedIndex;
+
+        return 0;
+    }
 
     private Control? GetOrCreateContainer(IReadOnlyList<object?> items, int index,
                                           ItemContainerGenerator generator)
@@ -470,7 +483,6 @@ public class WrapGrid : VirtualizingPanel
             Array.Clear(_itemHeightKnown, 0, _itemCacheCount);
         }
         _itemCacheCount = 0;
-        _lastAvailableWidth = -1;
         _estimatedItemHeight = 250;
     }
 
