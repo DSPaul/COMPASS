@@ -9,10 +9,10 @@ Usage: python generate_nuget_sources.py
 Writes: nuget-sources.json and dotnet-runtime-version.txt (next to this script)
 
 The two files must stay in sync: nuget-sources.json vendors the runtime packs for
-the resolved version, and dotnet-runtime-version.txt lets the Flatpak manifest pin
-`RuntimeFrameworkVersion` to that exact version. Pinning is what keeps the offline
-build working when the SDK shipped by the Flatpak extension is a different patch
-than the version we vendored.
+the resolved version, and dotnet-runtime-version.txt lets the Flatpak build
+script pin `RuntimeFrameworkVersion` to that exact version. Pinning is what keeps
+the offline build working when the SDK shipped by the Flatpak extension is a
+different patch than the version we vendored.
 """
 
 import base64
@@ -37,7 +37,7 @@ NUGET_CACHE = Path(os.environ.get("NUGET_PACKAGES", Path.home() / ".nuget" / "pa
 
 # Runtime packs required for a self-contained linux-x64 publish.
 # These are not tracked in packages.lock.json but are fetched directly from NuGet.
-# crossgen2 is required when PublishReadyToRun=true (used in info.compassapp.COMPASS.yaml).
+# crossgen2 is required when PublishReadyToRun=true (used in Deployment/flatpak/build.sh).
 LINUX_RUNTIME_PACKS = (
     "microsoft.netcore.app.runtime.linux-x64",
     "microsoft.netcore.app.host.linux-x64",
@@ -134,7 +134,7 @@ def generate():
     dotnet_runtime_version = _resolve_dotnet_runtime_version()
     print(f"Resolved .NET runtime version: {dotnet_runtime_version}")
 
-    # Persist the version so the Flatpak manifest can pin RuntimeFrameworkVersion
+    # Persist the version so the Flatpak build script can pin RuntimeFrameworkVersion
     # to exactly the version we vendor. Without this the SDK shipped by the Flatpak
     # extension would request its own (possibly different) runtime pack version and
     # the offline restore would fail with NU1102.
