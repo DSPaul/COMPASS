@@ -12,7 +12,17 @@ namespace COMPASS.Common.Domain
 
         public Folder(string path,  Func<Folder, IEnumerable<Folder>> findSubfoldersOnDisk)
         {
-            FullPath = path.TrimEnd(Path.DirectorySeparatorChar).TrimEnd(Path.AltDirectorySeparatorChar);
+            //Strip the trailing separator if any, except for a root path e.g. C:\
+            string? root = Path.GetPathRoot(path);
+            bool isRoot = PathUtils.PathsEqual(root, path);
+
+            if (!isRoot)
+            {
+                path = path.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            }
+
+            FullPath = path;
+
             _findSubfoldersOnDisk = findSubfoldersOnDisk;
         }
 
@@ -71,7 +81,7 @@ namespace COMPASS.Common.Domain
             OnPropertyChanged(nameof(SubFolders));
         }
 
-        public string Name => Path.GetFileName(FullPath);
+        public string Name => Path.GetFileName(FullPath) is { Length: > 0 } name ? name : FullPath;
         
         //Proxy for Subfolder, to implement IHasChildren
         public RangeObservableCollection<Folder> Children => SubFolders;

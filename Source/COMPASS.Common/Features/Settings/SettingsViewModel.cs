@@ -1,3 +1,4 @@
+using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Features.CodexCollections;
@@ -198,8 +199,11 @@ namespace COMPASS.Common.Features.Settings
             if (folders.Any())
             {
                 var folder = folders.Single();
-                string newPath = folder.Path.LocalPath;
+                string? newPath = folder.TryGetLocalPath();
                 folder.Dispose();
+
+                if (string.IsNullOrEmpty(newPath)) return;
+
                 await _applicationDataService.UpdateUserDataPath(newPath);
 
                 OnPropertyChanged(nameof(UserDataPath));

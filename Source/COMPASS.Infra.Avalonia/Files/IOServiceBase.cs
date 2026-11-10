@@ -1,4 +1,5 @@
 using Avalonia.Platform.Storage;
+using COMPASS.Infra.Collections;
 using COMPASS.Infra.IO;
 using COMPASS.Infra.Logging;
 using COMPASS.Infra.Progress;
@@ -39,7 +40,10 @@ namespace COMPASS.Infra.Avalonia.Files
             if (folders.Count == 0) return null;
 
             var folder = folders.Single();
-            string path = folder.Path.LocalPath;
+
+            //TryGetLocalPath instead of Path.LocalPath: Avalonia returns a relative Path for
+            //drive and share roots, and LocalPath throws on relative URIs
+            string? path = folder.TryGetLocalPath();
 
             //Dispose the handle for now and just keep the path, might need to hold on to this later
             folder.Dispose();
@@ -61,7 +65,8 @@ namespace COMPASS.Infra.Avalonia.Files
             IList<IStorageFolder> folders = await filesService.OpenFoldersAsync(options).ConfigureAwait(false);
 
             if (folders.Count == 0) return [];
-            var paths = folders.Select(f => f.Path.LocalPath).ToList();
+
+            List<string> paths = folders.Select(f => f.TryGetLocalPath()).RemoveNulls().ToList();
 
             //Dispose the handles for now and just keep the paths, might need to hold on to this later
             foreach (var folder in folders)

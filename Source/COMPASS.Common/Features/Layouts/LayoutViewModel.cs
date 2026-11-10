@@ -119,7 +119,9 @@ namespace COMPASS.Common.Features.Layouts
                 AdornerFactory = storageItems => new FileDropAdorner(storageItems),
                 OnDroppedMultipleAsync = async storageItems =>
                 {
-                    var paths = storageItems.Select(f => f.Path.LocalPath).ToList();
+                    var paths = storageItems.Select(item => item.TryGetLocalPath())
+                                            .RemoveNulls()
+                                            .ToList();
 
                     var folders = paths.Where(path => File.GetAttributes(path).HasFlag(FileAttributes.Directory)).ToList();
                     var files = paths.Where(path => !File.GetAttributes(path).HasFlag(FileAttributes.Directory)).ToList();

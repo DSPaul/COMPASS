@@ -40,6 +40,46 @@ namespace COMPASS.UnitTests.Domain
         }
 
         [Test]
+        public void Constructor_TrailingSeparator_IsTrimmed()
+        {
+            // Arrange
+            string pathWithTrailingSeparator = _tempRoot + Path.DirectorySeparatorChar;
+
+            // Act
+            Folder folder = _folderFactory.Create(pathWithTrailingSeparator);
+
+            // Assert
+            Assert.That(folder.FullPath, Is.EqualTo(_tempRoot));
+        }
+
+        [Test]
+        public void Constructor_RootPath_KeepsTrailingSeparator()
+        {
+            // Arrange: stripping the separator of a root turns it into a drive-relative path
+            string diskRoot = Path.GetPathRoot(_tempRoot)!;
+
+            // Act
+            Folder folder = _folderFactory.Create(diskRoot);
+
+            // Assert
+            Assert.That(folder.FullPath, Is.EqualTo(diskRoot));
+        }
+
+        [Test]
+        public void Name_RootPath_FallsBackToFullPath()
+        {
+            // Arrange
+            string diskRoot = Path.GetPathRoot(_tempRoot)!;
+            Folder folder = _folderFactory.Create(diskRoot);
+
+            // Act
+            string name = folder.Name;
+
+            // Assert
+            Assert.That(name, Is.EqualTo(diskRoot));
+        }
+
+        [Test]
         public void SubFolders_FirstAccess_LoadsFromDisk()
         {
             // Arrange
