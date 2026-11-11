@@ -101,10 +101,18 @@
                         <Flyout Placement="Right" HorizontalOffset="10">
                             <ScrollViewer MinWidth="350" MaxHeight="400">
                                 <StackPanel IsVisible="{Binding HasNewFileTypes}" Margin="5" Spacing="5">
-                                    <StackPanel Orientation="Horizontal" Spacing="5">
-                                        <TextBlock Text="Newly Found Extensions" FontWeight="Bold"/>
-										<controls:Explainer Content="These file types have not been imported before"/>
-                                    </StackPanel>
+                                    <Grid ColumnDefinitions="*,auto">
+                                        <StackPanel Orientation="Horizontal" Spacing="5">
+                                            <TextBlock Text="Newly Found Extensions" FontWeight="Bold"/>
+                                            <controls:Explainer Content="These file types have not been imported before"/>
+                                        </StackPanel>
+                                        <CheckBox Grid.Column="1"
+                                                  Content="Select all"
+                                                  IsThreeState="True"
+                                                  IsChecked="{Binding ImportAllUnknownFileTypes, Mode=OneWay}"
+                                                  Command="{Binding ToggleAllUnknownFileTypesCommand}"
+                                                  VerticalAlignment="Center" />
+                                    </Grid>
                                     <TextBlock Text="Uncheck to exclude from import"
                                                Foreground="{StaticResource TextMutedColor}"/>
                                     <ItemsControl ItemsSource="{Binding UnknownFileTypes}"
@@ -137,10 +145,18 @@
                         <Flyout Placement="Right" HorizontalOffset="10">
                             <ScrollViewer MinWidth="350" MaxHeight="400">
                                 <StackPanel IsVisible="{Binding !!KnownFileTypes.Count}" Margin="5" Spacing="5">
-                                    <StackPanel Orientation="Horizontal" Spacing="5">
-                                        <TextBlock Text="Known Extensions" FontWeight="Bold" />
-										<controls:Explainer Content="These file types have been imported before"/>
-                                    </StackPanel>
+                                    <Grid ColumnDefinitions="*,auto">
+                                        <StackPanel Orientation="Horizontal" Spacing="5">
+                                            <TextBlock Text="Known Extensions" FontWeight="Bold" />
+                                            <controls:Explainer Content="These file types have been imported before"/>
+                                        </StackPanel>
+                                        <CheckBox Grid.Column="1"
+                                                  Content="Select all"
+                                                  IsThreeState="True"
+                                                  IsChecked="{Binding ImportAllKnownFileTypes, Mode=OneWay}"
+                                                  Command="{Binding ToggleAllKnownFileTypesCommand}"
+                                                  VerticalAlignment="Center" />
+                                    </Grid>
                                     <TextBlock Text="Uncheck to exclude from import"
                                                Foreground="{StaticResource TextMutedColor}"/>
                                     <ItemsControl ItemsSource="{Binding KnownFileTypes}"

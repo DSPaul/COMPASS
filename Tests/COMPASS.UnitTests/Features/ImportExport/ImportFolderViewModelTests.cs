@@ -134,6 +134,100 @@ public class ImportFolderViewModelTests
         Assert.That(filteredFiles, Is.EquivalentTo(_allFiles));
     }
 
+    [Test]
+    public void ToggleAllKnownFileTypesCommand_AllImported_ExcludesEveryKnownExtension()
+    {
+        var collectionInfo = new CollectionInfo
+        {
+            FiletypePreferences = new Dictionary<string, bool>
+            {
+                [".pdf"] = true,
+                [".txt"] = true,
+                [".epub"] = true
+            }
+        };
+        var dialogVm = CreateDialogVm(isAutoImport: false, collectionInfo);
+        dialogVm.ExcludeFileTypes = true;
+
+        dialogVm.ToggleAllKnownFileTypesCommand.Execute(null);
+
+        Assert.That(dialogVm.KnownFileTypes.Count, Is.EqualTo(3));
+        Assert.That(dialogVm.KnownFileTypes.Select(fileType => fileType.ShouldImport), Is.All.False);
+        Assert.That(dialogVm.ImportAllKnownFileTypes, Is.False);
+        Assert.That(dialogVm.FilesToImportCount, Is.Zero);
+    }
+
+    [Test]
+    public void ToggleAllKnownFileTypesCommand_PartiallyImported_ImportsEveryKnownExtension()
+    {
+        var collectionInfo = new CollectionInfo
+        {
+            FiletypePreferences = new Dictionary<string, bool>
+            {
+                [".pdf"] = true,
+                [".txt"] = true,
+                [".epub"] = true
+            }
+        };
+        var dialogVm = CreateDialogVm(isAutoImport: false, collectionInfo);
+        dialogVm.ExcludeFileTypes = true;
+
+        Assert.That(dialogVm.ImportAllKnownFileTypes, Is.True);
+
+        dialogVm.KnownFileTypes.Single(fileType => fileType.FileExtension == ".txt").ShouldImport = false;
+
+        Assert.That(dialogVm.ImportAllKnownFileTypes, Is.Null);
+
+        dialogVm.ToggleAllKnownFileTypesCommand.Execute(null);
+
+        Assert.That(dialogVm.KnownFileTypes.Select(fileType => fileType.ShouldImport), Is.All.True);
+        Assert.That(dialogVm.ImportAllKnownFileTypes, Is.True);
+        Assert.That(dialogVm.FilesToImportCount, Is.EqualTo(_allFiles.Count));
+    }
+
+    [Test]
+    public void ToggleAllUnknownFileTypesCommand_AllImported_ExcludesEveryNewExtension()
+    {
+        var dialogVm = CreateDialogVm(isAutoImport: false, new CollectionInfo());
+        dialogVm.ExcludeFileTypes = true;
+
+        dialogVm.ToggleAllUnknownFileTypesCommand.Execute(null);
+
+        Assert.That(dialogVm.UnknownFileTypes.Count, Is.EqualTo(3));
+        Assert.That(dialogVm.UnknownFileTypes.Select(fileType => fileType.ShouldImport), Is.All.False);
+        Assert.That(dialogVm.ImportAllUnknownFileTypes, Is.False);
+        Assert.That(dialogVm.FilesToImportCount, Is.Zero);
+    }
+
+    [Test]
+    public void ToggleAllKnownFileTypesCommand_AllImported_RefreshesFileCountOnce()
+    {
+        var collectionInfo = new CollectionInfo
+        {
+            FiletypePreferences = new Dictionary<string, bool>
+            {
+                [".pdf"] = true,
+                [".txt"] = true,
+                [".epub"] = true
+            }
+        };
+        var dialogVm = CreateDialogVm(isAutoImport: false, collectionInfo);
+        dialogVm.ExcludeFileTypes = true;
+
+        int fileCountChanges = 0;
+        dialogVm.PropertyChanged += (_, eventArgs) =>
+        {
+            if (eventArgs.PropertyName == nameof(ImportFolderViewModel.FilesToImportCount))
+            {
+                fileCountChanges++;
+            }
+        };
+
+        dialogVm.ToggleAllKnownFileTypesCommand.Execute(null);
+
+        Assert.That(fileCountChanges, Is.EqualTo(1));
+    }
+
     private ImportFolderViewModel CreateDialogVm(bool isAutoImport, CollectionInfo collectionInfo)
     {
         List<Folder> folders = [_folderFactory.Create(_tempRoot)];
