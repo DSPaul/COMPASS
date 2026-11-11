@@ -100,12 +100,14 @@
                     <Button.Flyout>
                         <Flyout Placement="Right" HorizontalOffset="10">
                             <ScrollViewer MinWidth="350" MaxHeight="400">
-                                <StackPanel IsVisible="{Binding HasNewFileTypes}">
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="Newly Found Extensions" FontWeight="Bold" Margin="5" />
+                                <StackPanel IsVisible="{Binding HasNewFileTypes}" Margin="5" Spacing="5">
+                                    <StackPanel Orientation="Horizontal" Spacing="5">
+                                        <TextBlock Text="Newly Found Extensions" FontWeight="Bold"/>
 										<controls:Explainer Content="These file types have not been imported before"/>
                                     </StackPanel>
-                                    <ItemsControl ItemsSource="{Binding UnknownFileTypes}" Margin="5"
+                                    <TextBlock Text="Uncheck to exclude from import"
+                                               Foreground="{StaticResource TextMutedColor}"/>
+                                    <ItemsControl ItemsSource="{Binding UnknownFileTypes}"
                                                     Background="{x:Null}" BorderBrush="{x:Null}">
                                         <ItemsControl.ItemsPanel>
                                             <ItemsPanelTemplate>
@@ -134,12 +136,14 @@
                     <Button.Flyout>
                         <Flyout Placement="Right" HorizontalOffset="10">
                             <ScrollViewer MinWidth="350" MaxHeight="400">
-                                <StackPanel IsVisible="{Binding !!KnownFileTypes.Count}">
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="Known Extensions" FontWeight="Bold" Margin="5" />
+                                <StackPanel IsVisible="{Binding !!KnownFileTypes.Count}" Margin="5" Spacing="5">
+                                    <StackPanel Orientation="Horizontal" Spacing="5">
+                                        <TextBlock Text="Known Extensions" FontWeight="Bold" />
 										<controls:Explainer Content="These file types have been imported before"/>
                                     </StackPanel>
-                                    <ItemsControl ItemsSource="{Binding KnownFileTypes}" Margin="5"
+                                    <TextBlock Text="Uncheck to exclude from import"
+                                               Foreground="{StaticResource TextMutedColor}"/>
+                                    <ItemsControl ItemsSource="{Binding KnownFileTypes}"
                                                     Background="{x:Null}" BorderBrush="{x:Null}">
                                         <ItemsControl.ItemsPanel>
                                             <ItemsPanelTemplate>
