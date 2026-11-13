@@ -12,6 +12,7 @@ using COMPASS.Infra.Updates;
 using COMPASS.Infra.Web;
 using Material.Icons;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using COMPASS.Infra.Avalonia.Validation;
 using COMPASS.Common.Features.Tabs;
 
@@ -43,6 +44,7 @@ namespace COMPASS.Common.Shell
 
             VersionName = $"v{applicationService.Version}";
             _logger.Info($"Launching COMPASS {VersionName}");
+            _logger.Info($"Running on {RuntimeInformation.OSDescription} ({RuntimeInformation.OSArchitecture}), process architecture {RuntimeInformation.ProcessArchitecture}");
 
             InitLayouts();
             _collectionManager.DiscoverCollections();

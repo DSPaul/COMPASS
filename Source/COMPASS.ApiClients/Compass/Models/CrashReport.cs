@@ -4,6 +4,7 @@ namespace COMPASS.ApiClients.Compass.Models
     {
         public required string Version { get; init; }
         public required string OperatingSystem { get; init; }
+        public string? Architecture { get; init; }
         public required string Error { get; init; }
     }
 }

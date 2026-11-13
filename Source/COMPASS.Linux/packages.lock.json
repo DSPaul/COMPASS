@@ -28,6 +28,12 @@
           "HotAvalonia.Fody": "3.1.5"
         }
       },
+      "OpenCvSharp5.official.runtime.linux-arm64.slim": {
+        "type": "Direct",
+        "requested": "[5.0.0.20261107, )",
+        "resolved": "5.0.0.20261107",
+        "contentHash": "Y8NXwqka7tBui4U1aHr+kb9YPaHs9IdXI/5qzDSvONWKifjcnNgB8rYa8YyBWactcWraeljEPoa8CnSINs0/+A=="
+      },
       "OpenCvSharp5.official.runtime.linux-x64.slim": {
         "type": "Direct",
         "requested": "[5.0.0.20261107, )",
@@ -669,7 +675,7 @@
           "Avalonia.Fonts.Inter": "[12.1.5, )",
           "Avalonia.Labs.Gif": "[12.1.0, )",
           "Avalonia.Themes.Fluent": "[12.1.5, )",
-          "COMPASS.Infra.Avalonia": "[2.0.1, )",
+          "COMPASS.Infra.Avalonia": "[2.0.2, )",
           "Magick.NET.AvaloniaMediaImaging": "[2.0.1, )",
           "PDFtoImage": "[5.4.0, )",
           "PdfPig": "[0.1.16, )",
@@ -681,7 +687,7 @@
         "dependencies": {
           "Autofac": "[9.3.4, )",
           "Autofac.Extensions.DependencyInjection": "[11.0.2, )",
-          "COMPASS.ApiClients": "[2.0.1, )",
+          "COMPASS.ApiClients": "[2.0.2, )",
           "CommandLineParser": "[2.9.1, )",
           "CommunityToolkit.Mvvm": "[8.4.2, )",
           "FuzzySharp": "[2.0.2, )",
@@ -705,7 +711,7 @@
           "Avalonia.Controls.DataGrid": "[12.1.2, )",
           "Avalonia.Labs.Gif": "[12.1.0, )",
           "AvaloniaUI.DiagnosticsSupport": "[2.2.3, )",
-          "COMPASS.Infra": "[2.0.1, )",
+          "COMPASS.Infra": "[2.0.2, )",
           "CommunityToolkit.Mvvm": "[8.4.2, )",
           "FlashCap": "[1.12.0, )",
           "MarkView.Avalonia": "[12.4.0, )",
@@ -716,7 +722,104 @@
         }
       }
     },
+    "net10.0/linux-arm64": {
+      "OpenCvSharp5.official.runtime.linux-arm64.slim": {
+        "type": "Direct",
+        "requested": "[5.0.0.20261107, )",
+        "resolved": "5.0.0.20261107",
+        "contentHash": "Y8NXwqka7tBui4U1aHr+kb9YPaHs9IdXI/5qzDSvONWKifjcnNgB8rYa8YyBWactcWraeljEPoa8CnSINs0/+A=="
+      },
+      "OpenCvSharp5.official.runtime.linux-x64.slim": {
+        "type": "Direct",
+        "requested": "[5.0.0.20261107, )",
+        "resolved": "5.0.0.20261107",
+        "contentHash": "gYb/Tg9YLtH7hN/LGLK/P7JsyGEjLgaXLnzsZ4vvvUqPNOnPQOyYszGGI/v2jyo70Nx26QjRXSQPtn0altbcYw=="
+      },
+      "SkiaSharp.NativeAssets.Linux": {
+        "type": "Direct",
+        "requested": "[4.155.0, )",
+        "resolved": "4.155.0",
+        "contentHash": "thcEQh8XAWbunlK9kvabMgGr12Bhy7bXGDEAQa42XwjFK293YI1I+ee9RvVGM2qewO5S9XTpUabIFaF9yQRmEw=="
+      },
+      "Avalonia.Angle.Windows.Natives": {
+        "type": "Transitive",
+        "resolved": "2.1.27548.20260419",
+        "contentHash": "l17nI3XVDN3oMnpjf2pnmJg0YTwK4m6NLsn/itAjDMdObTFxN77D5F1M9sRMSfViSY3KKcse1ROczwgoWLJsnA=="
+      },
+      "Avalonia.Native": {
+        "type": "Transitive",
+        "resolved": "12.1.5",
+        "contentHash": "LsC92ialAyccwXiqSjSHVlYGbASfB8XHbGT0XB3zqERF7PM7M3KjSnMgGc1HkzvwtGX+GgTYap6PV8N9H6un8Q==",
+        "dependencies": {
+          "Avalonia": "12.1.5"
+        }
+      },
+      "bblanchon.PDFium.Linux": {
+        "type": "Transitive",
+        "resolved": "152.0.7961",
+        "contentHash": "80m1PwszVp53avI/l+BCov8/6jl7B2FU+hQNTSrApMrkwKcCSRDHkXYYrGYsxpc8NAs/44tyrEQdCfX1yRzPhw=="
+      },
+      "bblanchon.PDFium.macOS": {
+        "type": "Transitive",
+        "resolved": "152.0.7961",
+        "contentHash": "GaBNtpfoiYbXTi9WLeEWSxWi2zG9kJMfuDMF7AH4kK0zjXz3C/Qg9epKIZKN3nfPaS48Qy3uV2VM14QBI/iAGg=="
+      },
+      "bblanchon.PDFium.Win32": {
+        "type": "Transitive",
+        "resolved": "152.0.7961",
+        "contentHash": "E6m7Y/OZ/eySQBy4drjDCF6pspBdp2PaF6vC04K1BgGbS8UtXOdL0SnReg3zE309hBZ6U/ZDMys9QE5VhBzDDQ=="
+      },
+      "HarfBuzzSharp.NativeAssets.Linux": {
+        "type": "Transitive",
+        "resolved": "14.2.0",
+        "contentHash": "KgdkGoqCoRPAdekskR9asBbY5tzfqRcYQ0/+hz8rvPMAmbQqX1g57xr6rbGUyIVY5j5ioExZWUZ10QocUVpgwQ=="
+      },
+      "HarfBuzzSharp.NativeAssets.macOS": {
+        "type": "Transitive",
+        "resolved": "14.2.0",
+        "contentHash": "v2AfGa0Q0aNRz7glbRTvkrR8w2pipUpyRHDNjOCPXnnHE3pjY0ycTY0L7dL/AByd53aQ0AGPwIEP1H9hZPPywg=="
+      },
+      "HarfBuzzSharp.NativeAssets.Win32": {
+        "type": "Transitive",
+        "resolved": "14.2.0",
+        "contentHash": "NCqaG3bJDl66JdmHeyOpRUf4eiGVwu8OSxGv6ukofBiukVyUpWj01btr/telMQLQ+XuQ83iDpi6NRDFoRIcojA=="
+      },
+      "Magick.NET-Q8-AnyCPU": {
+        "type": "Transitive",
+        "resolved": "15.1.0",
+        "contentHash": "nHJpUfEkhiDu5XJAymHWQBCinVQJABTK2j6haHqs650UPUP9iEMqN73VNu8m+YyoyEp5gGwO65hqivhgzzpfnQ==",
+        "dependencies": {
+          "Magick.NET.Core": "15.1.0"
+        }
+      },
+      "Selenium.WebDriver": {
+        "type": "Transitive",
+        "resolved": "4.52.0",
+        "contentHash": "ISAxyCkxAQ1pvJ9/9619q4DTdvuW4zaJydxoSqNFS7Db8JytgilbJXYHg7xwpGXXjNwXSx/07hqaKwL0Unf+pg=="
+      },
+      "SkiaSharp.NativeAssets.Linux.NoDependencies": {
+        "type": "Transitive",
+        "resolved": "4.150.1",
+        "contentHash": "2KVadgDky2xQw7lEMRT/u0ftX5K1u8X7MhCN47Em22Z6VM6JJg1c9cwfGuSPAt1oY6+GjGHH18vkeev+nqT9Kw=="
+      },
+      "SkiaSharp.NativeAssets.macOS": {
+        "type": "Transitive",
+        "resolved": "4.155.0",
+        "contentHash": "NaXi75WZBJWW1+zdHTdh319vBpPR2m04uznYZ9Z2BcIue7Ip4YNIycMgWjz88giLP0fVh5FCcng66+if/tqF8Q=="
+      },
+      "SkiaSharp.NativeAssets.Win32": {
+        "type": "Transitive",
+        "resolved": "4.155.0",
+        "contentHash": "mTpojWcWzoB8mERp8Du9/T6KnBHo1nguYiLdy0AxjIsA6xHIDdo4xAU7FB6CxW9ATEkR77drNFTv84RuUDurvQ=="
+      }
+    },
     "net10.0/linux-x64": {
+      "OpenCvSharp5.official.runtime.linux-arm64.slim": {
+        "type": "Direct",
+        "requested": "[5.0.0.20261107, )",
+        "resolved": "5.0.0.20261107",
+        "contentHash": "Y8NXwqka7tBui4U1aHr+kb9YPaHs9IdXI/5qzDSvONWKifjcnNgB8rYa8YyBWactcWraeljEPoa8CnSINs0/+A=="
+      },
       "OpenCvSharp5.official.runtime.linux-x64.slim": {
         "type": "Direct",
         "requested": "[5.0.0.20261107, )",

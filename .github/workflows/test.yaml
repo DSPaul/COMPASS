@@ -107,9 +107,59 @@ jobs:
       if: always()
       run: pkill -f "publish/linux-x64/COMPASS" || true
 
+    - name: Verify native OpenCv library matches the target architecture
+      run: file -L publish/linux-x64/libOpenCvSharpExtern.so | grep -q "x86-64"
+
     - name: Upload Log Artifact
       if: failure()
       uses: actions/upload-artifact@v7
       with:
         name: log-file-linux
+        path: /home/runner/.local/share/COMPASS/logs
+
+  #The test projects are pinned to linux-x64, so on arm64 only publish and smoke test the app.
+  smoke-test-linux-arm64:
+    name: smoke-test-linux-arm64
+    runs-on: ubuntu-24.04-arm
+
+    steps:
+    - uses: actions/checkout@v6
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v5
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Install xvfb
+      run: sudo apt-get update && sudo apt-get install -y xvfb
+
+    - name: Restore dependencies
+      run: dotnet restore Source/COMPASS.Linux/COMPASS.Linux.csproj --runtime linux-arm64 --locked-mode
+
+    - name: Publish
+      run: dotnet publish Source/COMPASS.Linux/COMPASS.Linux.csproj --configuration Release --runtime linux-arm64 --self-contained true --no-restore -o publish/linux-arm64
+
+    - name: Verify native OpenCv library matches the target architecture
+      run: file -L publish/linux-arm64/libOpenCvSharpExtern.so | grep -q "aarch64"
+
+    - name: Smoke test - launch app and verify it survives startup
+      run: |
+        timeout 60s xvfb-run -a ./publish/linux-arm64/COMPASS &
+        APP_PID=$!
+        sleep 12
+        if ! kill -0 "$APP_PID" 2>/dev/null; then
+          echo "::error::COMPASS terminated within 12s of launch - likely crashed during startup"
+          exit 1
+        fi
+        echo "COMPASS was still running after 12s, startup succeeded"
+
+    - name: Stop smoke test app
+      if: always()
+      run: pkill -f "publish/linux-arm64/COMPASS" || true
+
+    - name: Upload Log Artifact
+      if: failure()
+      uses: actions/upload-artifact@v7
+      with:
+        name: log-file-linux-arm64
         path: /home/runner/.local/share/COMPASS/logs

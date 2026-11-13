@@ -3,6 +3,7 @@
     <OutputType>WinExe</OutputType>
     <AssemblyName>COMPASS</AssemblyName>
     <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
+    <RuntimeIdentifiers>linux-x64;linux-arm64</RuntimeIdentifiers>
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
   </PropertyGroup>
@@ -11,7 +12,10 @@
     <PackageReference Include="Avalonia.Desktop" Version="12.1.5" />
     <PackageReference Include="HotAvalonia" Version="3.1.5" PrivateAssets="All" />
     <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="4.155.0" />
+    <!-- Both are referenced unconditionally to keep the lock file identical for every RID;
+         each only ships runtimes/<rid>/native, so publish picks the one matching the target RID. -->
     <PackageReference Include="OpenCvSharp5.official.runtime.linux-x64.slim" Version="5.0.0.20261107" />
+    <PackageReference Include="OpenCvSharp5.official.runtime.linux-arm64.slim" Version="5.0.0.20261107" />
   </ItemGroup>
 
   <ItemGroup>

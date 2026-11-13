@@ -97,10 +97,18 @@ jobs:
         name: COMPASS_Installer_Signed
         path: .\Deployment\Versions\${{ needs.get-version.outputs.version }}\COMPASS_Setup_${{ needs.get-version.outputs.version }}.exe
 
+  #A Flatpak bundle holds a single architecture, so each one is built natively on a matching runner.
   package-flatpak:
-    name: Create Flatpak bundle
+    name: Create Flatpak bundle (${{ matrix.arch }})
     needs: get-version
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - arch: x86_64
+            runner: ubuntu-latest
+          - arch: aarch64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
     container:
       image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-48
       options: --privileged
@@ -113,15 +121,16 @@ jobs:
     - name: Build Flatpak
       uses: flatpak/flatpak-github-actions/flatpak-builder@v6
       with:
-        bundle: COMPASS_${{ needs.get-version.outputs.version }}.flatpak
+        bundle: COMPASS_${{ needs.get-version.outputs.version }}_${{ matrix.arch }}.flatpak
         manifest-path: Deployment/flatpak/info.compassapp.COMPASS.yaml
-        cache-key: flatpak-builder-${{ github.sha }}
+        arch: ${{ matrix.arch }}
+        cache-key: flatpak-builder-${{ matrix.arch }}-${{ github.sha }}
 
     - name: Upload Flatpak
       uses: actions/upload-artifact@v7
       with:
-        name: COMPASS_Flatpak
-        path: COMPASS_${{ needs.get-version.outputs.version }}.flatpak
+        name: COMPASS_Flatpak_${{ matrix.arch }}
+        path: COMPASS_${{ needs.get-version.outputs.version }}_${{ matrix.arch }}.flatpak
 
   draft-release:
     name: Create Draft Release
@@ -148,10 +157,11 @@ jobs:
         name: COMPASS_Installer_Signed
         path: release-files/
 
-    - name: Download Flatpak
+    - name: Download Flatpaks
       uses: actions/download-artifact@v8
       with:
-        name: COMPASS_Flatpak
+        pattern: COMPASS_Flatpak_*
+        merge-multiple: true
         path: release-files/
 
     - name: Create draft release

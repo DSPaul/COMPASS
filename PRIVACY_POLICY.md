@@ -13,7 +13,8 @@ COMPASS is a local desktop application. Your collection data never leaves your m
 When COMPASS crashes, you are given the option to submit an anonymous crash report. That report contains:
 
 - **Application version** — the version of COMPASS that crashed
-- **Operating system** — a description of your OS and version (e.g. "Windows 11 Build 22631")
+- **Operating system** — a description of your OS and version as reported by the system (e.g. "Microsoft Windows 10.0.22631", or on Linux the kernel version and build string)
+- **Processor architecture** — the type of processor your OS runs on (e.g. "X64" or "Arm64")
 - **Error details** — the exception type, message, and stack trace
 
 No file contents or collection data are included. Stack traces may incidentally contain local file system paths (e.g. the installation path of COMPASS itself).
