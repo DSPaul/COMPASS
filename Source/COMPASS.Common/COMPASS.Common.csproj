@@ -6,8 +6,8 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia.Labs.Gif" Version="12.1.0" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.5" />
-    <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.5" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.6" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.6" />
     <PackageReference Include="PdfPig" Version="0.1.16" />
     <PackageReference Include="Magick.NET.AvaloniaMediaImaging" Version="2.0.1" />
     <PackageReference Include="PDFtoImage" Version="5.4.0" />
