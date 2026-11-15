@@ -1,5 +1,21 @@
 # CHANGELOG
 
+## COMPASS v2.0.3 (15 November 2026)
+
+### Improvements
+
+- Hide hidden folders when showing subfolder in folder import
+- Add progress bar when scanning large folder for files to import
+
+### Fixes
+
+- Fix crash when trying to import a root directory
+- Fix crash when a dropped item has no file on disk (an entry dragged out of a ZIP folder, a mail attachment), and import its contents instead
+- Limit modal window size so it cannot be bigger than the screen size
+
+## Other
+
+Added ARM support on linux
 ## COMPASS v2.0.2 (07 November 2026)
 
 ### Improvements

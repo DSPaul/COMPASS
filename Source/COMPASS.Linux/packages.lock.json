@@ -30,21 +30,21 @@
       },
       "OpenCvSharp5.official.runtime.linux-arm64.slim": {
         "type": "Direct",
-        "requested": "[5.0.0.20261109, )",
-        "resolved": "5.0.0.20261109",
-        "contentHash": "tJCxk9508i8rVinWDGjhwvDOBbfQ8JaV5Jbc9yIuTkir8D7xbm3Z+k6nETBxpIGPsOW/SDg2aoRPO2+GqZtw2w=="
+        "requested": "[5.1.0.20261115, )",
+        "resolved": "5.1.0.20261115",
+        "contentHash": "ymyIZ+OoTWbI4dAHtl3Ipruh4Kb3dLnert7e4EWyOoCoGXInaidK2h9RAMFxKwx1v/NxfY7ja4anOAkgWZ9sfw=="
       },
       "OpenCvSharp5.official.runtime.linux-x64.slim": {
         "type": "Direct",
-        "requested": "[5.0.0.20261109, )",
-        "resolved": "5.0.0.20261109",
-        "contentHash": "0BiJtXHr1wuqyJx+qrWW3TDZ/wAbgwiEW+tEiW2MPEPbn74a64ZOFmgSB4a4m7B5SxRRl2cy+S7sbkZz2oZjew=="
+        "requested": "[5.1.0.20261115, )",
+        "resolved": "5.1.0.20261115",
+        "contentHash": "3QvBQdL2oR2STkgMwG8w0/43xQ6QriyDAgXyW3YubyX27Q9kDi+PfWOQFHAVnALF7V1HoPvgPRoaD7WfsFST6w=="
       },
       "SkiaSharp.NativeAssets.Linux": {
         "type": "Direct",
-        "requested": "[4.156.0, )",
-        "resolved": "4.156.0",
-        "contentHash": "H+s60e8mNUO8jiRuQQpMXQjcPnFTYb168t59mB/UAewSHNv5hXLfP8xiKeSDc4jAF/aMusjamXx9Di2FIurl/w=="
+        "requested": "[4.156.1, )",
+        "resolved": "4.156.1",
+        "contentHash": "l9GWuJzlDd+xZ4gXahlsoDYI0oZkhmibA9ZxMOxJO1uKmDYGlQA3DFkUfLH1ksobGhuVLD4cUbQff3G43XcD1g=="
       },
       "Autofac": {
         "type": "Transitive",
@@ -496,8 +496,8 @@
       },
       "OpenCvSharp5": {
         "type": "Transitive",
-        "resolved": "5.0.0.20261109",
-        "contentHash": "tzeUegRQDXivBHq23f1zdtOYY/lZndPZ9EO89sBUTU+DyoulNCcbhMVQZIaTidfaQwDKxQpu6ekA3KMwetj+fA=="
+        "resolved": "5.1.0.20261115",
+        "contentHash": "Stw5qGieUn8uO2eptokpfciX2m+sMEStdg3fBlaFAaWqblBMYEt8OslZXYt2pkhfpqlXjqt/q4DDebXxXzaTaQ=="
       },
       "PdfPig": {
         "type": "Transitive",
@@ -565,11 +565,11 @@
       },
       "SkiaSharp": {
         "type": "Transitive",
-        "resolved": "4.156.0",
-        "contentHash": "bdBfG346spQvqwvdz7w8yoqquN7MmU89O+TJ9TwnwyFuqhHkBOQnLJ57euu+4XWi99a5uXikDMZmcM4q58HUXw==",
+        "resolved": "4.156.1",
+        "contentHash": "DFlbYk/Rxnqm+UM/EaynxLlucc07+fuWzT84KsyT8aCDAT1PZOPlp5eATD7eYczTgV771bnxQKSrLbNmUCaSLQ==",
         "dependencies": {
-          "SkiaSharp.NativeAssets.Win32": "4.156.0",
-          "SkiaSharp.NativeAssets.macOS": "4.156.0"
+          "SkiaSharp.NativeAssets.Win32": "4.156.1",
+          "SkiaSharp.NativeAssets.macOS": "4.156.1"
         }
       },
       "SkiaSharp.NativeAssets.Linux.NoDependencies": {
@@ -579,8 +579,8 @@
       },
       "SkiaSharp.NativeAssets.macOS": {
         "type": "Transitive",
-        "resolved": "4.156.0",
-        "contentHash": "pBJ4ARN6ekiBqh+G697sMQmZd4igIEtSdxx9mfxR3nUTxErkrx0JeaU1+IQ4dX8qobG9Fcskv6azW3zPbAEqXQ=="
+        "resolved": "4.156.1",
+        "contentHash": "c05wS/CpRum9JKzk77bXrUsBdxIhv4QBk+sbE3nlEfoEV53Uq9VY4yxuae20lO42kE8PoLShuh6dbbvRrE4/iw=="
       },
       "SkiaSharp.NativeAssets.WebAssembly": {
         "type": "Transitive",
@@ -589,8 +589,8 @@
       },
       "SkiaSharp.NativeAssets.Win32": {
         "type": "Transitive",
-        "resolved": "4.156.0",
-        "contentHash": "D4q5I+N/IBH3LTC/SK51MkfdjuX5JZVSS4gTJHbLPZ9btgga3xSC/gL/lyh18mfpwFmnm6b61DsEv6zrhTy0Ow=="
+        "resolved": "4.156.1",
+        "contentHash": "BFSUQxmxG9KI2UV7MW1Xb4XhCLSB7Rwsg9E94KelNi8L6ptGXnHIOm3yqU/y3djwg4ZNiBWhOB8XAGUVaF9LuA=="
       },
       "Svg.Animation": {
         "type": "Transitive",
@@ -716,30 +716,30 @@
           "FlashCap": "[1.13.0, )",
           "MarkView.Avalonia": "[12.4.1, )",
           "Material.Icons.Avalonia": "[3.0.2, )",
-          "OpenCvSharp5": "[5.0.0.20261109, )",
+          "OpenCvSharp5": "[5.1.0.20261115, )",
           "SkiaImageView.Avalonia11": "[1.5.0, )",
-          "SkiaSharp": "[4.156.0, )"
+          "SkiaSharp": "[4.156.1, )"
         }
       }
     },
     "net10.0/linux-arm64": {
       "OpenCvSharp5.official.runtime.linux-arm64.slim": {
         "type": "Direct",
-        "requested": "[5.0.0.20261109, )",
-        "resolved": "5.0.0.20261109",
-        "contentHash": "tJCxk9508i8rVinWDGjhwvDOBbfQ8JaV5Jbc9yIuTkir8D7xbm3Z+k6nETBxpIGPsOW/SDg2aoRPO2+GqZtw2w=="
+        "requested": "[5.1.0.20261115, )",
+        "resolved": "5.1.0.20261115",
+        "contentHash": "ymyIZ+OoTWbI4dAHtl3Ipruh4Kb3dLnert7e4EWyOoCoGXInaidK2h9RAMFxKwx1v/NxfY7ja4anOAkgWZ9sfw=="
       },
       "OpenCvSharp5.official.runtime.linux-x64.slim": {
         "type": "Direct",
-        "requested": "[5.0.0.20261109, )",
-        "resolved": "5.0.0.20261109",
-        "contentHash": "0BiJtXHr1wuqyJx+qrWW3TDZ/wAbgwiEW+tEiW2MPEPbn74a64ZOFmgSB4a4m7B5SxRRl2cy+S7sbkZz2oZjew=="
+        "requested": "[5.1.0.20261115, )",
+        "resolved": "5.1.0.20261115",
+        "contentHash": "3QvBQdL2oR2STkgMwG8w0/43xQ6QriyDAgXyW3YubyX27Q9kDi+PfWOQFHAVnALF7V1HoPvgPRoaD7WfsFST6w=="
       },
       "SkiaSharp.NativeAssets.Linux": {
         "type": "Direct",
-        "requested": "[4.156.0, )",
-        "resolved": "4.156.0",
-        "contentHash": "H+s60e8mNUO8jiRuQQpMXQjcPnFTYb168t59mB/UAewSHNv5hXLfP8xiKeSDc4jAF/aMusjamXx9Di2FIurl/w=="
+        "requested": "[4.156.1, )",
+        "resolved": "4.156.1",
+        "contentHash": "l9GWuJzlDd+xZ4gXahlsoDYI0oZkhmibA9ZxMOxJO1uKmDYGlQA3DFkUfLH1ksobGhuVLD4cUbQff3G43XcD1g=="
       },
       "Avalonia.Angle.Windows.Natives": {
         "type": "Transitive",
@@ -804,33 +804,33 @@
       },
       "SkiaSharp.NativeAssets.macOS": {
         "type": "Transitive",
-        "resolved": "4.156.0",
-        "contentHash": "pBJ4ARN6ekiBqh+G697sMQmZd4igIEtSdxx9mfxR3nUTxErkrx0JeaU1+IQ4dX8qobG9Fcskv6azW3zPbAEqXQ=="
+        "resolved": "4.156.1",
+        "contentHash": "c05wS/CpRum9JKzk77bXrUsBdxIhv4QBk+sbE3nlEfoEV53Uq9VY4yxuae20lO42kE8PoLShuh6dbbvRrE4/iw=="
       },
       "SkiaSharp.NativeAssets.Win32": {
         "type": "Transitive",
-        "resolved": "4.156.0",
-        "contentHash": "D4q5I+N/IBH3LTC/SK51MkfdjuX5JZVSS4gTJHbLPZ9btgga3xSC/gL/lyh18mfpwFmnm6b61DsEv6zrhTy0Ow=="
+        "resolved": "4.156.1",
+        "contentHash": "BFSUQxmxG9KI2UV7MW1Xb4XhCLSB7Rwsg9E94KelNi8L6ptGXnHIOm3yqU/y3djwg4ZNiBWhOB8XAGUVaF9LuA=="
       }
     },
     "net10.0/linux-x64": {
       "OpenCvSharp5.official.runtime.linux-arm64.slim": {
         "type": "Direct",
-        "requested": "[5.0.0.20261109, )",
-        "resolved": "5.0.0.20261109",
-        "contentHash": "tJCxk9508i8rVinWDGjhwvDOBbfQ8JaV5Jbc9yIuTkir8D7xbm3Z+k6nETBxpIGPsOW/SDg2aoRPO2+GqZtw2w=="
+        "requested": "[5.1.0.20261115, )",
+        "resolved": "5.1.0.20261115",
+        "contentHash": "ymyIZ+OoTWbI4dAHtl3Ipruh4Kb3dLnert7e4EWyOoCoGXInaidK2h9RAMFxKwx1v/NxfY7ja4anOAkgWZ9sfw=="
       },
       "OpenCvSharp5.official.runtime.linux-x64.slim": {
         "type": "Direct",
-        "requested": "[5.0.0.20261109, )",
-        "resolved": "5.0.0.20261109",
-        "contentHash": "0BiJtXHr1wuqyJx+qrWW3TDZ/wAbgwiEW+tEiW2MPEPbn74a64ZOFmgSB4a4m7B5SxRRl2cy+S7sbkZz2oZjew=="
+        "requested": "[5.1.0.20261115, )",
+        "resolved": "5.1.0.20261115",
+        "contentHash": "3QvBQdL2oR2STkgMwG8w0/43xQ6QriyDAgXyW3YubyX27Q9kDi+PfWOQFHAVnALF7V1HoPvgPRoaD7WfsFST6w=="
       },
       "SkiaSharp.NativeAssets.Linux": {
         "type": "Direct",
-        "requested": "[4.156.0, )",
-        "resolved": "4.156.0",
-        "contentHash": "H+s60e8mNUO8jiRuQQpMXQjcPnFTYb168t59mB/UAewSHNv5hXLfP8xiKeSDc4jAF/aMusjamXx9Di2FIurl/w=="
+        "requested": "[4.156.1, )",
+        "resolved": "4.156.1",
+        "contentHash": "l9GWuJzlDd+xZ4gXahlsoDYI0oZkhmibA9ZxMOxJO1uKmDYGlQA3DFkUfLH1ksobGhuVLD4cUbQff3G43XcD1g=="
       },
       "Avalonia.Angle.Windows.Natives": {
         "type": "Transitive",
@@ -895,13 +895,13 @@
       },
       "SkiaSharp.NativeAssets.macOS": {
         "type": "Transitive",
-        "resolved": "4.156.0",
-        "contentHash": "pBJ4ARN6ekiBqh+G697sMQmZd4igIEtSdxx9mfxR3nUTxErkrx0JeaU1+IQ4dX8qobG9Fcskv6azW3zPbAEqXQ=="
+        "resolved": "4.156.1",
+        "contentHash": "c05wS/CpRum9JKzk77bXrUsBdxIhv4QBk+sbE3nlEfoEV53Uq9VY4yxuae20lO42kE8PoLShuh6dbbvRrE4/iw=="
       },
       "SkiaSharp.NativeAssets.Win32": {
         "type": "Transitive",
-        "resolved": "4.156.0",
-        "contentHash": "D4q5I+N/IBH3LTC/SK51MkfdjuX5JZVSS4gTJHbLPZ9btgga3xSC/gL/lyh18mfpwFmnm6b61DsEv6zrhTy0Ow=="
+        "resolved": "4.156.1",
+        "contentHash": "BFSUQxmxG9KI2UV7MW1Xb4XhCLSB7Rwsg9E94KelNi8L6ptGXnHIOm3yqU/y3djwg4ZNiBWhOB8XAGUVaF9LuA=="
       }
     }
   }
