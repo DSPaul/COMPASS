@@ -29,6 +29,10 @@ namespace COMPASS.Tests.Common.Mocks
 
         public Task<IStorageFolder?> TryGetFolderFromPathAsync(string folderPath) => Task.FromResult<IStorageFolder?>(null);
 
+        //Pure sorting with no picker or window involved, so the real implementation is the right one here
+        public void ClassifyDroppedFiles(IEnumerable<IStorageItem> droppedItems, out List<string> filesOnDisk, out List<IStorageFile> filesFromStream) =>
+            new FilesService().ClassifyDroppedFiles(droppedItems, out filesOnDisk, out filesFromStream);
+
         public FilePickerFileType ZipExtensionFilter =>
             new("Zip file")
             {

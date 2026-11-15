@@ -22,7 +22,6 @@ namespace COMPASS.Common.Features.Layouts
     {
         public LayoutViewModel(
             CodexInfoViewModelFactory codexInfoVmFactory,
-            ImportFilesViewModelFactory importFilesVmFactory, 
             CodexCollectionOperations collectionOperations, 
             CollectionTabVM tabVM)
         {
@@ -31,7 +30,7 @@ namespace COMPASS.Common.Features.Layouts
             tabVM.CollectionChanging += OnCollectionChanging;
             tabVM.CollectionChanged += OnCollectionChanged;
 
-            FileDropManager = CreateFileDropManager(importFilesVmFactory, collectionOperations, tabVM);
+            FileDropManager = CreateFileDropManager(collectionOperations, tabVM);
         }
 
         protected CollectionTabVM _tabViewModel;
@@ -110,43 +109,14 @@ namespace COMPASS.Common.Features.Layouts
 
         public DropManager FileDropManager { get; }
             
-        private DropManager CreateFileDropManager(
-            ImportFilesViewModelFactory importFilesVmFactory, 
+        private static DropManager CreateFileDropManager(
             CodexCollectionOperations codexCollectionOperations,
             CollectionTabVM tabVm) => new DropManager()
             .AddHandler(new DropHandler<IStorageItem>(DataFormat.File, DragDropEffects.Copy)
             {
                 AdornerFactory = storageItems => new FileDropAdorner(storageItems),
-                OnDroppedMultipleAsync = async storageItems =>
-                {
-                    var paths = storageItems.Select(f => f.Path.LocalPath).ToList();
-
-                    var folders = paths.Where(path => File.GetAttributes(path).HasFlag(FileAttributes.Directory)).ToList();
-                    var files = paths.Where(path => !File.GetAttributes(path).HasFlag(FileAttributes.Directory)).ToList();
-
-                    if (folders.Count != 0)
-                    {
-                        using ImportFilesViewModel folderImportVM = importFilesVmFactory.Create(autoImport: false);
-                        folderImportVM.RecursiveDirectories = folders;
-                        folderImportVM.Files = files;
-                        await folderImportVM.Import();
-                    }
-                    else
-                    {
-                        switch (files.Count)
-                        {
-                            case 0:
-                                return;
-                            case 1 when files.First().EndsWith(Constants.SatchelExtension):
-                                await tabVm.ImportSatchelAsync(files.First());
-                                break;
-                            default:
-                                IList<Codex> importedCodices = await codexCollectionOperations.ImportFilesAsync(files, _tabViewModel.CollectionVM.Identifier);
-                                _tabViewModel.SelectCodices(importedCodices);
-                                break;
-                        }
-                    }
-                }
+                OnDroppedMultipleAsync = async storageItems 
+                    => await codexCollectionOperations.ImportStorageItemsAsync(storageItems, tabVm.CollectionVM.Identifier)
             });
 
         /// <summary>

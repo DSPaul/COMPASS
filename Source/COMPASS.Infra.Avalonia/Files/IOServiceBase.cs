@@ -1,4 +1,5 @@
 using Avalonia.Platform.Storage;
+using COMPASS.Infra.Collections;
 using COMPASS.Infra.IO;
 using COMPASS.Infra.Logging;
 using COMPASS.Infra.Progress;
@@ -39,7 +40,10 @@ namespace COMPASS.Infra.Avalonia.Files
             if (folders.Count == 0) return null;
 
             var folder = folders.Single();
-            string path = folder.Path.LocalPath;
+
+            //TryGetLocalPath instead of Path.LocalPath: Avalonia returns a relative Path for
+            //drive and share roots, and LocalPath throws on relative URIs
+            string? path = folder.TryGetLocalPath();
 
             //Dispose the handle for now and just keep the path, might need to hold on to this later
             folder.Dispose();
@@ -61,7 +65,8 @@ namespace COMPASS.Infra.Avalonia.Files
             IList<IStorageFolder> folders = await filesService.OpenFoldersAsync(options).ConfigureAwait(false);
 
             if (folders.Count == 0) return [];
-            var paths = folders.Select(f => f.Path.LocalPath).ToList();
+
+            List<string> paths = folders.Select(f => f.TryGetLocalPath()).RemoveNulls().ToList();
 
             //Dispose the handles for now and just keep the paths, might need to hold on to this later
             foreach (var folder in folders)
@@ -175,16 +180,64 @@ namespace COMPASS.Infra.Avalonia.Files
         /// <inheritdoc/>
         public IEnumerable<string> TryGetDirectories(string directory)
         {
+            // Can't yield from inside the try/catch, so instead of a simple
+            // foreach(var dir in ...) yield return dir;
+            // we are forced to do this awkward contraption instead
+            IEnumerator<string> dirEnumerator;
+
             try
             {
-                return Directory.GetDirectories(directory);
+                dirEnumerator = new DirectoryInfo(directory)
+                    .EnumerateDirectories()
+                    .Where(dir => !IsHidden(dir))
+                    .Select(dir => dir.FullName)
+                    .GetEnumerator();
             }
             catch (Exception ex)
             {
-                logger.Error($"Failed to get subfolders of {directory}", ex);
-                return Enumerable.Empty<string>();
+                logger.Error($"Failed to get directory info of {directory}", ex);
+                yield break;
             }
 
+            using (dirEnumerator)
+            {
+                bool currentValid;
+
+                do
+                {
+                    try
+                    {
+                        currentValid = dirEnumerator.MoveNext();
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.Error($"Failed to enumerate directories of {directory}", ex);
+                        yield break;
+                    }
+
+                    if (currentValid)
+                    {
+                        yield return dirEnumerator.Current;
+                    }
+
+                } while (currentValid);
+            }
+        }
+
+        /// <summary>
+        /// True when the folder is hidden
+        /// </summary>
+        private bool IsHidden(DirectoryInfo folder)
+        {
+            try
+            {
+                return folder.Attributes.HasFlag(FileAttributes.Hidden);
+            }
+            catch (Exception ex)
+            {
+                logger.Debug($"Could not read the attributes of {folder.FullName}, skipping it", ex);
+                return true;
+            }
         }
     }
 }

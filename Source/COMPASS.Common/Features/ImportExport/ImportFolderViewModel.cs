@@ -37,6 +37,7 @@ namespace COMPASS.Common.Features.ImportExport
             _isAutoImport = isAutoImport;
             _collectionInfo = collectionInfo;
             _allFiles = allFiles.ToList();
+            _fileTypeChangesNotifier = new(_ => RefreshFilteredFileCount());
 
             IncludeSubfolders = true;
             //make sure there are no duplicates (normalized: separators, trailing slashes; comparer: casing)
@@ -82,7 +83,7 @@ namespace COMPASS.Common.Features.ImportExport
                 bool shouldImport = known ? storedShouldImport : true;
                 FileTypeInfo extensionInfo = new FileTypeInfo(extensionGroup.Key, shouldImport, extensionGroup.Count());
 
-                extensionInfo.PropertyChanged += (_, _) => RefreshFilteredFileCount();
+                extensionInfo.PropertyChanged += (_, _) => _fileTypeChangesNotifier.Notify();
 
                 if (known)
                 {
@@ -182,6 +183,55 @@ namespace COMPASS.Common.Features.ImportExport
         public IList<FileTypeInfo> KnownFileTypes { get; }
         public IList<FileTypeInfo> UnknownFileTypes { get; }
 
+        /// <summary>
+        /// Batches the change notifications of the file type checkboxes so the counts
+        /// are only recalculated once when all of them are updated in bulk.
+        /// </summary>
+        private readonly EventDeferralScope _fileTypeChangesNotifier;
+
+        /// <summary>
+        /// True when every known file type is imported, false when none is, and null when only some are.
+        /// Changed through <see cref="ToggleAllKnownFileTypesCommand"/>.
+        /// </summary>
+        public bool? ImportAllKnownFileTypes => GetImportAllState(KnownFileTypes);
+
+        public IRelayCommand ToggleAllKnownFileTypesCommand => field ??= new RelayCommand(() => ToggleAllFileTypes(KnownFileTypes));
+
+        /// <summary>
+        /// True when every newly found file type is imported, false when none is, and null when only some are.
+        /// Changed through <see cref="ToggleAllUnknownFileTypesCommand"/>.
+        /// </summary>
+        public bool? ImportAllUnknownFileTypes => GetImportAllState(UnknownFileTypes);
+
+        public IRelayCommand ToggleAllUnknownFileTypesCommand => field ??= new RelayCommand(() => ToggleAllFileTypes(UnknownFileTypes));
+
+        private static bool? GetImportAllState(IList<FileTypeInfo> fileTypes)
+        {
+            int importedCount = fileTypes.Count(fileType => fileType.ShouldImport);
+            if (importedCount == 0)
+            {
+                return false;
+            }
+
+            return importedCount == fileTypes.Count ? true : null;
+        }
+
+        private void ToggleAllFileTypes(IList<FileTypeInfo> fileTypes)
+        {
+            //When anything is excluded the click selects everything, otherwise it clears everything
+            bool shouldImport = fileTypes.Any(fileType => !fileType.ShouldImport);
+
+            //Every file type raises a change notification, but recalculating the file counts
+            //for each one would re-filter the whole file list over and over
+            using (_fileTypeChangesNotifier.BeginDeferral())
+            {
+                foreach (FileTypeInfo fileTypeInfo in fileTypes)
+                {
+                    fileTypeInfo.ShouldImport = shouldImport;
+                }
+            }
+        }
+
         public bool HasNewFileTypes => UnknownFileTypes.Count > 0;
         public bool ShowNewFileTypesHint => HasNewFileTypes && !ExcludeFileTypes;
 
@@ -254,6 +304,8 @@ namespace COMPASS.Common.Features.ImportExport
             FilesToImportCount = GetFilteredFiles().Count;
             OnPropertyChanged(nameof(KnownTypesFoundSummary));
             OnPropertyChanged(nameof(UnknownTypesFoundSummary));
+            OnPropertyChanged(nameof(ImportAllKnownFileTypes));
+            OnPropertyChanged(nameof(ImportAllUnknownFileTypes));
         }
 
         #endregion

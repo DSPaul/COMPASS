@@ -52,7 +52,7 @@
         <Grid Grid.Column="2" Margin="30,0" RowDefinitions="auto,auto,*">
             <CheckBox Content="All Tags" IsChecked="{Binding SelectedTagCollection.TagsRoot.IsChecked}" Margin="0,10"/>
             <Rectangle Height="3" Fill="{StaticResource Separator}" Grid.Row="1"/>
-            <TreeView  Background="Transparent" Grid.Row="2"
+            <TreeView  Background="Transparent" Grid.Row="2" MinWidth="300"
                       ItemsSource="{Binding SelectedTagCollection.TagsRoot.Children}"
                       HorizontalAlignment="Stretch" BorderThickness="0" >
                 <TreeView.ItemTemplate>

@@ -6,6 +6,24 @@ namespace COMPASS.UnitTests.Infra.IO;
 [TestFixture]
 public class PathUtilsTests
 {
+    private string _tempRoot = "";
+
+    [SetUp]
+    public void SetUp()
+    {
+        _tempRoot = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(_tempRoot);
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        if (Directory.Exists(_tempRoot))
+        {
+            Directory.Delete(_tempRoot, true);
+        }
+    }
+
     #region GetCommonFolder
 
     [Test]
@@ -574,7 +592,93 @@ public class PathUtilsTests
 
     #endregion
 
+    #region ClassifyPaths
+
+    [Test]
+    public void ClassifyPaths_FolderFileAndMissingPath_EachGoesToItsOwnList()
+    {
+        string folderPath = CreateSubDirectory("books");
+        string filePath = CreateFile("books", "adventure.pdf");
+        string missingPath = Path.Combine(_tempRoot, "deleted.pdf");
+
+        PathClassification classification = PathUtils.ClassifyPaths([folderPath, filePath, missingPath]);
+
+        Assert.That(classification.Folders, Is.EqualTo(new[] { folderPath }));
+        Assert.That(classification.Files, Is.EqualTo(new[] { filePath }));
+        Assert.That(classification.Missing, Is.EqualTo(new[] { missingPath }));
+    }
+
+    [Test]
+    public void ClassifyPaths_FileThatDisappearedAfterItWasHandedOver_IsMissingInsteadOfThrowing()
+    {
+        //A drop can hand over the path of a file that was deleted while it was being dragged,
+        //which used to throw FileNotFoundException from File.GetAttributes
+        string filePath = CreateFile("adventure.pdf");
+        File.Delete(filePath);
+
+        PathClassification classification = null!;
+
+        Assert.DoesNotThrow(() => classification = PathUtils.ClassifyPaths([filePath]));
+
+        Assert.That(classification.Missing, Is.EqualTo(new[] { filePath }));
+        Assert.That(classification.Files, Is.Empty);
+    }
+
+    [Test]
+    public void ClassifyPaths_TrailingSeparatorOnFolder_IsRecognisedAsFolder()
+    {
+        string folderPath = CreateSubDirectory("books") + Path.DirectorySeparatorChar;
+
+        PathClassification classification = PathUtils.ClassifyPaths([folderPath]);
+
+        Assert.That(classification.Folders, Has.Count.EqualTo(1));
+    }
+
+    [Test]
+    public void ClassifyPaths_EmptySequence_ReturnsEmptyLists()
+    {
+        PathClassification classification = PathUtils.ClassifyPaths([]);
+
+        Assert.That(classification.Folders, Is.Empty);
+        Assert.That(classification.Files, Is.Empty);
+        Assert.That(classification.Missing, Is.Empty);
+    }
+
+    [TestCase("")]
+    [TestCase("   ")]
+    public void ClassifyPaths_BlankPath_IsIgnored(string blankPath)
+    {
+        PathClassification classification = PathUtils.ClassifyPaths([blankPath]);
+
+        Assert.That(classification.Folders, Is.Empty);
+        Assert.That(classification.Files, Is.Empty);
+        Assert.That(classification.Missing, Is.Empty);
+    }
+
+    [Test]
+    public void ClassifyPaths_Null_Throws()
+    {
+        Assert.Throws<ArgumentNullException>(() => PathUtils.ClassifyPaths(null!));
+    }
+
+    #endregion
+
     #region Helpers
+
+    private string CreateSubDirectory(string name)
+    {
+        string path = Path.Combine(_tempRoot, name);
+        Directory.CreateDirectory(path);
+        return path;
+    }
+
+    private string CreateFile(params string[] relativePath)
+    {
+        string path = Path.Combine([_tempRoot, .. relativePath]);
+        File.WriteAllText(path, "test");
+
+        return path;
+    }
 
     /// <summary>
     /// Builds an absolute path using this platform's root: a drive root such as

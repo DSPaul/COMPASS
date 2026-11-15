@@ -196,6 +196,38 @@ public static class PathUtils
     }
 
     /// <summary>
+    /// Sorts the given paths into folders, files and paths that do not exist.
+    /// </summary>
+    public static PathClassification ClassifyPaths(IEnumerable<string> paths)
+    {
+        ArgumentNullException.ThrowIfNull(paths);
+
+        PathClassification classification = new();
+
+        foreach (string path in paths)
+        {
+            if (string.IsNullOrWhiteSpace(path)) continue;
+
+            //Folders first: Directory.Exists is false for files, and File.Exists is false for
+            //folders and for anything else that is not on disk
+            if (Directory.Exists(path))
+            {
+                classification.Folders.Add(path);
+            }
+            else if (File.Exists(path))
+            {
+                classification.Files.Add(path);
+            }
+            else
+            {
+                classification.Missing.Add(path);
+            }
+        }
+
+        return classification;
+    }
+
+    /// <summary>
     /// True when the path (or URL) matches any of the globs.
     /// </summary>
     public static bool MatchesAnyGlob(string filePath, IList<string> globs )

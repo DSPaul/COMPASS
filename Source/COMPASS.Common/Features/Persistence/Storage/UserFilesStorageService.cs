@@ -1,6 +1,8 @@
+using Avalonia.Platform.Storage;
 using COMPASS.Infra.IO;
 using COMPASS.Infra.Logging;
 using COMPASS.Common.Domain;
+using COMPASS.Infra.Text;
 
 namespace COMPASS.Common.Features.Persistence.Storage;
 
@@ -14,7 +16,7 @@ public class UserFilesStorageService(
     
 
     #region IUserFilesStorageService
-    private string UserFilesDirectory(CodexCollection collection) => Path.Combine(_collectionsPath, collection.Name , Constants.DIR_FILES);
+    private string UserFilesDirectory(CodexCollection collection) => Path.Combine(_collectionsPath, collection.Name, Constants.DIR_FILES);
 
     public bool HasUserFiles(CodexCollection collection)
     {
@@ -37,7 +39,7 @@ public class UserFilesStorageService(
         string userFilesPath = UserFilesDirectory(collection);
         try
         {
-            ioService.EnsureDirectoryExists(userFilesPath);
+            Directory.CreateDirectory(userFilesPath);
             return true;
         }
         catch (Exception ex)
@@ -129,6 +131,103 @@ public class UserFilesStorageService(
             logger.Warn($"Failed to copy file associated with {codex.Title}", ex);
         }
     }
+
+    public async Task<List<string>> SaveStorageFiles(CodexCollection collection, IEnumerable<IStorageFile> storageFiles, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(collection);
+        ArgumentNullException.ThrowIfNull(storageFiles);
+
+        List<string> savedPaths = [];
+
+        if (!EnsureDirectoryExists(collection))
+        {
+            return savedPaths;
+        }
+
+        string filesDirectory = UserFilesDirectory(collection);
+
+        foreach (IStorageFile storageFile in storageFiles)
+        {
+            string fileName = Path.GetFileName(storageFile.Name);
+            if (string.IsNullOrWhiteSpace(fileName))
+            {
+                logger.Warn($"Skipped a file with an unusable file name: \"{storageFile.Name}\"");
+                continue;
+            }
+
+            string targetPath = GetAvailablePath(filesDirectory, fileName);
+            string partialPath = targetPath + PartialFileExtension;
+
+            try
+            {
+                await ReadIntoFileAsync(storageFile, partialPath, cancellationToken);
+
+                //Only a complete copy takes the place of what is already there: a read that fails
+                //halfway must not leave a truncated version of the item's own file behind
+                File.Move(partialPath, targetPath, overwrite: true);
+                savedPaths.Add(targetPath);
+            }
+            catch (OperationCanceledException)
+            {
+                DeleteIfItExists(partialPath);
+                throw;
+            }
+            catch (Exception exception)
+            {
+                logger.Warn($"Failed to save a copy of {fileName}", exception);
+                DeleteIfItExists(partialPath);
+            }
+        }
+
+        return savedPaths;
+    }
     #endregion
 
+    private const string PartialFileExtension = ".partial";
+
+    private static async Task ReadIntoFileAsync(IStorageFile storageFile, string path, CancellationToken cancellationToken)
+    {
+        //A virtual file is read through the OLE data object of the drop, which belongs to the UI thread.
+        //Its stream only implements a synchronous Read, so CopyToAsync/ReadAsync would push every read onto
+        //a pool thread (RPC_E_WRONG_THREAD). Read synchronously here and only write asynchronously: without
+        //ConfigureAwait(false) every write resumes on the UI thread, so the next read happens there as well.
+        await using Stream contents = await storageFile.OpenReadAsync();
+        await using FileStream target = new(path, FileMode.Create, FileAccess.Write, FileShare.None, CopyBufferSize, useAsync: true);
+
+        byte[] buffer = new byte[CopyBufferSize];
+        int bytesRead;
+        while ((bytesRead = contents.Read(buffer, 0, buffer.Length)) > 0)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            await target.WriteAsync(buffer.AsMemory(0, bytesRead), cancellationToken);
+        }
+    }
+
+    private const int CopyBufferSize = 81920;
+
+    private void DeleteIfItExists(string path)
+    {
+        try
+        {
+            File.Delete(path);
+        }
+        catch (Exception exception)
+        {
+            logger.Warn($"Failed to clean up {path}", exception);
+        }
+    }
+
+    /// <summary>
+    /// The path to save the file to: its own name when that is free or already its own file, otherwise
+    /// a numbered variant, so a second item with the same name does not overwrite the first.
+    /// </summary>
+    private static string GetAvailablePath(string filesDirectory, string fileName)
+    {
+        string nameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
+        string extension = Path.GetExtension(fileName);
+
+        string basePath = Path.Combine(filesDirectory, nameWithoutExtension);
+
+        return basePath.GetValidVariant(p => !File.Exists(p + extension)) + extension;
+    }
 }

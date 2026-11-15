@@ -9,10 +9,19 @@ using COMPASS.Infra.Notifications;
 using COMPASS.Common.Domain;
 using COMPASS.Infra.Avalonia.Validation;
 using COMPASS.Common.Features.Tabs;
+using COMPASS.Infra.Measuring;
+using COMPASS.Infra.Progress;
+using System.Diagnostics;
 namespace COMPASS.Common.Features.ImportExport;
 
 public class ImportFilesViewModel : ValidatableViewModelBase, IDisposable
 {
+    /// <summary>
+    /// Minimum time between progress updates while scanning. Reporting every folder would
+    /// flood the UI with notifications when walking an entire drive.
+    /// </summary>
+    private const int ScanReportIntervalMs = 200;
+
     private readonly ILogger _logger;
     private readonly IIOService _ioService;
     private readonly INotificationService _notificationService;
@@ -22,6 +31,7 @@ public class ImportFilesViewModel : ValidatableViewModelBase, IDisposable
     private readonly CodexOperations _codexOperations;
     private readonly CollectionManager _collectionManager;
     private readonly IActiveTabContext _activeTabContext;
+    private readonly ProgressTrackingManager _progressTrackingManager;
 
     private readonly bool _autoImport;
     private readonly CollectionHandle _targetCollectionHandle;
@@ -38,6 +48,7 @@ public class ImportFilesViewModel : ValidatableViewModelBase, IDisposable
         CodexOperations codexOperations,
         CollectionManager collectionManager,
         IActiveTabContext activeTabContext,
+        ProgressTrackingManager progressTrackingManager,
         string targetCollectionId, bool autoImport)
     {
         _logger = logger;
@@ -49,6 +60,7 @@ public class ImportFilesViewModel : ValidatableViewModelBase, IDisposable
         _codexOperations = codexOperations;
         _collectionManager = collectionManager;
         _activeTabContext = activeTabContext;
+        _progressTrackingManager = progressTrackingManager;
         
         var handle = _collectionManager.LoadCollection(targetCollectionId);
         if (handle != null)
@@ -97,7 +109,17 @@ public class ImportFilesViewModel : ValidatableViewModelBase, IDisposable
             if (!success) return;
         }
 
-        var toImport = GetPathsToImport();
+        IList<string> toImport;
+
+        try
+        {
+            toImport = await GetPathsToImport();
+        }
+        catch (OperationCanceledException)
+        {
+            _logger.Info("Import was cancelled while scanning for files");
+            return;
+        }
         
         if (toImport.Any())
         {
@@ -141,14 +163,35 @@ public class ImportFilesViewModel : ValidatableViewModelBase, IDisposable
     /// because of banishment or due to file extension preference
     /// That are either in FileName or in a folder in RecursiveDirectories
     /// </summary>
-    /// <returns></returns>
-    private IList<string> GetPathsToImport()
+    /// <remarks>
+    /// Walking a full drive can take minutes, so the scan runs on a background thread
+    /// behind a progress tracker that shows the current folder and can be cancelled.
+    /// </remarks>
+    private async Task<IList<string>> GetPathsToImport()
     {
+        ProgressTracker scanTracker = new(Quantities.Items("Folders"));
+        IList<string> toImport = [];
+
+        await _progressTrackingManager.RunAsync(scanTracker, "Scanning for files...",
+            async (tracker, cancellationToken) =>
+            {
+                toImport = await Task.Run(() => FindFilesToImport(tracker, cancellationToken), cancellationToken);
+            });
+
+        return toImport;
+    }
+
+    private IList<string> FindFilesToImport(ProgressTracker tracker, CancellationToken cancellationToken)
+    {
+        Stopwatch reportThrottle = Stopwatch.StartNew();
+
         // 1. Unroll the recursive folders
         List<string> discoveredDirectories = [];
         Queue<string> toSearch = new(RecursiveDirectories);
         while (toSearch.Any())
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             string currentFolder = toSearch.Dequeue();
 
             if (!Directory.Exists(currentFolder)) continue;
@@ -159,20 +202,42 @@ public class ImportFilesViewModel : ValidatableViewModelBase, IDisposable
             {
                 toSearch.Enqueue(dir);
             }
+
+            if (reportThrottle.ElapsedMilliseconds >= ScanReportIntervalMs)
+            {
+                reportThrottle.Restart();
+                tracker.Report(ProgressReports.Status($"{discoveredDirectories.Count:N0} folders scanned"));
+            }
         }
 
         //2. Build a list with all the files to import
         List<string> toImport = [..Files];
-        var directoriesToSearch = 
+        List<string> directoriesToSearch = 
             discoveredDirectories
             .Concat(NonRecursiveDirectories)
-            .Concat(ExistingFolders.Flatten().Select(f => f.FullPath));
-        foreach (var folder in directoriesToSearch)
+            .Concat(ExistingFolders.Flatten().Select(f => f.FullPath))
+            .ToList();
+
+        for (int directoryIndex = 0; directoryIndex < directoriesToSearch.Count; directoryIndex++)
         {
-            toImport.AddRange(_ioService.TryGetFilesInFolder(folder));
+            cancellationToken.ThrowIfCancellationRequested();
+
+            string currentFolder = directoriesToSearch[directoryIndex];
+            toImport.AddRange(_ioService.TryGetFilesInFolder(currentFolder));
+
+            bool isLastFolder = directoryIndex == directoriesToSearch.Count - 1;
+
+            //Now that the amount of folders is known, the bar can show how far along the file scan is
+            if (isLastFolder || reportThrottle.ElapsedMilliseconds >= ScanReportIntervalMs)
+            {
+                reportThrottle.Restart();
+                tracker.Report(ProgressReports.XOutOfY(directoryIndex + 1, directoriesToSearch.Count));
+                tracker.Report(ProgressReports.Status($"{toImport.Count:N0} files found"));
+            }
         }
 
         //3. Filter out doubles and banished paths
+        tracker.Report(ProgressReports.Status($"Checking {toImport.Count:N0} files..."));
         return toImport.Distinct().Where(path => !PathUtils.MatchesAnyGlob(path, _TargetCollection.Info.BanishedPaths)).ToList();
     }
 
@@ -214,7 +279,8 @@ public class ImportFilesViewModel : ValidatableViewModelBase, IDisposable
         CodexCollectionOperations codexCollectionOperations,
         CodexOperations codexOperations,
         Lazy<CollectionManager> collectionManager,
-        IActiveTabContext activeTabContext)
+        IActiveTabContext activeTabContext,
+        ProgressTrackingManager progressTrackingManager)
     {
         public ImportFilesViewModel Create(bool autoImport)
         {
@@ -232,6 +298,6 @@ public class ImportFilesViewModel : ValidatableViewModelBase, IDisposable
                 logger, ioService, notificationService, 
                 importFolderDialogFactory, folderFactory,
                 codexCollectionOperations, codexOperations, collectionManager.Value, activeTabContext,
-                targetCollectionId, autoImport);
+                progressTrackingManager, targetCollectionId, autoImport);
         }
     }

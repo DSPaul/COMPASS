@@ -35,14 +35,22 @@ DEST_DIR = "nuget-sources"
 # Global NuGet packages cache location
 NUGET_CACHE = Path(os.environ.get("NUGET_PACKAGES", Path.home() / ".nuget" / "packages"))
 
-# Runtime packs required for a self-contained linux-x64 publish.
+# .NET RIDs the Flatpak is built for (see Deployment/flatpak/build.sh). Every arch downloads
+# the packs of all RIDs: COMPASS.Linux lists all of them in RuntimeIdentifiers, so the offline
+# restore on any arch may ask for any of them.
+LINUX_RIDS = ("linux-x64", "linux-arm64")
+
+# Runtime packs required for a self-contained publish, per RID.
 # These are not tracked in packages.lock.json but are fetched directly from NuGet.
 # crossgen2 is required when PublishReadyToRun=true (used in Deployment/flatpak/build.sh).
-LINUX_RUNTIME_PACKS = (
-    "microsoft.netcore.app.runtime.linux-x64",
-    "microsoft.netcore.app.host.linux-x64",
-    "microsoft.netcore.app.crossgen2.linux-x64",
-    "microsoft.aspnetcore.app.runtime.linux-x64",
+LINUX_RUNTIME_PACK_PREFIXES = (
+    "microsoft.netcore.app.runtime",
+    "microsoft.netcore.app.host",
+    "microsoft.netcore.app.crossgen2",
+    "microsoft.aspnetcore.app.runtime",
+)
+LINUX_RUNTIME_PACKS = tuple(
+    f"{prefix}.{rid}" for rid in LINUX_RIDS for prefix in LINUX_RUNTIME_PACK_PREFIXES
 )
 
 

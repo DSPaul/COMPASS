@@ -11,8 +11,6 @@ namespace COMPASS.Common.Features.ImportExport
 {
     public class ImportTagsViewModel : ValidatableViewModelBase, IDisposable, IModalViewModel, IConfirmable
     {
-        private readonly TagViewModelFactory _tagViewModelFactory;
-        private readonly CollectionManager _collectionManager;
 
         public ImportTagsViewModel(TagViewModelFactory tagViewModelFactory, CollectionManager collectionManager, string importCollectionId, string targetCollectionId)
             : this(tagViewModelFactory, collectionManager, [importCollectionId], targetCollectionId) { }
@@ -25,9 +23,6 @@ namespace COMPASS.Common.Features.ImportExport
 
         public ImportTagsViewModel(TagViewModelFactory tagViewModelFactory, CollectionManager collectionManager, IEnumerable<CollectionHandle> importCollectionHandles, string targetCollectionId)
         {
-            _tagViewModelFactory = tagViewModelFactory;
-            _collectionManager = collectionManager;
-
             //Load the target collection
             _targetCollectionHandle = collectionManager.LoadCollection(targetCollectionId) ?? throw new LoadException(targetCollectionId);
 
@@ -41,9 +36,6 @@ namespace COMPASS.Common.Features.ImportExport
 
         public ImportTagsViewModel(TagViewModelFactory tagViewModelFactory, CollectionManager collectionManager, CodexCollectionVM codexCollectionVM, string targetCollectionId)
         {
-            _tagViewModelFactory = tagViewModelFactory;
-            _collectionManager = collectionManager;
-
             //Load the target collection
             _targetCollectionHandle = collectionManager.LoadCollection(targetCollectionId) ?? throw new LoadException(targetCollectionId);
             TagsSelectorVM = new TagsSelectorViewModel(tagViewModelFactory, codexCollectionVM);

@@ -10,6 +10,7 @@ using COMPASS.Infra.IO;
 using COMPASS.Infra.Logging;
 using COMPASS.Infra.Notifications;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using COMPASS.Common.Domain;
 
 namespace COMPASS.Common.Shell;
@@ -26,6 +27,12 @@ public static class CrashHandler
     const string SubmitOptionId = "SUBMIT";
 
     private static bool _crashHandled = false;
+
+    // Matches the length limit the COMPASS API enforces on the os field
+    private const int MaxOperatingSystemLength = 200;
+
+    private static string TruncateTo(string text, int maxLength) =>
+        text.Length <= maxLength ? text : text[..maxLength];
     
     public static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
     {
@@ -139,7 +146,8 @@ public static class CrashHandler
                 var request = new CrashReport
                 {
                     Version = ServiceResolver.Resolve<IApplicationService>().Version,
-                    OperatingSystem = System.Runtime.InteropServices.RuntimeInformation.OSDescription,
+                    OperatingSystem = TruncateTo(RuntimeInformation.OSDescription, MaxOperatingSystemLength),
+                    Architecture = RuntimeInformation.OSArchitecture.ToString(),
                     Error = exceptionMessage
                 };
                 var compassApiClient = ServiceResolver.Resolve<ICompassApiClient>();

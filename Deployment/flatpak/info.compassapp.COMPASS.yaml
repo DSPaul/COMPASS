@@ -14,6 +14,7 @@ finish-args:
   - --share=network
   - --filesystem=home
   - --device=all
+  - --env=FONTCONFIG_FILE=/app/etc/fonts/compass.conf
 
 build-options:
   append-path: /usr/lib/sdk/dotnet10/bin
@@ -30,6 +31,7 @@ modules:
       - install -Dm644 Deployment/flatpak/info.compassapp.COMPASS.desktop ${FLATPAK_DEST}/share/applications/info.compassapp.COMPASS.desktop
       - install -Dm644 Deployment/flatpak/info.compassapp.COMPASS.metainfo.xml ${FLATPAK_DEST}/share/metainfo/info.compassapp.COMPASS.metainfo.xml
       - install -Dm644 Deployment/flatpak/info.compassapp.COMPASS-mime.xml ${FLATPAK_DEST}/share/mime/packages/info.compassapp.COMPASS.xml
+      - install -Dm644 Deployment/flatpak/fonts.conf ${FLATPAK_DEST}/etc/fonts/compass.conf
       - install -Dm644 Source/COMPASS.Common/Assets/COMPASS_Icon-512x512.png ${FLATPAK_DEST}/share/icons/hicolor/512x512/apps/info.compassapp.COMPASS.png
 
     sources:

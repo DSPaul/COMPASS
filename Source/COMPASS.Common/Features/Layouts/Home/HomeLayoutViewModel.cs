@@ -1,7 +1,6 @@
 using Avalonia.Threading;
 using COMPASS.Common.Features.CodexCollections;
 using COMPASS.Common.Features.Codices;
-using COMPASS.Common.Features.ImportExport;
 using COMPASS.Infra.Avalonia.Threading;
 using COMPASS.Infra.Preferences;
 using System.Collections.ObjectModel;
@@ -15,9 +14,8 @@ namespace COMPASS.Common.Features.Layouts.Home
         public HomeLayoutViewModel(
             HomeLayoutPreferences preferences, 
             CodexInfoViewModelFactory codexInfoVmFactory,
-            ImportFilesViewModelFactory importFilesVmFactory,
             CodexCollectionOperations collectionOperations,
-            CollectionTabVM tabVM) : base(codexInfoVmFactory, importFilesVmFactory, collectionOperations, tabVM)
+            CollectionTabVM tabVM) : base(codexInfoVmFactory, collectionOperations, tabVM)
         {
             Preferences = preferences;
             tabVM.CollectionVM.CodexPropertyChanged += OnCodexPropertyChanged;
@@ -89,11 +87,10 @@ namespace COMPASS.Common.Features.Layouts.Home
     public class HomeLayoutViewModelFactory(
         IPreferencesService preferencesService,
         CodexInfoViewModelFactory codexInfoVmFactory,
-        ImportFilesViewModelFactory importFilesVmFactory,
         CodexCollectionOperations collectionOperations) : LayoutViewModelFactoryBase
     {
         public override LayoutViewModel Create(CollectionTabVM tabVm) => new HomeLayoutViewModel(
             preferencesService.GetPreferences<HomeLayoutPreferences>(), codexInfoVmFactory,
-            importFilesVmFactory, collectionOperations, tabVm);
+            collectionOperations, tabVm);
     }
 }

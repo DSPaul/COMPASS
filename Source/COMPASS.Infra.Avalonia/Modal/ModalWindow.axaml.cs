@@ -1,6 +1,8 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Controls.Templates;
+using Avalonia.Platform;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using COMPASS.Infra.DependencyInjection;
@@ -36,13 +38,15 @@ public partial class ModalWindow : Window
         _disposeOnClose = disposeOnClose;
         vm.CloseAction = () => Dispatcher.UIThread.Post(Close);
 
+        AddHandler(WindowOpenedEvent, (_, _) => LimitContentSizeToScreen());
+
         // Wait until the layout is ready
-        ContentPresenter.Loaded += (_, _) => UpdateSizeBounds();
+        ContentPresenter.Loaded += (_, _) => UpdateBoundsFromContent();
     }
 
     private readonly bool _disposeOnClose;
 
-    private void UpdateSizeBounds()
+    private void UpdateBoundsFromContent()
     {
         Visual? presenter = ContentPresenter.GetVisualChildren().FirstOrDefault(); //inner content presenter
         Control? modalView = presenter?.GetVisualChildren().OfType<Control>().FirstOrDefault();
@@ -59,6 +63,33 @@ public partial class ModalWindow : Window
         Height = modalView.Height;
 
         SizeToContent = SizeToContent.Manual; //don't resize modal after it's loaded
+
+        // The screen limit is only for the initial size, after that the content should follow the window when resized
+        ContentPresenter.MaxWidth = double.PositiveInfinity;
+        ContentPresenter.MaxHeight = double.PositiveInfinity;
+    }
+
+    private void LimitContentSizeToScreen()
+    {
+        Screen? screen = GetTargetScreen();
+        if (screen == null) return;
+
+        const double decorationsMargin = 40; //title bar and borders
+        const double fractionOfScreen = 0.6; //Modal should be smaller than screen to feel like a modal
+        ContentPresenter.MaxWidth = screen.WorkingArea.Width / screen.Scaling *  fractionOfScreen;
+        ContentPresenter.MaxHeight = Math.Max(screen.WorkingArea.Height / screen.Scaling - decorationsMargin, 0) * fractionOfScreen;
+    }
+
+    /// <summary>
+    /// The screen the modal will be shown on, which is the screen of the window that opens it.
+    /// </summary>
+    private Screen? GetTargetScreen()
+    {
+        TopLevel? openingWindow = Owner as TopLevel
+            ?? (global::Avalonia.Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?
+                .Windows.FirstOrDefault(window => window != this && window.IsActive);
+        Screen? openingScreen = openingWindow?.Screens?.ScreenFromTopLevel(openingWindow);
+        return openingScreen ?? Screens.ScreenFromTopLevel(this) ?? Screens.Primary;
     }
 
     private async void TopLevel_OnClosed(object? sender, EventArgs e)
