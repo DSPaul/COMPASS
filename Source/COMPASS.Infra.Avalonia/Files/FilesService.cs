@@ -45,6 +45,29 @@ namespace COMPASS.Infra.Avalonia.Files
             }
         }
 
+        public void ClassifyDroppedFiles(IEnumerable<IStorageItem> droppedItems,
+            out List<string> filesOnDisk,
+            out List<IStorageFile> filesFromStream)
+        {
+            ArgumentNullException.ThrowIfNull(droppedItems);
+
+            filesOnDisk = [];
+            filesFromStream = [];
+
+            foreach (IStorageItem droppedItem in droppedItems)
+            {
+                string? localPath = droppedItem.TryGetLocalPath();
+                if (localPath is not null)
+                {
+                    filesOnDisk.Add(localPath);
+                }
+                else if (droppedItem is IStorageFile droppedFile)
+                {
+                    filesFromStream.Add(droppedFile);
+                }
+            }
+        }
+
         public FilePickerFileType ZipExtensionFilter =>
             new("Zip file")
             {

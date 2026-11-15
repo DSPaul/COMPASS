@@ -7,6 +7,9 @@ namespace COMPASS.Infra.Avalonia.Files
         Task<IList<IStorageFolder>> OpenFoldersAsync(FolderPickerOpenOptions? options = null);
         Task<IStorageFile?> SaveFileAsync(FilePickerSaveOptions? options = null);
         Task<IStorageFolder?> TryGetFolderFromPathAsync(string folderPath);
+        void ClassifyDroppedFiles(IEnumerable<IStorageItem> droppedItems,
+            out List<string> filesOnDisk,
+            out List<IStorageFile> filesFromStream);
         FilePickerFileType ZipExtensionFilter { get; }
     }
 }

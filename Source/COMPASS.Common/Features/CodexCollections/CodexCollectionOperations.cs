@@ -1,11 +1,14 @@
+using Avalonia.Platform.Storage;
+using COMPASS.Common.Domain;
 using COMPASS.Common.Features.Codices;
 using COMPASS.Common.Features.Covers;
-using COMPASS.Common.Features.Tags;
+using COMPASS.Common.Features.ImportExport;
 using COMPASS.Common.Features.Persistence.Storage;
-using COMPASS.Infra.Collections;
-using COMPASS.Infra.Logging;
-using COMPASS.Common.Domain;
 using COMPASS.Common.Features.Tabs;
+using COMPASS.Common.Features.Tags;
+using COMPASS.Infra.Collections;
+using COMPASS.Infra.IO;
+using COMPASS.Infra.Logging;
 
 namespace COMPASS.Common.Features.CodexCollections;
 
@@ -16,9 +19,11 @@ public class CodexCollectionOperations(
     IUserFilesStorageService userFilesStorageService,
     ICoverStorageService coverStorageService,
     ICoverService coverService,
+    IImportExportService importExportService,
     ILogger logger,
     Lazy<CollectionManager> collectionManager,
     CodexOperations codexOperations,
+    Lazy<ImportFilesViewModelFactory> importFilesVmFactory,
     IActiveTabContext activeTabContext)
 {
     /// <summary>
@@ -144,6 +149,42 @@ public class CodexCollectionOperations(
             .ToList();
 
         return await CreateCodicesAsync(sourceSets, targetCollectionId);
+    }
+
+    public async Task ImportStorageItemsAsync(IList<IStorageItem> storageItems, string targetCollectionId)
+    {
+        using CollectionHandle targetCollectionHandle = collectionManager.Value.LoadCollection(targetCollectionId)
+                                                       ?? throw new LoadException(targetCollectionId);
+        var targetCollection = targetCollectionHandle.CollectionVM.Collection;
+
+        PathClassification classifiedPaths = await importExportService.GetImportablePathsAsync(storageItems, targetCollection);
+
+        var folders = classifiedPaths.Folders;
+        var files = classifiedPaths.Files;
+
+        if (folders.Count != 0)
+        {
+            using ImportFilesViewModel folderImportVM = importFilesVmFactory.Value.Create(autoImport: false);
+            folderImportVM.RecursiveDirectories = folders;
+            folderImportVM.Files = files;
+            await folderImportVM.Import();
+        }
+        else
+        {
+            switch (files.Count)
+            {
+                case 0:
+                    return;
+                case 1 when files.First().EndsWith(Constants.SatchelExtension):
+                    if(activeTabContext.ActiveTab != null)
+                        await activeTabContext.ActiveTab.ImportSatchelAsync(files.Single());
+                    break;
+                default:
+                    IList<Codex> importedCodices = await ImportFilesAsync(files, targetCollectionId);
+                    activeTabContext.ActiveTab?.SelectCodices(importedCodices);
+                    break;
+            }
+        }
     }
 
     public async Task<IList<Codex>> CreateCodicesAsync(IList<SourceSet> sourceSets, string? targetCollectionId = null)

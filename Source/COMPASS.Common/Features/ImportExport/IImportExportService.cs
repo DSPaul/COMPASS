@@ -1,5 +1,6 @@
 using Avalonia.Platform.Storage;
 using COMPASS.Common.Domain;
+using COMPASS.Infra.IO;
 
 namespace COMPASS.Common.Features.ImportExport;
 
@@ -14,6 +15,14 @@ public interface IImportExportService
     /// <param name="satchelPath"></param>
     /// <returns> The loaded collection</returns>
     Task<CodexCollection?> OpenSatchel(string? satchelPath = null);
+
+    /// <summary>
+    /// Take storage items and turn them into paths that can be imported, sorted into folders and files.
+    /// </summary>
+    /// <param name="storageItems"></param>
+    /// <param name="collection"></param>
+    /// <returns></returns>
+    Task<PathClassification> GetImportablePathsAsync(IEnumerable<IStorageItem> storageItems, CodexCollection collection);
 
     #endregion
 

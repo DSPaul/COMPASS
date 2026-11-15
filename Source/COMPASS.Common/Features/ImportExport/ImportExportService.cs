@@ -1,8 +1,10 @@
 using Autofac.Features.Indexed;
 using Avalonia.Platform.Storage;
+using COMPASS.Common.Domain;
 using COMPASS.Common.Features.Covers;
 using COMPASS.Common.Features.Persistence;
 using COMPASS.Common.Features.Persistence.Repositories;
+using COMPASS.Common.Features.Persistence.Storage;
 using COMPASS.Infra.Application;
 using COMPASS.Infra.Avalonia.Files;
 using COMPASS.Infra.IO;
@@ -18,7 +20,6 @@ using SharpCompress.Writers.Zip;
 using System.Text.Json;
 using Constants = COMPASS.Common.Domain.Constants;
 using Notification = COMPASS.Infra.Notifications.Notification;
-using COMPASS.Common.Domain;
 namespace COMPASS.Common.Features.ImportExport;
 
 public class ImportExportService(
@@ -28,6 +29,7 @@ public class ImportExportService(
     IFilesService filesService,
     IIOService ioService,
     INotificationService windowedNotificationService,
+    IUserFilesStorageService userFilesStorageService,
     ILogger logger,
     ProgressTrackingManager progressTrackingManager,
     IIndex<StorageStrategy, ICodexCollectionRepository> repositories)
@@ -44,6 +46,35 @@ public class ImportExportService(
         };
 
     #region Import
+
+    /// <summary>
+    /// Turns storage items handed over by another app into paths that can be imported, sorted into folders and files. 
+    /// Items that are not a file on disk, are saved into the collection's file folder first.
+    /// </summary>
+    public async Task<PathClassification> GetImportablePathsAsync(IEnumerable<IStorageItem> storageItems, CodexCollection collection)
+    {
+        //Distinguish between items that are a folders/files on disk and those that are not
+        filesService.ClassifyDroppedFiles(storageItems, out List<string> filesOnDisk, out List<IStorageFile> filesFromStream);
+
+        List<string> pathsToImport = [.. filesOnDisk];
+
+        if (filesFromStream.Count != 0)
+        {
+            List<string> savedPaths = await userFilesStorageService.SaveStorageFiles(collection, filesFromStream);
+
+            pathsToImport.AddRange(savedPaths);
+        }
+
+        PathClassification classifiedPaths = PathUtils.ClassifyPaths(pathsToImport);
+
+        if (classifiedPaths.Missing.Count != 0)
+        {
+            logger.Warn($"Skipped {classifiedPaths.Missing.Count} item(s) that no longer exist: " +
+                $"{string.Join(", ", classifiedPaths.Missing)}");
+        }
+
+        return classifiedPaths;
+    }
 
     public async Task<CodexCollection?> OpenSatchel(string? satchelPath = null)
     {

@@ -9,6 +9,7 @@ using COMPASS.Common.Features.Filtering.Filters;
 using COMPASS.Common.Features.ImportExport;
 using COMPASS.Infra.Collections;
 using COMPASS.Infra.DependencyInjection;
+using COMPASS.Infra.IO;
 using COMPASS.Tests.Common;
 using System.ComponentModel;
 using COMPASS.Common.Domain;
@@ -293,6 +294,8 @@ public class FilterServiceTests
     private class StubImportExportService : IImportExportService
     {
         public Task<CodexCollection?> OpenSatchel(string? satchelPath = null) => Task.FromResult<CodexCollection?>(null);
+        public Task<PathClassification> GetImportablePathsAsync(IEnumerable<IStorageItem> storageItems, CodexCollection collection) =>
+            Task.FromResult(new PathClassification());
         public Task ExportCollection(CodexCollection collection, IStorageFile? file, bool includeFiles, bool includeCovers) => Task.CompletedTask;
         public Task ExportTags(CodexCollection collection) => Task.CompletedTask;
         public void CompressUserDataToZip(string zipPath) { }
