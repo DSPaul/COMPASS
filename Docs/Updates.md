@@ -2,7 +2,7 @@
 
 ## Overview
 
-COMPASS checks the `DSPAUL/COMPASS` GitHub releases for versions newer than the running one. On Windows it can download and install them automatically; on Linux it just opens the release page.
+COMPASS checks the `DSPAUL/COMPASS` GitHub releases for versions newer than the running one. On Windows it can download and install them automatically; on Linux it points the user to Flathub.
 
 Checking runs on startup and then every 6 hours, and can be disabled or extended to pre-releases in Settings.
 
@@ -36,7 +36,7 @@ Shared helpers download assets with SHA256 checksum verification (checksum from 
 
 **Platform implementations**, registered as `IUpdateService` in each platform's DI module:
 - Windows (`Services/UpdateService.cs`) — downloads `COMPASS_Setup_{version}.exe`, launches it with `/SILENT`, shuts down the app.
-- Linux (`Services/UpdateService.cs`) — `HandleUpdate` opens the release page in the browser; no auto-install yet.
+- Linux (`Services/UpdateService.cs`) — `HandleUpdate` shows a dialog telling the user to run `flatpak update info.compassapp.COMPASS` (or use their software center), with a button that opens the Flathub page.
 
 ## Preferences
 

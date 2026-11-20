@@ -24,12 +24,28 @@ namespace COMPASS.Linux.Services
 
         protected override Task<bool> AssureUpdateDownloaded(Update update) => Task.FromResult(true); //nothing to download
 
-        public override Task HandleUpdate(Update update)
+        private const string FLATHUB_URL = "https://flathub.org/en-GB/apps/info.compassapp.COMPASS";
+        private const string FLATPAK_UPDATE_COMMAND = "flatpak update info.compassapp.COMPASS";
+
+        public override async Task HandleUpdate(Update update)
         {
-            //Just open the download page in the browser for Linux, since we can't auto-update
-            //When we get on some package managers, we can tell users to go use those instead
-            Process.Start(new ProcessStartInfo(update.ReleaseUrl) { UseShellExecute = true });
-            return Task.CompletedTask;
+            //COMPASS is distributed through Flathub on Linux, so updates go through flatpak
+            var notification = new Notification(
+                "Update via Flathub",
+                $"COMPASS on Linux is updated through Flathub. To install v{update.Version}, run the following command in a terminal:\n\n{FLATPAK_UPDATE_COMMAND}\n\nor update it through your software center.",
+                Severity.Info,
+                NotificationAction.Cancel | NotificationAction.Confirm)
+            {
+                ConfirmText = "Open Flathub",
+                CancelText = "Close"
+            };
+
+            await notificationService.ShowDialog(notification).ConfigureAwait(false);
+
+            if (notification.Result == NotificationAction.Confirm)
+            {
+                Process.Start(new ProcessStartInfo(FLATHUB_URL) { UseShellExecute = true });
+            }
         }
     }
 }
