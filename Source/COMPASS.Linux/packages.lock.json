@@ -42,9 +42,9 @@
       },
       "SkiaSharp.NativeAssets.Linux": {
         "type": "Direct",
-        "requested": "[4.156.1, )",
-        "resolved": "4.156.1",
-        "contentHash": "l9GWuJzlDd+xZ4gXahlsoDYI0oZkhmibA9ZxMOxJO1uKmDYGlQA3DFkUfLH1ksobGhuVLD4cUbQff3G43XcD1g=="
+        "requested": "[4.157.0, )",
+        "resolved": "4.157.0",
+        "contentHash": "1+xcqjIcXWYJgOh6gLj2noeJRicrqRYt2Y5CPVDH74X/uqHeCpnM1gR+CvUpHKNlfvBsD9WVxqw2zPU01MxCCg=="
       },
       "Autofac": {
         "type": "Transitive",
@@ -520,16 +520,16 @@
       },
       "Selenium.Support": {
         "type": "Transitive",
-        "resolved": "4.52.0",
-        "contentHash": "14Lqh5OIs7hM4WUMJo16XUgRgZHvnBfEY1AtN1rPOxBXlCyDXr5A78OQiTx9HA180c0Xh3e6NwkTR4A5D5DlAw==",
+        "resolved": "4.53.0",
+        "contentHash": "i+9mgvi7BmtBUYK02RT+jAD864aecr8G/1/eTxopEr0XLlTyDxpARFmX4DI3pbok0tTFKXhNEUVm69p+94Nnvw==",
         "dependencies": {
-          "Selenium.WebDriver": "4.52.0"
+          "Selenium.WebDriver": "4.53.0"
         }
       },
       "Selenium.WebDriver": {
         "type": "Transitive",
-        "resolved": "4.52.0",
-        "contentHash": "ISAxyCkxAQ1pvJ9/9619q4DTdvuW4zaJydxoSqNFS7Db8JytgilbJXYHg7xwpGXXjNwXSx/07hqaKwL0Unf+pg=="
+        "resolved": "4.53.0",
+        "contentHash": "5drFnFaNcc5b3RoR5kYaRUx18uAyLZDecN0Z5QL6hDt+cunL8WqqDEBL34Q5OQZDUy4rHJhPJzNRK0bVaa7Qyg=="
       },
       "Serilog": {
         "type": "Transitive",
@@ -546,8 +546,8 @@
       },
       "SharpCompress": {
         "type": "Transitive",
-        "resolved": "0.50.9",
-        "contentHash": "Jm32AbptP318P+G4Bew0c72X7R1MXqImenXD9kfkygysZJCTfXfp01CLKuFhGvJGIxSw/dutEAaAlwNOZ8MBlw=="
+        "resolved": "0.50.11",
+        "contentHash": "OVurDgTt5RPybp3rRPD0yWlGyao6AfyiVWPNlAgnIhgucdMNthbc+ytpt5tYPDSrk1i+N4wZ9AiNZxKN/XPNsg=="
       },
       "ShimSkiaSharp": {
         "type": "Transitive",
@@ -565,11 +565,11 @@
       },
       "SkiaSharp": {
         "type": "Transitive",
-        "resolved": "4.156.1",
-        "contentHash": "DFlbYk/Rxnqm+UM/EaynxLlucc07+fuWzT84KsyT8aCDAT1PZOPlp5eATD7eYczTgV771bnxQKSrLbNmUCaSLQ==",
+        "resolved": "4.157.0",
+        "contentHash": "C0PYSs8z0OGihExuIPaCEJnoEmDwiVRTFmDI2TZ44rWr2u7UiQX4rZyEwfVSHEiV5Zn/FYh1WbcO9uMPRxAsbw==",
         "dependencies": {
-          "SkiaSharp.NativeAssets.Win32": "4.156.1",
-          "SkiaSharp.NativeAssets.macOS": "4.156.1"
+          "SkiaSharp.NativeAssets.Win32": "4.157.0",
+          "SkiaSharp.NativeAssets.macOS": "4.157.0"
         }
       },
       "SkiaSharp.NativeAssets.Linux.NoDependencies": {
@@ -579,8 +579,8 @@
       },
       "SkiaSharp.NativeAssets.macOS": {
         "type": "Transitive",
-        "resolved": "4.156.1",
-        "contentHash": "c05wS/CpRum9JKzk77bXrUsBdxIhv4QBk+sbE3nlEfoEV53Uq9VY4yxuae20lO42kE8PoLShuh6dbbvRrE4/iw=="
+        "resolved": "4.157.0",
+        "contentHash": "s44YB0BMAEudDf/AdcJLCcN6AXxhpKto0ZnJjats1TwNC+SD4mI2FhotDft58M593Ocea1ra6ad5slfJBhxfvg=="
       },
       "SkiaSharp.NativeAssets.WebAssembly": {
         "type": "Transitive",
@@ -589,8 +589,8 @@
       },
       "SkiaSharp.NativeAssets.Win32": {
         "type": "Transitive",
-        "resolved": "4.156.1",
-        "contentHash": "BFSUQxmxG9KI2UV7MW1Xb4XhCLSB7Rwsg9E94KelNi8L6ptGXnHIOm3yqU/y3djwg4ZNiBWhOB8XAGUVaF9LuA=="
+        "resolved": "4.157.0",
+        "contentHash": "tP54cTnPqGrzf2pBcyupMZWdIUjV34ELdKuh3/c329kRQF4UCVLZvilQZrDMqPJ9P/+AUJC8kDRMBgT/jBvYug=="
       },
       "Svg.Animation": {
         "type": "Transitive",
@@ -675,7 +675,7 @@
           "Avalonia.Fonts.Inter": "[12.1.6, )",
           "Avalonia.Labs.Gif": "[12.1.0, )",
           "Avalonia.Themes.Fluent": "[12.1.6, )",
-          "COMPASS.Infra.Avalonia": "[2.0.2, )",
+          "COMPASS.Infra.Avalonia": "[2.0.3, )",
           "Magick.NET.AvaloniaMediaImaging": "[2.0.1, )",
           "PDFtoImage": "[5.4.0, )",
           "PdfPig": "[0.1.16, )",
@@ -687,7 +687,7 @@
         "dependencies": {
           "Autofac": "[9.3.4, )",
           "Autofac.Extensions.DependencyInjection": "[11.0.2, )",
-          "COMPASS.ApiClients": "[2.0.2, )",
+          "COMPASS.ApiClients": "[2.0.3, )",
           "CommandLineParser": "[2.9.1, )",
           "CommunityToolkit.Mvvm": "[8.4.2, )",
           "FuzzySharp": "[2.0.2, )",
@@ -696,11 +696,11 @@
           "Microsoft.Extensions.FileSystemGlobbing": "[10.0.14, )",
           "Microsoft.Extensions.Http": "[10.0.14, )",
           "NuGet.Versioning": "[8.0.0, )",
-          "Selenium.Support": "[4.52.0, )",
-          "Selenium.WebDriver": "[4.52.0, )",
+          "Selenium.Support": "[4.53.0, )",
+          "Selenium.WebDriver": "[4.53.0, )",
           "Serilog": "[4.4.0, )",
           "Serilog.Sinks.File": "[7.0.0, )",
-          "SharpCompress": "[0.50.9, )"
+          "SharpCompress": "[0.50.11, )"
         }
       },
       "compass.infra.avalonia": {
@@ -711,14 +711,14 @@
           "Avalonia.Controls.DataGrid": "[12.1.2, )",
           "Avalonia.Labs.Gif": "[12.1.0, )",
           "AvaloniaUI.DiagnosticsSupport": "[2.2.3, )",
-          "COMPASS.Infra": "[2.0.2, )",
+          "COMPASS.Infra": "[2.0.3, )",
           "CommunityToolkit.Mvvm": "[8.4.2, )",
           "FlashCap": "[1.13.0, )",
           "MarkView.Avalonia": "[12.4.1, )",
           "Material.Icons.Avalonia": "[3.0.2, )",
           "OpenCvSharp5": "[5.1.0.20261115, )",
           "SkiaImageView.Avalonia11": "[1.5.0, )",
-          "SkiaSharp": "[4.156.1, )"
+          "SkiaSharp": "[4.157.0, )"
         }
       }
     },
@@ -737,9 +737,9 @@
       },
       "SkiaSharp.NativeAssets.Linux": {
         "type": "Direct",
-        "requested": "[4.156.1, )",
-        "resolved": "4.156.1",
-        "contentHash": "l9GWuJzlDd+xZ4gXahlsoDYI0oZkhmibA9ZxMOxJO1uKmDYGlQA3DFkUfLH1ksobGhuVLD4cUbQff3G43XcD1g=="
+        "requested": "[4.157.0, )",
+        "resolved": "4.157.0",
+        "contentHash": "1+xcqjIcXWYJgOh6gLj2noeJRicrqRYt2Y5CPVDH74X/uqHeCpnM1gR+CvUpHKNlfvBsD9WVxqw2zPU01MxCCg=="
       },
       "Avalonia.Angle.Windows.Natives": {
         "type": "Transitive",
@@ -794,8 +794,8 @@
       },
       "Selenium.WebDriver": {
         "type": "Transitive",
-        "resolved": "4.52.0",
-        "contentHash": "ISAxyCkxAQ1pvJ9/9619q4DTdvuW4zaJydxoSqNFS7Db8JytgilbJXYHg7xwpGXXjNwXSx/07hqaKwL0Unf+pg=="
+        "resolved": "4.53.0",
+        "contentHash": "5drFnFaNcc5b3RoR5kYaRUx18uAyLZDecN0Z5QL6hDt+cunL8WqqDEBL34Q5OQZDUy4rHJhPJzNRK0bVaa7Qyg=="
       },
       "SkiaSharp.NativeAssets.Linux.NoDependencies": {
         "type": "Transitive",
@@ -804,13 +804,13 @@
       },
       "SkiaSharp.NativeAssets.macOS": {
         "type": "Transitive",
-        "resolved": "4.156.1",
-        "contentHash": "c05wS/CpRum9JKzk77bXrUsBdxIhv4QBk+sbE3nlEfoEV53Uq9VY4yxuae20lO42kE8PoLShuh6dbbvRrE4/iw=="
+        "resolved": "4.157.0",
+        "contentHash": "s44YB0BMAEudDf/AdcJLCcN6AXxhpKto0ZnJjats1TwNC+SD4mI2FhotDft58M593Ocea1ra6ad5slfJBhxfvg=="
       },
       "SkiaSharp.NativeAssets.Win32": {
         "type": "Transitive",
-        "resolved": "4.156.1",
-        "contentHash": "BFSUQxmxG9KI2UV7MW1Xb4XhCLSB7Rwsg9E94KelNi8L6ptGXnHIOm3yqU/y3djwg4ZNiBWhOB8XAGUVaF9LuA=="
+        "resolved": "4.157.0",
+        "contentHash": "tP54cTnPqGrzf2pBcyupMZWdIUjV34ELdKuh3/c329kRQF4UCVLZvilQZrDMqPJ9P/+AUJC8kDRMBgT/jBvYug=="
       }
     },
     "net10.0/linux-x64": {
@@ -828,9 +828,9 @@
       },
       "SkiaSharp.NativeAssets.Linux": {
         "type": "Direct",
-        "requested": "[4.156.1, )",
-        "resolved": "4.156.1",
-        "contentHash": "l9GWuJzlDd+xZ4gXahlsoDYI0oZkhmibA9ZxMOxJO1uKmDYGlQA3DFkUfLH1ksobGhuVLD4cUbQff3G43XcD1g=="
+        "requested": "[4.157.0, )",
+        "resolved": "4.157.0",
+        "contentHash": "1+xcqjIcXWYJgOh6gLj2noeJRicrqRYt2Y5CPVDH74X/uqHeCpnM1gR+CvUpHKNlfvBsD9WVxqw2zPU01MxCCg=="
       },
       "Avalonia.Angle.Windows.Natives": {
         "type": "Transitive",
@@ -885,8 +885,8 @@
       },
       "Selenium.WebDriver": {
         "type": "Transitive",
-        "resolved": "4.52.0",
-        "contentHash": "ISAxyCkxAQ1pvJ9/9619q4DTdvuW4zaJydxoSqNFS7Db8JytgilbJXYHg7xwpGXXjNwXSx/07hqaKwL0Unf+pg=="
+        "resolved": "4.53.0",
+        "contentHash": "5drFnFaNcc5b3RoR5kYaRUx18uAyLZDecN0Z5QL6hDt+cunL8WqqDEBL34Q5OQZDUy4rHJhPJzNRK0bVaa7Qyg=="
       },
       "SkiaSharp.NativeAssets.Linux.NoDependencies": {
         "type": "Transitive",
@@ -895,13 +895,13 @@
       },
       "SkiaSharp.NativeAssets.macOS": {
         "type": "Transitive",
-        "resolved": "4.156.1",
-        "contentHash": "c05wS/CpRum9JKzk77bXrUsBdxIhv4QBk+sbE3nlEfoEV53Uq9VY4yxuae20lO42kE8PoLShuh6dbbvRrE4/iw=="
+        "resolved": "4.157.0",
+        "contentHash": "s44YB0BMAEudDf/AdcJLCcN6AXxhpKto0ZnJjats1TwNC+SD4mI2FhotDft58M593Ocea1ra6ad5slfJBhxfvg=="
       },
       "SkiaSharp.NativeAssets.Win32": {
         "type": "Transitive",
-        "resolved": "4.156.1",
-        "contentHash": "BFSUQxmxG9KI2UV7MW1Xb4XhCLSB7Rwsg9E94KelNi8L6ptGXnHIOm3yqU/y3djwg4ZNiBWhOB8XAGUVaF9LuA=="
+        "resolved": "4.157.0",
+        "contentHash": "tP54cTnPqGrzf2pBcyupMZWdIUjV34ELdKuh3/c329kRQF4UCVLZvilQZrDMqPJ9P/+AUJC8kDRMBgT/jBvYug=="
       }
     }
   }
