@@ -10,7 +10,7 @@
 
 
 # COMPASS
-Codex Organizer to make Pen-and-paper Adventuring Super Simple or COMPASS for short is a desktop application to organize and manage all your TTRPG resources, inspired by [Playnite](https://github.com/JosefNemec/Playnite). You can download the latest version of COMPASS over at https://www.compassapp.info or in the [Github Releases section](https://github.com/DSPaul/COMPASS/releases). On Linux, COMPASS is available on Flathub.
+Codex Organizer to make Pen-and-paper Adventuring Super Simple or COMPASS for short is a desktop application to organize and manage all your TTRPG resources, inspired by [Playnite](https://github.com/JosefNemec/Playnite). It is availabe for both Windows and Linux. You can download the latest Windows version of COMPASS over at https://www.compassapp.info or in the [Github Releases section](https://github.com/DSPaul/COMPASS/releases). On Linux, COMPASS is available on Flathub.
 
 <a href="https://flathub.org/en-GB/apps/info.compassapp.COMPASS"><img width="200" alt="Get it on Flathub" src="https://flathub.org/api/badge?locale=en&size=padded"/></a>
 
