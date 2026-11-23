@@ -23,9 +23,10 @@ namespace COMPASS.Common.Features.CodexCollections
         private readonly ObservableCollection<CodexCollectionVM> _allCollectionVms = [];
 
         //Needed for binding to context menu "Move to Collection"
-        public IReadOnlyCollection<string> CollectionNames => _allCollectionVms.Select(collectionState => collectionState.Collection.Name)
-                                                                                       .ToList()
-                                                                                       .AsReadOnly();
+        public IReadOnlyCollection<string> CollectionNames => _allCollectionVms.OrderBy(vm => vm.Collection.Name)
+                                                                               .Select(vm => vm.Collection.Name)
+                                                                               .ToList()
+                                                                               .AsReadOnly();
         public IReadOnlyCollection<CodexCollectionVM> CollectionVms => _allCollectionVms;
         #endregion
 

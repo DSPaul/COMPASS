@@ -74,6 +74,7 @@ namespace COMPASS.Common.Features.Persistence.Repositories
                     .GetDirectories(_collectionsPath)
                     .Select(dir => Path.GetFileName(dir))
                     .Where(dir => CollectionManager.IsValidCollectionName(dir, out _, []))
+                    .OrderBy(dir => dir)
                     .Select(dir => new CodexCollection(dir))
                     .ToList();
             }
