@@ -6,11 +6,11 @@
   <project_license>AGPL-3.0-only</project_license>
   
   <name>COMPASS</name>
-  <summary>Digital library for TTRPGs</summary>
+  <summary>Digital library for tabletop role-playing games</summary>
   
   <description>
     <p>
-      COMPASS is a desktop application that helps you organize all your Tabletop RPG resources.
+      COMPASS (Codex Organizer to Make Pen-and-paper Adventuring Super Simple) is a desktop application that helps you organize all your Tabletop RPG resources.
       It provides powerful tools to catalog and manage your digital library of rulebooks, adventures,
       maps, and other gaming materials. Supports any file type, webpages and integrates with services such as Homebrewery.
     </p>
@@ -22,7 +22,7 @@
       <li>Four different layouts to view your collection</li>
       <li>Fuzzy search with advanced filtering and sorting</li>
       <li>Share your collection with others, including metadata, tags and files</li>
-      <li>No vendor lock-in - all data saved in human-readable XML</li>
+      <li>No vendor lock-in - all data saved in human-readable files</li>
       <li>Cross-platform support with a modern UI</li>
     </ul>
   </description>
